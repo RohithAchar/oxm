@@ -1,14 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Roboto, Open_Sans } from "next/font/google";
 import "./globals.css";
+import Providers from "@/lib/Providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+import { Navbar } from "@/components/nav/navbar";
+
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin"],
+});
+
+const openSans = Open_Sans({
+  variable: "--font-open-sans",
   subsets: ["latin"],
 });
 
@@ -25,9 +33,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${openSans.variable} ${roboto.variable} ${inter.variable} antialiased`}
       >
-        {children}
+        <Providers>
+          <Navbar />
+          <div className="bg-muted p-4">{children}</div>
+        </Providers>
       </body>
     </html>
   );
