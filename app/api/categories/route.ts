@@ -1,6 +1,6 @@
 // app/api/categories/route.ts
 import { createClient } from "@/utils/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 // GET all categories
 export async function GET() {
