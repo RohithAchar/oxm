@@ -19,13 +19,7 @@ import { Loader2, Phone, Shield } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 
-interface PhoneVerificationProps {
-  onVerificationSuccess?: (phoneNumber: string) => void;
-}
-
-export default function PhoneVerification({
-  onVerificationSuccess,
-}: PhoneVerificationProps) {
+export default function PhoneVerification() {
   const [step, setStep] = useState<"phone" | "otp">("phone");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
@@ -114,7 +108,6 @@ export default function PhoneVerification({
 
       if (data.success) {
         setSuccess("Phone number verified successfully!");
-        onVerificationSuccess?.(formattedPhone);
         toast.success("Phone number verified successfully!");
         router.push("/");
       } else {
