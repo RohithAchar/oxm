@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,18 @@ export default function PhoneVerification() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const isPhoneNumberExists = async () => {
+      const res = await axios.get("/api/phone-number-exists");
+      const data = res.data;
+      if (data.exists) {
+        toast.error("Phone number already exists!");
+        router.push("/");
+      }
+    };
+    isPhoneNumberExists();
+  }, []);
 
   const formatPhoneNumber = (phone: string) => {
     // Add +91 if not present and format for Indian numbers
