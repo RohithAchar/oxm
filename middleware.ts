@@ -41,7 +41,8 @@ export async function middleware(request: NextRequest) {
   // Protected routes
   if (
     request.nextUrl.pathname.startsWith("/dashboard") ||
-    request.nextUrl.pathname.startsWith("/verify-phone")
+    request.nextUrl.pathname.startsWith("/verify-phone") ||
+    request.nextUrl.pathname.startsWith("/create-business")
   ) {
     if (!user) {
       const url = request.nextUrl.clone();
