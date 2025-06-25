@@ -94,7 +94,7 @@ const CategorySidebar = () => {
           <Link
             href="/"
             className={cn(
-              "px-3 py-2 text-lg font-medium rounded-md transition-colors hover:bg-gray-100",
+              "px-3 py-2 text-sm font-medium rounded-md transition-colors hover:bg-gray-100",
               pathname === "/" ? "text-black font-semibold" : "text-gray-600"
             )}
             onClick={() => setOpen(false)}
@@ -129,7 +129,7 @@ const CategorySidebar = () => {
                       <Link
                         href={`/category/${parentCategory.slug}`}
                         className={cn(
-                          "flex-1 truncate text-lg",
+                          "flex-1 truncate text-sm",
                           isActive(parentCategory.slug)
                             ? "text-black font-semibold"
                             : "text-gray-700"
@@ -146,9 +146,9 @@ const CategorySidebar = () => {
                         parentCategory.children.length > 0 && (
                           <span className="ml-2 flex-shrink-0">
                             {expandedCategories.has(parentCategory.id) ? (
-                              <ChevronDown className="h-6 w-6 text-gray-400 group-hover:text-gray-600" />
+                              <ChevronDown className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
                             ) : (
-                              <ChevronRight className="h-6 w-6 text-gray-400 group-hover:text-gray-600" />
+                              <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
                             )}
                           </span>
                         )}
@@ -165,7 +165,7 @@ const CategorySidebar = () => {
                             key={childCategory.id}
                             href={`/category/${childCategory.slug}`}
                             className={cn(
-                              "block px-3 py-1.5 text-base rounded-md transition-colors hover:bg-gray-50 truncate",
+                              "block px-3 py-1.5 text-xs rounded-md transition-colors hover:bg-gray-50 truncate",
                               isActive(childCategory.slug)
                                 ? "bg-blue-50 text-blue-700 font-medium"
                                 : "text-gray-600 hover:text-gray-900"
