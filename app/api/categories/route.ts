@@ -7,11 +7,11 @@ export async function GET() {
   try {
     const supabase = await createClient();
 
-    // in alphabetic order
+    // in alphabetic order and without the parent category
     const { data: categories, error } = await supabase
       .from("categories")
       .select("*")
-      .order("name", { ascending: true });
+      .order("name");
 
     if (error) {
       console.error("Error fetching categories:", error);
