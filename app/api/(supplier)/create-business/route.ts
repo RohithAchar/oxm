@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       state,
       pincode,
       gst_certificate_url,
+      profile_avatar_url,
     } = body;
 
     if (!user) {
@@ -85,6 +86,7 @@ export async function POST(req: NextRequest) {
       gst_certificate_url,
       is_verified: false,
       profile_id: profile.data?.id,
+      profile_avatar_url,
     });
 
     return NextResponse.json(

@@ -269,10 +269,13 @@ export type Database = {
           gst_number: string
           id: string
           is_verified: boolean | null
+          message: string | null
           phone: string
           pincode: string
+          profile_avatar_url: string | null
           profile_id: string | null
           state: string
+          status: Database["public"]["Enums"]["verification_status"] | null
           updated_at: string | null
         }
         Insert: {
@@ -284,10 +287,13 @@ export type Database = {
           gst_number: string
           id?: string
           is_verified?: boolean | null
+          message?: string | null
           phone: string
           pincode: string
+          profile_avatar_url?: string | null
           profile_id?: string | null
           state: string
+          status?: Database["public"]["Enums"]["verification_status"] | null
           updated_at?: string | null
         }
         Update: {
@@ -299,10 +305,13 @@ export type Database = {
           gst_number?: string
           id?: string
           is_verified?: boolean | null
+          message?: string | null
           phone?: string
           pincode?: string
+          profile_avatar_url?: string | null
           profile_id?: string | null
           state?: string
+          status?: Database["public"]["Enums"]["verification_status"] | null
           updated_at?: string | null
         }
         Relationships: [
@@ -329,6 +338,7 @@ export type Database = {
         | "shipped"
         | "delivered"
         | "cancelled"
+      verification_status: "PENDING" | "REJECTED" | "APPROVED"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -451,6 +461,7 @@ export const Constants = {
         "delivered",
         "cancelled",
       ],
+      verification_status: ["PENDING", "REJECTED", "APPROVED"],
     },
   },
 } as const

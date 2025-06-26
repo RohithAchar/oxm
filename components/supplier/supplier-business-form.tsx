@@ -81,6 +81,7 @@ type FormData = z.infer<typeof formSchema>;
 export function SupplierBusinessForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -93,6 +94,29 @@ export function SupplierBusinessForm() {
       pincode: "",
     },
   });
+
+  const handleProfilePicUpload = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Profile picture must be a JPG or PNG image.");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error("Profile picture must be under 2MB.");
+      return;
+    }
+
+    setProfilePic(file);
+    toast.success("Profile picture selected.");
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -151,7 +175,29 @@ export function SupplierBusinessForm() {
         }
       }
 
+      let profilePicUrl = null;
+      if (profilePic) {
+        const picFormData = new FormData();
+        picFormData.append("file", profilePic);
+
+        const picUploadRes = await axios.post(
+          "/api/profile-picture",
+          picFormData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (picUploadRes.data.publicUrl) {
+          profilePicUrl = picUploadRes.data.publicUrl;
+          toast.success("Profile picture uploaded.");
+        }
+      }
+
       console.log("GST certificate URL:", gstCertificateUrl);
+      console.log("Profile picture URL:", profilePicUrl);
       console.log("Form data:", data);
       console.log("Uploaded file:", uploadedFile);
 
@@ -159,14 +205,41 @@ export function SupplierBusinessForm() {
       const res = await axios.post("/api/create-business", {
         ...data,
         gst_certificate_url: gstCertificateUrl,
+        profile_avatar_url: profilePicUrl,
       });
 
       toast.success("Supplier business registered successfully!");
       form.reset();
       setUploadedFile(null);
-    } catch (error) {
-      toast.error("Failed to register business. Please try again.");
-      console.error("Submission error:", error);
+    } catch (error: any) {
+      console.error("Frontend API Error:", error);
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const message =
+          error.response?.data?.message || "Unknown error occurred";
+
+        switch (status) {
+          case 400:
+            toast.error("Bad Request: " + message);
+            break;
+          case 401:
+            toast.error("Unauthorized: " + message);
+            // Optionally redirect to login
+            break;
+          case 503:
+            toast.error("Service Unavailable: " + message);
+            break;
+          case 500:
+            toast.error("Server Error: " + message);
+            break;
+          default:
+            toast.error("Error: " + message);
+        }
+      } else {
+        // Non-Axios errors
+        alert("Unexpected error: " + error.message || error.toString());
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -312,6 +385,53 @@ export function SupplierBusinessForm() {
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium">
+                  Profile Picture (Optional)
+                </label>
+                <div className="mt-2">
+                  <div className="flex items-center justify-center w-full">
+                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        {profilePic ? (
+                          <>
+                            <img
+                              src={URL.createObjectURL(profilePic)}
+                              alt="Preview"
+                              className="w-16 h-16 rounded-full mb-2 object-cover"
+                            />
+                            <p className="text-sm text-gray-600">
+                              {profilePic.name}
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                            <p className="text-sm text-gray-600">
+                              <span className="font-semibold">
+                                Click to upload
+                              </span>{" "}
+                              profile picture
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              JPG or PNG, max 2MB
+                            </p>
+                          </>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        accept=".png,.jpg,.jpeg"
+                        onChange={handleProfilePicUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">
                   GST Certificate (Optional)
                 </label>
                 <div className="mt-2">
@@ -363,6 +483,7 @@ export function SupplierBusinessForm() {
                 onClick={() => {
                   form.reset();
                   setUploadedFile(null);
+                  setProfilePic(null);
                 }}
                 disabled={isSubmitting}
               >

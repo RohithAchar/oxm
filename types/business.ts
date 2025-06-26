@@ -1,3 +1,4 @@
+import { Database } from "@/utils/supabase/database.types";
 import { z } from "zod";
 
 export const formSchema = z.object({
@@ -23,4 +24,8 @@ export const formSchema = z.object({
     .max(6, "Pincode must be 6 digits")
     .regex(/^[0-9]{6}$/, "Pincode must contain only numbers"),
   gst_certificate_url: z.any().optional(),
+  profile_avatar_url: z.string().optional(),
 });
+
+export type Business =
+  Database["public"]["Tables"]["supplier_businesses"]["Row"];
