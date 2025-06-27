@@ -35,7 +35,7 @@ import {
 import { Upload, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
-import { formSchema } from "@/types/business";
+import { businessTypeOptions, formSchema } from "@/types/business";
 
 // Indian states for the dropdown
 const indianStates = [
@@ -92,6 +92,7 @@ export function SupplierBusinessForm() {
       city: "",
       state: "",
       pincode: "",
+      type: "MANUFACTURER",
     },
   });
 
@@ -381,6 +382,35 @@ export function SupplierBusinessForm() {
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Business Type *</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select business type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {businessTypeOptions.map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {type.charAt(0).toUpperCase() +
+                            type.slice(1).toLowerCase()}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <div className="space-y-4">
               <div>

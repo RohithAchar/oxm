@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       pincode,
       gst_certificate_url,
       profile_avatar_url,
+      type,
     } = body;
 
     if (!user) {
@@ -47,7 +48,8 @@ export async function POST(req: NextRequest) {
       !business_address ||
       !city ||
       !state ||
-      !pincode
+      !pincode ||
+      !type
     ) {
       return NextResponse.json(
         {
@@ -62,6 +64,7 @@ export async function POST(req: NextRequest) {
             city: !city ? "City is required" : null,
             state: !state ? "State is required" : null,
             pincode: !pincode ? "Pincode is required" : null,
+            type: !type ? "Type is required" : null,
           },
         },
         { status: 400 }
@@ -87,6 +90,7 @@ export async function POST(req: NextRequest) {
       is_verified: false,
       profile_id: profile.data?.id,
       profile_avatar_url,
+      type,
     });
 
     return NextResponse.json(

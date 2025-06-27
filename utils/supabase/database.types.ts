@@ -276,6 +276,7 @@ export type Database = {
           profile_id: string | null
           state: string
           status: Database["public"]["Enums"]["verification_status"] | null
+          type: Database["public"]["Enums"]["business-type"] | null
           updated_at: string | null
         }
         Insert: {
@@ -294,6 +295,7 @@ export type Database = {
           profile_id?: string | null
           state: string
           status?: Database["public"]["Enums"]["verification_status"] | null
+          type?: Database["public"]["Enums"]["business-type"] | null
           updated_at?: string | null
         }
         Update: {
@@ -312,6 +314,7 @@ export type Database = {
           profile_id?: string | null
           state?: string
           status?: Database["public"]["Enums"]["verification_status"] | null
+          type?: Database["public"]["Enums"]["business-type"] | null
           updated_at?: string | null
         }
         Relationships: [
@@ -332,6 +335,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      "business-type":
+        | "MANUFACTURER"
+        | "WHOLESALER"
+        | "DISTRIBUTOR"
+        | "TRADER / RESELLER"
+        | "DROPSHIPPER"
+        | "EXPORTER"
+        | "IMPORTER"
+        | "OTHER"
       order_status:
         | "pending"
         | "confirmed"
@@ -454,6 +466,16 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      "business-type": [
+        "MANUFACTURER",
+        "WHOLESALER",
+        "DISTRIBUTOR",
+        "TRADER / RESELLER",
+        "DROPSHIPPER",
+        "EXPORTER",
+        "IMPORTER",
+        "OTHER",
+      ],
       order_status: [
         "pending",
         "confirmed",

@@ -1,6 +1,19 @@
 import { Database } from "@/utils/supabase/database.types";
 import { z } from "zod";
 
+type business_types = Database["public"]["Enums"]["business-type"];
+
+export const businessTypeOptions = [
+  "MANUFACTURER",
+  "WHOLESALER",
+  "DISTRIBUTOR",
+  "TRADER / RESELLER",
+  "DROPSHIPPER",
+  "EXPORTER",
+  "IMPORTER",
+  "OTHER",
+] as const;
+
 export const formSchema = z.object({
   business_name: z
     .string()
@@ -25,6 +38,7 @@ export const formSchema = z.object({
     .regex(/^[0-9]{6}$/, "Pincode must contain only numbers"),
   gst_certificate_url: z.any().optional(),
   profile_avatar_url: z.string().optional(),
+  type: z.enum(businessTypeOptions),
 });
 
 export type Business =

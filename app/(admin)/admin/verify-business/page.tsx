@@ -51,6 +51,7 @@ import {
   Search,
   Filter,
   X,
+  Tags,
 } from "lucide-react";
 import { Database } from "@/utils/supabase/database.types";
 
@@ -379,6 +380,7 @@ const AdminBusinessVerification = () => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Business Name</TableHead>
+                  <TableHead>Type</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>GST Number</TableHead>
@@ -391,7 +393,7 @@ const AdminBusinessVerification = () => {
                 {filteredBusinesses.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={7}
+                      colSpan={8}
                       className="text-center py-8 text-gray-500"
                     >
                       {businesses.length === 0
@@ -405,6 +407,7 @@ const AdminBusinessVerification = () => {
                       <TableCell className="font-medium">
                         {business.business_name}
                       </TableCell>
+                      <TableCell>{business.type}</TableCell>
                       <TableCell>
                         <div className="text-sm">
                           <div>
@@ -492,6 +495,14 @@ const AdminBusinessVerification = () => {
                   {selectedBusiness.business_address}, {selectedBusiness.city},{" "}
                   {selectedBusiness.state} - {selectedBusiness.pincode}
                 </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium flex items-center gap-2">
+                  <Tags className="h-4 w-4" />
+                  Type
+                </Label>
+                <p className="text-sm">{selectedBusiness.type}</p>
               </div>
 
               <div className="space-y-2">
