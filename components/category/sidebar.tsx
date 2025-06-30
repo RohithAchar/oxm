@@ -142,7 +142,7 @@ const CategorySidebar = () => {
                         {parentCategory.name}
                       </Link>
 
-                      {parentCategory.children &&
+                      {/* {parentCategory.children &&
                         parentCategory.children.length > 0 && (
                           <span className="ml-2 flex-shrink-0">
                             {expandedCategories.has(parentCategory.id) ? (
@@ -151,12 +151,12 @@ const CategorySidebar = () => {
                               <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
                             )}
                           </span>
-                        )}
+                        )} */}
                     </button>
                   </div>
 
                   {/* Child Categories */}
-                  {expandedCategories.has(parentCategory.id) &&
+                  {/* {expandedCategories.has(parentCategory.id) &&
                     parentCategory.children &&
                     parentCategory.children.length > 0 && (
                       <div className="ml-4 mt-1 space-y-1 border-l-2 border-gray-100 pl-3">
@@ -180,7 +180,7 @@ const CategorySidebar = () => {
                           </Link>
                         ))}
                       </div>
-                    )}
+                    )} */}
                 </div>
               ))}
             </div>
