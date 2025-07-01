@@ -100,12 +100,105 @@ export async function POST(req: NextRequest) {
       );
     }
     // Your business logic here
-    const result = await supabase.from("products").insert(body);
+    const result = await supabase
+      .from("products")
+      .insert(body)
+      .select("id")
+      .single();
 
     return NextResponse.json(
       {
         success: true,
-        data: result,
+        id: result.data?.id,
+        message: "Operation completed successfully",
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error("API Error:", error);
+
+    // Handle JSON parsing errors
+    if (error instanceof SyntaxError) {
+      return NextResponse.json(
+        {
+          error: "Invalid JSON",
+          message: "Request body must be valid JSON",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Handle specific error types
+    if (error.name === "ValidationError") {
+      return NextResponse.json(
+        {
+          error: "Validation failed",
+          message: error.message,
+          details: error.details,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (error.name === "UnauthorizedError") {
+      return NextResponse.json(
+        {
+          error: "Unauthorized",
+          message: "Invalid credentials",
+        },
+        { status: 401 }
+      );
+    }
+
+    // Database connection errors
+    if (error.code === "ECONNREFUSED") {
+      return NextResponse.json(
+        {
+          error: "Service unavailable",
+          message: "Database connection failed",
+        },
+        { status: 503 }
+      );
+    }
+
+    // Generic server error
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        message:
+          process.env.NODE_ENV === "development"
+            ? error.message
+            : "Something went wrong",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "User not authorized" },
+        { status: 401 }
+      );
+    }
+
+    // Your business logic here
+    const result = await supabase
+      .from("products")
+      .select("*")
+      .eq("supplier_id", user.id);
+
+    return NextResponse.json(
+      {
+        success: true,
+        result,
         message: "Operation completed successfully",
       },
       { status: 200 }

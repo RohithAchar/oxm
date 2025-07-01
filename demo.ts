@@ -2,6 +2,7 @@
 
 // export async function POST(req: NextRequest) {
 //   try {
+// const supabase = await createClient();
 //     // Parse request body
 //     const body = await req.json();
 

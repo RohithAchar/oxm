@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Search,
   Plus,
@@ -44,101 +44,72 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import axios from "axios";
+import { Database } from "@/utils/supabase/database.types";
+import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
-// Mock data based on the schema
-const mockProducts = [
-  {
-    id: "1",
-    name: "Premium Wireless Headphones",
-    description: "High-quality wireless headphones with noise cancellation",
-    sku: "WH-001",
-    brand: "AudioTech",
-    category_id: "electronics",
-    supplier_id: "sup-001",
-    sample_price: 299.99,
-    minimum_order_quantity: 10,
-    is_active: true,
-    is_sample_available: true,
-    country_of_origin: "Germany",
-    hsn_code: "85183000",
-    height: 20,
-    breadth: 15,
-    length: 25,
-    weight: 0.5,
-    created_at: "2024-01-15T10:30:00Z",
-    updated_at: "2024-01-20T14:45:00Z",
-  },
-  {
-    id: "2",
-    name: "Smart Fitness Tracker",
-    description: "Advanced fitness tracker with heart rate monitoring",
-    sku: "FT-002",
-    brand: "FitLife",
-    category_id: "wearables",
-    supplier_id: "sup-002",
-    sample_price: 149.99,
-    minimum_order_quantity: 25,
-    is_active: true,
-    is_sample_available: false,
-    country_of_origin: "China",
-    hsn_code: "91021100",
-    height: 1,
-    breadth: 4,
-    length: 25,
-    weight: 0.03,
-    created_at: "2024-01-10T08:15:00Z",
-    updated_at: "2024-01-18T16:20:00Z",
-  },
-  {
-    id: "3",
-    name: "Organic Cotton T-Shirt",
-    description: "Sustainable organic cotton t-shirt in multiple colors",
-    sku: "TS-003",
-    brand: "EcoWear",
-    category_id: "clothing",
-    supplier_id: "sup-003",
-    sample_price: 29.99,
-    minimum_order_quantity: 50,
-    is_active: false,
-    is_sample_available: true,
-    country_of_origin: "India",
-    hsn_code: "61091000",
-    height: 0.5,
-    breadth: 40,
-    length: 60,
-    weight: 0.15,
-    created_at: "2024-01-05T12:00:00Z",
-    updated_at: "2024-01-22T09:30:00Z",
-  },
-  {
-    id: "4",
-    name: "Stainless Steel Water Bottle",
-    description: "Insulated stainless steel water bottle, 750ml capacity",
-    sku: "WB-004",
-    brand: "HydroMax",
-    category_id: "accessories",
-    supplier_id: "sup-001",
-    sample_price: 39.99,
-    minimum_order_quantity: 30,
-    is_active: true,
-    is_sample_available: true,
-    country_of_origin: "USA",
-    hsn_code: "73239300",
-    height: 25,
-    breadth: 7,
-    length: 7,
-    weight: 0.4,
-    created_at: "2024-01-12T15:45:00Z",
-    updated_at: "2024-01-19T11:10:00Z",
-  },
-];
+type Category = Database["public"]["Tables"]["categories"]["Row"];
+type Product = Database["public"]["Tables"]["products"]["Row"];
 
 const ManageProductsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categroies, setCategories] = useState<Category[]>([]);
 
-  const filteredProducts = mockProducts.filter((product) => {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("/api/products");
+        const result = response.data.result.data;
+        setProducts(result);
+
+        const categoriesResponse = await axios.get("/api/categories");
+        const categories = categoriesResponse.data.categories;
+        const mainCategories = categories.filter(
+          (category: Category) => category.parent_id === null
+        );
+        setCategories(mainCategories);
+      } catch (error: any) {
+        console.error("Frontend API Error:", error);
+
+        if (axios.isAxiosError(error)) {
+          const status = error.response?.status;
+          const message =
+            error.response?.data?.message || "Unknown error occurred";
+
+          switch (status) {
+            case 400:
+              toast.error("Bad Request: " + message);
+              break;
+            case 401:
+              toast.error("Unauthorized: " + message);
+              // Optionally redirect to login
+              break;
+            case 503:
+              toast.error("Service Unavailable: " + message);
+              break;
+            case 500:
+              toast.error("Server Error: " + message);
+              break;
+            default:
+              toast.error("Error: " + message);
+          }
+        } else {
+          // Non-Axios errors
+          toast.error("Unexpected error: " + error.message || error.toString());
+        }
+      } finally {
+        setLoading(false); // <- stop loading after fetch
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const filteredProducts = products.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -185,10 +156,10 @@ const ManageProductsPage = () => {
             Manage your product catalog, inventory, and pricing
           </p>
         </div>
-        <Button className="md:w-auto">
+        {/* <Button className="md:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Add Product
-        </Button>
+        </Button> */}
       </div>
 
       {/* Stats Cards */}
@@ -201,8 +172,16 @@ const ManageProductsPage = () => {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{mockProducts.length}</div>
-            <p className="text-xs text-muted-foreground">+2 from last month</p>
+            {loading ? (
+              <CardSkeleton />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">{products.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  +2 from last month
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -213,17 +192,23 @@ const ManageProductsPage = () => {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {mockProducts.filter((p) => p.is_active).length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {Math.round(
-                (mockProducts.filter((p) => p.is_active).length /
-                  mockProducts.length) *
-                  100
-              )}
-              % of total
-            </p>
+            {loading ? (
+              <CardSkeleton />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {products.filter((p) => p.is_active).length}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {Math.round(
+                    (products.filter((p) => p.is_active).length /
+                      products.length) *
+                      100
+                  )}
+                  % of total
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -234,10 +219,18 @@ const ManageProductsPage = () => {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              {mockProducts.filter((p) => p.is_sample_available).length}
-            </div>
-            <p className="text-xs text-muted-foreground">Ready for sampling</p>
+            {loading ? (
+              <CardSkeleton />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  {products.filter((p) => p.is_sample_available).length}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Ready for sampling
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
         <Card>
@@ -248,16 +241,22 @@ const ManageProductsPage = () => {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              $
-              {Math.round(
-                mockProducts.reduce((acc, p) => acc + p.sample_price, 0) /
-                  mockProducts.length
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Average across all products
-            </p>
+            {loading ? (
+              <CardSkeleton />
+            ) : (
+              <>
+                <div className="text-2xl font-bold">
+                  $
+                  {Math.round(
+                    products.reduce((acc, p) => acc + p.sample_price, 0) /
+                      products.length
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Average across all products
+                </p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -297,11 +296,12 @@ const ManageProductsPage = () => {
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="electronics">Electronics</SelectItem>
-                  <SelectItem value="wearables">Wearables</SelectItem>
-                  <SelectItem value="clothing">Clothing</SelectItem>
-                  <SelectItem value="accessories">Accessories</SelectItem>
+                  <SelectItem value="all">All</SelectItem>
+                  {categroies.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -327,84 +327,92 @@ const ManageProductsPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProducts.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell>
-                    <div className="space-y-1">
-                      <div className="font-medium">{product.name}</div>
-                      <div className="text-sm text-muted-foreground line-clamp-1">
+              {loading ? (
+                <SkeletonProducts />
+              ) : (
+                filteredProducts.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell>
+                      <div className="space-y-1">
+                        <div className="font-medium">{product.name}</div>
+                        {/* <div className="text-sm text-muted-foreground line-clamp-1">
                         {product.description}
+                      </div> */}
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {product.sku}
-                  </TableCell>
-                  <TableCell>{product.brand}</TableCell>
-                  <TableCell className="capitalize">
-                    {product.category_id?.replace("_", " ")}
-                  </TableCell>
-                  <TableCell>${product.sample_price}</TableCell>
-                  <TableCell>{product.minimum_order_quantity}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={product.is_active ? "default" : "secondary"}
-                    >
-                      {product.is_active ? "Active" : "Inactive"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={
-                        product.is_sample_available ? "outline" : "secondary"
+                    </TableCell>
+                    <TableCell className="font-mono text-sm">
+                      {product.sku}
+                    </TableCell>
+                    <TableCell>{product.brand}</TableCell>
+                    <TableCell className="capitalize">
+                      {
+                        categroies.find(
+                          (category) => category.id === product.category_id
+                        )?.name
                       }
-                    >
-                      {product.is_sample_available
-                        ? "Available"
-                        : "Not Available"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() => handleViewProduct(product.id)}
-                        >
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleEditProduct(product.id)}
-                        >
-                          <Edit className="mr-2 h-4 w-4" />
-                          Edit Product
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => handleToggleStatus(product.id)}
-                        >
-                          {product.is_active ? "Deactivate" : "Activate"}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteProduct(product.id)}
-                          className="text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete Product
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>${product.sample_price}</TableCell>
+                    <TableCell>{product.minimum_order_quantity}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={product.is_active ? "default" : "secondary"}
+                      >
+                        {product.is_active ? "Active" : "Inactive"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={
+                          product.is_sample_available ? "outline" : "secondary"
+                        }
+                      >
+                        {product.is_sample_available
+                          ? "Available"
+                          : "Not Available"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <span className="sr-only">Open menu</span>
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            onClick={() => handleViewProduct(product.id)}
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleEditProduct(product.id)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Edit Product
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleToggleStatus(product.id)}
+                          >
+                            {product.is_active ? "Deactivate" : "Activate"}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="text-destructive"
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Delete Product
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </CardContent>
@@ -413,7 +421,7 @@ const ManageProductsPage = () => {
       {/* Pagination */}
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
-          Showing {filteredProducts.length} of {mockProducts.length} products
+          Showing {filteredProducts.length} of {products.length} products
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline" size="sm" disabled>
@@ -429,3 +437,43 @@ const ManageProductsPage = () => {
 };
 
 export default ManageProductsPage;
+
+const SkeletonProducts = () => {
+  return [...Array(5)].map((_, index) => (
+    <TableRow key={index}>
+      <TableCell>
+        <Skeleton className="h-4 w-32" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-24" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-20" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-16" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-10" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-16" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-4 w-20" />
+      </TableCell>
+      <TableCell className="text-right">
+        <Skeleton className="h-8 w-8 rounded-full" />
+      </TableCell>
+    </TableRow>
+  ));
+};
+
+const CardSkeleton = () => {
+  return (
+    <>
+      <Skeleton className="h-6 w-20" />
+      <Skeleton className="h-4 w-24 mt-2" />
+    </>
+  );
+};
