@@ -93,3 +93,35 @@
 //     );
 //   }
 // }
+
+// Client
+// catch (error: any) {
+//       console.error("Frontend API Error:", error);
+
+//       if (axios.isAxiosError(error)) {
+//         const status = error.response?.status;
+//         const message =
+//           error.response?.data?.message || "Unknown error occurred";
+
+//         switch (status) {
+//           case 400:
+//             toast.error("Bad Request: " + message);
+//             break;
+//           case 401:
+//             toast.error("Unauthorized: " + message);
+//             // Optionally redirect to login
+//             break;
+//           case 503:
+//             toast.error("Service Unavailable: " + message);
+//             break;
+//           case 500:
+//             toast.error("Server Error: " + message);
+//             break;
+//           default:
+//             toast.error("Error: " + message);
+//         }
+//       } else {
+//         // Non-Axios errors
+//         toast.error("Unexpected error: " + error.message || error.toString());
+//       }
+//     }

@@ -75,46 +75,67 @@ export type Database = {
       }
       products: {
         Row: {
+          brand: string | null
+          breadth: number | null
           category_id: string | null
+          country_of_origin: string | null
           created_at: string | null
           description: string
+          height: number | null
+          hsn_code: string | null
           id: string
           is_active: boolean | null
           is_sample_available: boolean | null
+          length: number | null
           minimum_order_quantity: number
           name: string
           sample_price: number
           sku: string
           supplier_id: string | null
           updated_at: string | null
+          weight: number | null
         }
         Insert: {
+          brand?: string | null
+          breadth?: number | null
           category_id?: string | null
+          country_of_origin?: string | null
           created_at?: string | null
           description: string
+          height?: number | null
+          hsn_code?: string | null
           id?: string
           is_active?: boolean | null
           is_sample_available?: boolean | null
+          length?: number | null
           minimum_order_quantity: number
           name: string
           sample_price: number
           sku: string
           supplier_id?: string | null
           updated_at?: string | null
+          weight?: number | null
         }
         Update: {
+          brand?: string | null
+          breadth?: number | null
           category_id?: string | null
+          country_of_origin?: string | null
           created_at?: string | null
           description?: string
+          height?: number | null
+          hsn_code?: string | null
           id?: string
           is_active?: boolean | null
           is_sample_available?: boolean | null
+          length?: number | null
           minimum_order_quantity?: number
           name?: string
           sample_price?: number
           sku?: string
           supplier_id?: string | null
           updated_at?: string | null
+          weight?: number | null
         }
         Relationships: [
           {

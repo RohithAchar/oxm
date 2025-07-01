@@ -239,7 +239,7 @@ export function SupplierBusinessForm() {
         }
       } else {
         // Non-Axios errors
-        alert("Unexpected error: " + error.message || error.toString());
+        toast.error("Unexpected error: " + error.message || error.toString());
       }
     } finally {
       setIsSubmitting(false);
