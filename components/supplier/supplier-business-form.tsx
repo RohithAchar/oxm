@@ -36,6 +36,7 @@ import { Upload, FileText, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { businessTypeOptions, formSchema } from "@/types/business";
+import { useRouter } from "next/navigation";
 
 // Indian states for the dropdown
 const indianStates = [
@@ -82,6 +83,7 @@ export function SupplierBusinessForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [profilePic, setProfilePic] = useState<File | null>(null);
+  const router = useRouter();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -212,6 +214,7 @@ export function SupplierBusinessForm() {
       toast.success("Supplier business registered successfully!");
       form.reset();
       setUploadedFile(null);
+      router.push("/supplier");
     } catch (error: any) {
       console.error("Frontend API Error:", error);
 

@@ -59,21 +59,21 @@ interface ProductImage {
 const productFormSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Description is required"),
-  sku: z.string().min(1, "SKU is required"),
   minimum_order_quantity: z.coerce
     .number()
     .min(1, "Minimum order quantity must be at least 1"),
   sample_price: z.coerce.number().min(0, "Sample price must be 0 or greater"),
-  brand: z.string().nullable().optional(),
-  category_id: z.string().nullable().optional(),
-  country_of_origin: z.string().nullable().optional(),
+  brand: z.string().min(1, "Brand is required"),
+  category_id: z.string().min(1, "Category is required"),
+  subcategory_id: z.string().min(1, "Sub category is required"),
+  country_of_origin: z.string().min(1, "Country of origin is required"),
   hsn_code: z.string().nullable().optional(),
-  supplier_id: z.string().nullable().optional(),
-  breadth: z.coerce.number().min(0).nullable().optional(),
-  height: z.coerce.number().min(0).nullable().optional(),
-  length: z.coerce.number().min(0).nullable().optional(),
-  weight: z.coerce.number().min(0).nullable().optional(),
-  is_active: z.boolean(),
+  supplier_id: z.string().min(1, "Supplier ID is required"),
+  youtube_link: z.string().nullable().optional(),
+  breadth: z.coerce.number().min(1, "Breadth is required"),
+  height: z.coerce.number().min(1, "Height is required"),
+  length: z.coerce.number().min(1, "Length is required"),
+  weight: z.coerce.number().min(1, "Wight is required"),
   is_sample_available: z.boolean(),
 });
 
@@ -105,8 +105,12 @@ const AddProductPage = () => {
   const [isUploadingImages, setIsUploadingImages] = useState(false);
   const [business, setBusiness] = useState<Business | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [subCategories, setSubCategories] = useState<Category[]>([]);
   const [productImages, setProductImages] = useState<ProductImage[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
 
   const supabase = createClient();
 
@@ -170,6 +174,11 @@ const AddProductPage = () => {
           (category: Category) => category.parent_id === null
         );
 
+        const subCategories = response.data.categories.filter(
+          (category: Category) => category.parent_id !== null
+        );
+
+        setSubCategories(subCategories);
         setCategories(mainCategories);
       } catch (error) {
       } finally {
@@ -186,20 +195,20 @@ const AddProductPage = () => {
     defaultValues: {
       name: "",
       description: "",
-      sku: "",
       minimum_order_quantity: 1,
       sample_price: 0,
       brand: business?.business_name || "",
       category_id: "",
+      subcategory_id: "",
       country_of_origin: "",
       hsn_code: "",
       supplier_id: business?.profile_id || "",
+      youtube_link: "",
       breadth: undefined,
       height: undefined,
       length: undefined,
       weight: undefined,
-      is_active: true,
-      is_sample_available: false,
+      is_sample_available: true,
     },
   });
 
@@ -336,9 +345,11 @@ const AddProductPage = () => {
         // Convert empty strings to null for optional fields
         brand: data.brand || null,
         category_id: data.category_id || null,
+        subcategory_id: data.subcategory_id || null,
         country_of_origin: data.country_of_origin || null,
         hsn_code: data.hsn_code || null,
         supplier_id: data.supplier_id || null,
+        youtube_link: data.youtube_link || null,
         breadth: data.breadth || null,
         height: data.height || null,
         length: data.length || null,
@@ -527,23 +538,6 @@ const AddProductPage = () => {
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="sku"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>SKU *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter SKU" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Stock Keeping Unit - unique identifier
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               <FormField
@@ -591,7 +585,10 @@ const AddProductPage = () => {
                     <FormItem>
                       <FormLabel>Category</FormLabel>
                       <Select
-                        onValueChange={field.onChange}
+                        onValueChange={(value: string) => {
+                          field.onChange(value);
+                          setSelectedCategoryId(value);
+                        }}
                         defaultValue={field.value || ""}
                       >
                         <FormControl>
@@ -605,6 +602,46 @@ const AddProductPage = () => {
                               {category.name}
                             </SelectItem>
                           ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="subcategory_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sub Category</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value || ""}
+                        disabled={!selectedCategoryId} // 🚫 disables until category selected
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue
+                              placeholder={
+                                selectedCategoryId
+                                  ? "Select sub category"
+                                  : "Select category first"
+                              }
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {subCategories.map((category) => {
+                            if (category.parent_id !== selectedCategoryId)
+                              return;
+
+                            return (
+                              <SelectItem key={category.id} value={category.id}>
+                                {category.name}
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -666,29 +703,6 @@ const AddProductPage = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="is_active"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">
-                          Active Status
-                        </FormLabel>
-                        <FormDescription>
-                          Make this product available for ordering
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-
                 <FormField
                   control={form.control}
                   name="is_sample_available"
@@ -768,6 +782,27 @@ const AddProductPage = () => {
                       </FormControl>
                       <FormDescription>
                         Harmonized System of Nomenclature code
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="youtube_link"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Youtube Link</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter Youtube link"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Link to the Youtube video of the product
                       </FormDescription>
                       <FormMessage />
                     </FormItem>

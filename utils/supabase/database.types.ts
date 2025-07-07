@@ -63,15 +63,7 @@ export type Database = {
           image_url?: string
           product_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "product_images_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       products: {
         Row: {
@@ -90,10 +82,11 @@ export type Database = {
           minimum_order_quantity: number
           name: string
           sample_price: number
-          sku: string
+          subcategory_id: string | null
           supplier_id: string | null
           updated_at: string | null
           weight: number | null
+          youtube_link: string | null
         }
         Insert: {
           brand?: string | null
@@ -111,10 +104,11 @@ export type Database = {
           minimum_order_quantity: number
           name: string
           sample_price: number
-          sku: string
+          subcategory_id?: string | null
           supplier_id?: string | null
           updated_at?: string | null
           weight?: number | null
+          youtube_link?: string | null
         }
         Update: {
           brand?: string | null
@@ -132,15 +126,23 @@ export type Database = {
           minimum_order_quantity?: number
           name?: string
           sample_price?: number
-          sku?: string
+          subcategory_id?: string | null
           supplier_id?: string | null
           updated_at?: string | null
           weight?: number | null
+          youtube_link?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "products_category_id_fkey"
             columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_subcategory_id_fkey"
+            columns: ["subcategory_id"]
             isOneToOne: false
             referencedRelation: "categories"
             referencedColumns: ["id"]
@@ -210,13 +212,6 @@ export type Database = {
           sample_order_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "sample_order_items_product_id_fkey"
-            columns: ["product_id"]
-            isOneToOne: false
-            referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "sample_order_items_sample_order_id_fkey"
             columns: ["sample_order_id"]

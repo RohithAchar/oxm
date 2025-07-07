@@ -112,7 +112,7 @@ const ManageProductsPage = () => {
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      // product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.brand?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
@@ -340,9 +340,9 @@ const ManageProductsPage = () => {
                       </div> */}
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-sm">
+                    {/* <TableCell className="font-mono text-sm">
                       {product.sku}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>{product.brand}</TableCell>
                     <TableCell className="capitalize">
                       {

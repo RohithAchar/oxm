@@ -15,17 +15,18 @@ export async function POST(req: NextRequest) {
       brand,
       breadth,
       category_id,
+      subcategory_id,
       country_of_origin,
       description,
       height,
       hsn_code,
-      is_active,
+
       is_sample_available,
       length,
       minimum_order_quantity,
       name,
       sample_price,
-      sku,
+
       supplier_id,
       weight,
     }: ProductInsert = body;
@@ -35,7 +36,8 @@ export async function POST(req: NextRequest) {
     // Required string fields
     if (!name) errors.name = "Product name is required";
     if (!category_id) errors.category_id = "Category is required";
-    if (!sku) errors.sku = "SKU is required";
+    if (!subcategory_id) errors.subcategory_id = "Sub category is required";
+
     if (!supplier_id) errors.supplier_id = "Supplier ID is required";
 
     // Numeric validations
@@ -77,9 +79,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Boolean checks
-    if (typeof is_active !== "boolean") {
-      errors.is_active = "is_active must be a boolean";
-    }
     if (typeof is_sample_available !== "boolean") {
       errors.is_sample_available = "is_sample_available must be a boolean";
     }
