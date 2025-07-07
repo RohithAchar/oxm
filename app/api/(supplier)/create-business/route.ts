@@ -11,6 +11,8 @@ export async function POST(req: NextRequest) {
     // Parse request body
     const body: z.infer<typeof formSchema> = await req.json();
 
+    console.log("BODY: ", body);
+
     const {
       business_name,
       gst_number,
@@ -77,30 +79,76 @@ export async function POST(req: NextRequest) {
       .eq("id", user.data.user?.id)
       .single();
 
-    // // Your business logic here
-    const result = await supabase.from("supplier_businesses").insert({
-      business_name,
-      gst_number,
-      business_address,
-      city,
-      state,
-      pincode,
-      phone: profile.data?.phone_number + "",
-      gst_certificate_url,
-      is_verified: false,
-      profile_id: profile.data?.id,
-      profile_avatar_url,
-      type,
-    });
+    if (!profile.data?.id) {
+      return NextResponse.json(
+        {
+          error: "Profile not found",
+          message: "User profile is missing or invalid",
+        },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: body,
-        message: "Operation completed successfully",
-      },
-      { status: 200 }
-    );
+    const existingBusiness = await supabase
+      .from("supplier_businesses")
+      .select("id")
+      .eq("profile_id", profile.data.id) // ✅ safe now
+      .single();
+
+    if (existingBusiness.data?.id) {
+      // 🔁 UPDATE
+      const updateResult = await supabase
+        .from("supplier_businesses")
+        .update({
+          business_name,
+          gst_number,
+          business_address,
+          city,
+          state,
+          pincode,
+          phone: profile.data?.phone_number + "",
+          gst_certificate_url,
+          is_verified: false,
+          profile_avatar_url,
+          type,
+          status: "PENDING",
+        })
+        .eq("profile_id", profile.data?.id);
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: updateResult,
+          message: "Business information updated successfully",
+        },
+        { status: 200 }
+      );
+    } else {
+      // ➕ CREATE
+      const insertResult = await supabase.from("supplier_businesses").insert({
+        business_name,
+        gst_number,
+        business_address,
+        city,
+        state,
+        pincode,
+        phone: profile.data?.phone_number + "",
+        gst_certificate_url,
+        is_verified: false,
+        profile_id: profile.data?.id,
+        profile_avatar_url,
+        type,
+      });
+
+      return NextResponse.json(
+        {
+          success: true,
+          data: insertResult,
+          message: "Business registered successfully",
+        },
+        { status: 201 }
+      );
+    }
   } catch (error: any) {
     console.error("API Error:", error);
 

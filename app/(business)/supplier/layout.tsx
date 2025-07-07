@@ -20,6 +20,10 @@ export default async function SupplierLayout({
     if (!business) {
       redirect("/create-business");
     }
+
+    if (business.is_verified === false) {
+      redirect("/create-business");
+    }
   }
 
   return (

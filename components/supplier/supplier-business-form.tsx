@@ -1,3 +1,5 @@
+// components/supplier/supplier-business-form.tsx
+
 "use client";
 
 import type React from "react";
@@ -32,11 +34,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Upload, FileText, Loader2 } from "lucide-react";
+import { Upload, FileText, Loader2, Clock } from "lucide-react";
 import { toast } from "sonner";
 import axios from "axios";
 import { businessTypeOptions, formSchema } from "@/types/business";
 import { useRouter } from "next/navigation";
+import { Database } from "@/utils/supabase/database.types";
 
 // Indian states for the dropdown
 const indianStates = [
@@ -79,7 +82,14 @@ const indianStates = [
 
 type FormData = z.infer<typeof formSchema>;
 
-export function SupplierBusinessForm() {
+type SupplierBusinessType =
+  Database["public"]["Tables"]["supplier_businesses"]["Insert"];
+
+export function SupplierBusinessForm({
+  existingBusiness,
+}: {
+  existingBusiness?: SupplierBusinessType | null;
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [profilePic, setProfilePic] = useState<File | null>(null);
@@ -88,13 +98,13 @@ export function SupplierBusinessForm() {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      business_name: "",
-      gst_number: "",
-      business_address: "",
-      city: "",
-      state: "",
-      pincode: "",
-      type: "MANUFACTURER",
+      business_name: existingBusiness?.business_name || "",
+      gst_number: existingBusiness?.gst_number || "",
+      business_address: existingBusiness?.business_address || "",
+      city: existingBusiness?.city || "",
+      state: existingBusiness?.state || "",
+      pincode: existingBusiness?.pincode || "",
+      type: existingBusiness?.type || "MANUFACTURER",
     },
   });
 
@@ -157,7 +167,7 @@ export function SupplierBusinessForm() {
       // 2. Get the file URL
       // 3. Submit the form data to your API/database
 
-      let gstCertificateUrl = null;
+      let gstCertificateUrl = existingBusiness?.gst_certificate_url || null;
       if (uploadedFile) {
         const fileFormData = new FormData();
         fileFormData.append("file", uploadedFile);
@@ -178,7 +188,7 @@ export function SupplierBusinessForm() {
         }
       }
 
-      let profilePicUrl = null;
+      let profilePicUrl = existingBusiness?.profile_avatar_url || null;
       if (profilePic) {
         const picFormData = new FormData();
         picFormData.append("file", profilePic);
@@ -249,110 +259,201 @@ export function SupplierBusinessForm() {
     }
   };
 
+  if (existingBusiness && existingBusiness.status === "PENDING") {
+    return (
+      <Card className="w-full max-w-2xl mx-auto text-center border-yellow-500 bg-yellow-50">
+        <CardHeader>
+          <div className="flex items-center justify-center space-x-2 text-yellow-600">
+            <Clock className="w-6 h-6" />
+            <CardTitle className="text-yellow-700">
+              Application Pending
+            </CardTitle>
+          </div>
+          <CardDescription>
+            Your supplier business application is currently under review.
+            <br />
+            You’ll be notified once it’s approved.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-yellow-700">
+            If you have questions, contact support or wait 24–48 hours.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>Register Supplier Business</CardTitle>
+    <>
+      <Card className="w-full max-w-2xl mx-auto p-6 mb-4">
+        <CardTitle className="text-red-500">Application Rejected</CardTitle>
         <CardDescription>
-          Please fill in all the required information to register your business
-          as a supplier.
+          Unfortunately, your supplier business application was not approved.
+          Please review the feedback below and make the necessary corrections
+          before resubmitting.
         </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="business_name"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Business Name *</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your business name"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <CardContent>
+          <p className="text-sm text-red-700">{existingBusiness?.message}</p>
+        </CardContent>
+      </Card>
+
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>Register Supplier Business</CardTitle>
+          <CardDescription>
+            Please fill in all the required information to register your
+            business as a supplier.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="business_name"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Business Name *</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter your business name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="gst_number"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>GST Number *</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="22AAAAA0000A1Z5"
+                          {...field}
+                          onChange={(e) =>
+                            field.onChange(e.target.value.toUpperCase())
+                          }
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter your 15-digit GST registration number
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="business_address"
+                  render={({ field }) => (
+                    <FormItem className="md:col-span-2">
+                      <FormLabel>Business Address *</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Enter your complete business address"
+                          className="min-h-[80px]"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>City *</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Enter city name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="state"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>State *</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select state" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {indianStates.map((state) => (
+                            <SelectItem key={state} value={state}>
+                              {state}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="pincode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Pincode *</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="123456"
+                          {...field}
+                          onChange={(e) => {
+                            const value = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 6);
+                            field.onChange(value);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               <FormField
                 control={form.control}
-                name="gst_number"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>GST Number *</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="22AAAAA0000A1Z5"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(e.target.value.toUpperCase())
-                        }
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      Enter your 15-digit GST registration number
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="business_address"
-                render={({ field }) => (
-                  <FormItem className="md:col-span-2">
-                    <FormLabel>Business Address *</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Enter your complete business address"
-                        className="min-h-[80px]"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="city"
+                name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>City *</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter city name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State *</FormLabel>
+                    <FormLabel>Business Type *</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select state" />
+                          <SelectValue placeholder="Select business type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {indianStates.map((state) => (
-                          <SelectItem key={state} value={state}>
-                            {state}
+                        {businessTypeOptions.map((type) => (
+                          <SelectItem key={type} value={type}>
+                            {type.charAt(0).toUpperCase() +
+                              type.slice(1).toLowerCase()}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -362,180 +463,135 @@ export function SupplierBusinessForm() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="pincode"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Pincode *</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="123456"
-                        {...field}
-                        onChange={(e) => {
-                          const value = e.target.value
-                            .replace(/\D/g, "")
-                            .slice(0, 6);
-                          field.onChange(value);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="type"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Business Type *</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select business type" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {businessTypeOptions.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {type.charAt(0).toUpperCase() +
-                            type.slice(1).toLowerCase()}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">
-                  Profile Picture (Optional)
-                </label>
-                <div className="mt-2">
-                  <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        {profilePic ? (
-                          <>
-                            <img
-                              src={URL.createObjectURL(profilePic)}
-                              alt="Preview"
-                              className="w-16 h-16 rounded-full mb-2 object-cover"
-                            />
-                            <p className="text-sm text-gray-600">
-                              {profilePic.name}
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                            <p className="text-sm text-gray-600">
-                              <span className="font-semibold">
-                                Click to upload
-                              </span>{" "}
-                              profile picture
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              JPG or PNG, max 2MB
-                            </p>
-                          </>
-                        )}
-                      </div>
-                      <input
-                        type="file"
-                        accept=".png,.jpg,.jpeg"
-                        onChange={handleProfilePicUpload}
-                        className="hidden"
-                      />
-                    </label>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">
+                    Profile Picture (Optional)
+                  </label>
+                  <div className="mt-2">
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          {profilePic ? (
+                            <>
+                              <img
+                                src={URL.createObjectURL(profilePic)}
+                                alt="Preview"
+                                className="w-16 h-16 rounded-full mb-2 object-cover"
+                              />
+                              <p className="text-sm text-gray-600">
+                                {profilePic.name}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                              <p className="text-sm text-gray-600">
+                                <span className="font-semibold">
+                                  Click to upload
+                                </span>{" "}
+                                profile picture
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                JPG or PNG, max 2MB
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          accept=".png,.jpg,.jpeg"
+                          onChange={handleProfilePicUpload}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">
-                  GST Certificate (Optional)
-                </label>
-                <div className="mt-2">
-                  <div className="flex items-center justify-center w-full">
-                    <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        {uploadedFile ? (
-                          <>
-                            <FileText className="w-8 h-8 mb-2 text-green-500" />
-                            <p className="text-sm text-gray-600">
-                              {uploadedFile.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                            <p className="text-sm text-gray-600">
-                              <span className="font-semibold">
-                                Click to upload
-                              </span>{" "}
-                              GST certificate
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              PDF, PNG, JPG up to 5MB
-                            </p>
-                          </>
-                        )}
-                      </div>
-                      <input
-                        type="file"
-                        className="hidden"
-                        accept=".pdf,.png,.jpg,.jpeg"
-                        onChange={handleFileUpload}
-                      />
-                    </label>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">
+                    GST Certificate (Optional)
+                  </label>
+                  <div className="mt-2">
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          {uploadedFile ? (
+                            <>
+                              <FileText className="w-8 h-8 mb-2 text-green-500" />
+                              <p className="text-sm text-gray-600">
+                                {uploadedFile.name}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {(uploadedFile.size / 1024 / 1024).toFixed(2)}{" "}
+                                MB
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                              <p className="text-sm text-gray-600">
+                                <span className="font-semibold">
+                                  Click to upload
+                                </span>{" "}
+                                GST certificate
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                PDF, PNG, JPG up to 5MB
+                              </p>
+                            </>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          className="hidden"
+                          accept=".pdf,.png,.jpg,.jpeg"
+                          onChange={handleFileUpload}
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1"
-                onClick={() => {
-                  form.reset();
-                  setUploadedFile(null);
-                  setProfilePic(null);
-                }}
-                disabled={isSubmitting}
-              >
-                Reset
-              </Button>
-              <Button type="submit" className="flex-1" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Registering...
-                  </>
-                ) : (
-                  "Register Business"
-                )}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+              <div className="flex gap-4 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    form.reset();
+                    setUploadedFile(null);
+                    setProfilePic(null);
+                  }}
+                  disabled={isSubmitting}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {existingBusiness ? "Updating..." : "Registering..."}
+                    </>
+                  ) : existingBusiness ? (
+                    "Update Business"
+                  ) : (
+                    "Register Business"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </>
   );
 }

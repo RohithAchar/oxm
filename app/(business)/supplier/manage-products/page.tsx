@@ -274,7 +274,7 @@ const ManageProductsPage = () => {
             <div className="flex flex-1 items-center space-x-2">
               <Search className="h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search products, SKU, or brand..."
+                placeholder="Search products or brand..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="max-w-sm"
@@ -316,7 +316,7 @@ const ManageProductsPage = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Product</TableHead>
-                <TableHead>SKU</TableHead>
+                {/* <TableHead>SKU</TableHead> */}
                 <TableHead>Brand</TableHead>
                 <TableHead>Category</TableHead>
                 <TableHead>Price</TableHead>
