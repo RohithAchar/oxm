@@ -1,3 +1,5 @@
+// components/sidebar.tsx
+
 "use client";
 
 import Link from "next/link";
@@ -14,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 
 const sidebarItems = [
+  { name: "View Profile", href: "/supplier/view-profile", icon: ShoppingBag },
   { name: "Add Product", href: "/supplier/add-product", icon: ShoppingBag },
   { name: "Manage Products", href: "/supplier/manage-products", icon: Box },
   { name: "Dashboard", href: "/supplier/dashboard", icon: LayoutDashboard },

@@ -1,3 +1,5 @@
+// app/(business)/supplier/layout.tsx
+
 import { Sidebar } from "@/components/supplier/sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";

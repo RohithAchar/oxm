@@ -1,3 +1,5 @@
+// app/api/(products)/products/route.ts
+
 import { Database } from "@/utils/supabase/database.types";
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
