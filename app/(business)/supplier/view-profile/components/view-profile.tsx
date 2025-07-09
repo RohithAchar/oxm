@@ -20,6 +20,7 @@ import {
   Clock,
   Edit3,
   Sparkles,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ import {
 } from "../types/view-profile-form.schema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 type SupplierDataType =
   Database["public"]["Tables"]["supplier_businesses"]["Row"];
@@ -114,6 +116,8 @@ const ViewProfile = ({
 }) => {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [profilePic, setProfilePic] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const {
     register,
@@ -131,11 +135,59 @@ const ViewProfile = ({
     },
   });
 
+  const handleProfilePicUpload = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    const maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Profile picture must be a JPG or PNG image.");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      toast.error("Profile picture must be under 2MB.");
+      return;
+    }
+
+    setPreviewUrl(URL.createObjectURL(file));
+    setProfilePic(file);
+    toast.success("Profile picture selected.");
+  };
+
   const onSubmit = async (formData: ViewProfileSchema) => {
+    let profilePicUrl = data?.profile_avatar_url;
+    if (profilePic) {
+      const picFormData = new FormData();
+      picFormData.append("file", profilePic);
+
+      const picUploadRes = await axios.post(
+        "/api/profile-picture",
+        picFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (picUploadRes.data.publicUrl) {
+        profilePicUrl = picUploadRes.data.publicUrl;
+        toast.success("Profile picture uploaded.");
+      }
+    }
+
     const res = await fetch("/api/update-supplier", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        ...formData,
+        profile_avatar_url: profilePicUrl,
+      }),
     });
 
     const result = await res.json();
@@ -260,6 +312,45 @@ const ViewProfile = ({
               onSubmit={handleSubmit(onSubmit)}
               className="grid grid-cols-1 sm:grid-cols-2 gap-6"
             >
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium">Profile Picture</label>
+                  <div className="mt-2">
+                    <div className="flex items-center justify-center w-full">
+                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                          <>
+                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                            <p className="text-sm text-gray-600">
+                              <span className="font-semibold">
+                                Click to upload
+                              </span>{" "}
+                              profile picture
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              JPG or PNG, max 2MB
+                            </p>
+                          </>
+                        </div>
+                        <input
+                          type="file"
+                          accept=".png,.jpg,.jpeg"
+                          onChange={handleProfilePicUpload}
+                          className="hidden"
+                        />
+                      </label>
+                      {previewUrl && (
+                        <div className="mt-4 ml-4 flex justify-center">
+                          <Avatar className="w-18 h-18">
+                            <AvatarImage src={previewUrl} alt="Preview" />
+                            <AvatarFallback>CN</AvatarFallback>
+                          </Avatar>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="col-span-2">
                 <Input
                   {...register("business_name")}
