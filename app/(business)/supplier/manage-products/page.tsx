@@ -1,15 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Search,
-  Plus,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Eye,
-  Package,
-} from "lucide-react";
+import { Search, MoreHorizontal, Edit, Eye, Package } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,6 +40,7 @@ import axios from "axios";
 import { Database } from "@/utils/supabase/database.types";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Product = Database["public"]["Tables"]["products"]["Row"];
@@ -59,6 +52,7 @@ const ManageProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [categroies, setCategories] = useState<Category[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -126,24 +120,29 @@ const ManageProductsPage = () => {
     return matchesSearch && matchesStatus && matchesCategory;
   });
 
-  const handleToggleStatus = (productId: string) => {
-    // Implementation for toggling product status
-    console.log("Toggle status for product:", productId);
+  const handleToggleStatus = async (productId: string, product: Product) => {
+    try {
+      setLoading(true);
+      await axios.patch(`/api/products/${productId}`, {
+        is_active: !product.is_active,
+      });
+      console.log("Toggle status for product:", productId);
+      toast.success("Product status updated successfully");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error toggling product status:", error);
+      toast.error("Error toggling product status");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEditProduct = (productId: string) => {
-    // Implementation for editing product
-    console.log("Edit product:", productId);
-  };
-
-  const handleDeleteProduct = (productId: string) => {
-    // Implementation for deleting product
-    console.log("Delete product:", productId);
+    router.push(`/supplier/add-product?id=${productId}`);
   };
 
   const handleViewProduct = (productId: string) => {
-    // Implementation for viewing product details
-    console.log("View product:", productId);
+    router.push(`/supplier/manage-products/${productId}`);
   };
 
   return (
@@ -395,17 +394,12 @@ const ManageProductsPage = () => {
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
-                            onClick={() => handleToggleStatus(product.id)}
+                            className="text-destructive"
+                            onClick={() =>
+                              handleToggleStatus(product.id, product)
+                            }
                           >
                             {product.is_active ? "Deactivate" : "Activate"}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => handleDeleteProduct(product.id)}
-                            className="text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete Product
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>

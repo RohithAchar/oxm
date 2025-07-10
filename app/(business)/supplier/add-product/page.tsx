@@ -43,6 +43,7 @@ import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 import axios from "axios";
 import { Business } from "@/types/business";
+import { useSearchParams } from "next/navigation";
 
 type ProductSchema = Database["public"]["Tables"]["products"]["Insert"];
 
@@ -53,6 +54,7 @@ interface ProductImage {
   url: string;
   displayOrder: number;
   isUploaded: boolean;
+  toDelete?: boolean; // Add this field
 }
 
 // Form validation schema based on your database schema
@@ -75,6 +77,7 @@ const productFormSchema = z.object({
   length: z.coerce.number().min(1, "Length is required"),
   weight: z.coerce.number().min(1, "Wight is required"),
   is_sample_available: z.boolean(),
+  is_active: z.boolean(),
 });
 
 type ProductFormValues = z.infer<typeof productFormSchema>;
@@ -111,10 +114,65 @@ const AddProductPage = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
+  const searchParams = useSearchParams();
+
+  const productIdParam = searchParams.get("id");
 
   const supabase = createClient();
 
   useEffect(() => {
+    const fetchProduct = async () => {
+      if (!productIdParam) return;
+
+      const { data: product } = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", productIdParam)
+        .single();
+
+      if (product) {
+        // Set the selected category ID for subcategory filtering
+        setSelectedCategoryId(product.category_id);
+
+        form.reset({
+          name: product.name || "",
+          description: product.description || "",
+          minimum_order_quantity: product.minimum_order_quantity || 1,
+          sample_price: product.sample_price || 0,
+          brand: product.brand || "",
+          category_id: product.category_id || "",
+          subcategory_id: product.subcategory_id || "",
+          country_of_origin: product.country_of_origin || "",
+          hsn_code: product.hsn_code || "",
+          supplier_id: product.supplier_id || "",
+          youtube_link: product.youtube_link || "",
+          breadth: product.breadth || undefined,
+          height: product.height || undefined,
+          length: product.length || undefined,
+          weight: product.weight || undefined,
+          is_sample_available: product.is_sample_available ?? true,
+          is_active: product.is_active ?? true,
+        });
+
+        // Fetch existing product images
+        const { data: images } = await supabase
+          .from("product_images")
+          .select("*")
+          .eq("product_id", productIdParam)
+          .order("display_order", { ascending: true });
+
+        if (images) {
+          const formattedImages = images.map((img, index) => ({
+            id: img.id,
+            url: img.image_url,
+            displayOrder: img.display_order ?? index,
+            isUploaded: true,
+          }));
+          setProductImages(formattedImages);
+        }
+      }
+    };
+
     const fetchUser = async () => {
       try {
         setIsLoading(true);
@@ -170,22 +228,27 @@ const AddProductPage = () => {
         setIsLoading(true);
         const response = await axios.get("/api/categories");
 
-        const mainCategories = response.data.categories.filter(
-          (category: Category) => category.parent_id === null
-        );
+        if (response.data && response.data.categories) {
+          const mainCategories = response.data.categories.filter(
+            (category: Category) => category.parent_id === null
+          );
 
-        const subCategories = response.data.categories.filter(
-          (category: Category) => category.parent_id !== null
-        );
+          const subCategories = response.data.categories.filter(
+            (category: Category) => category.parent_id !== null
+          );
 
-        setSubCategories(subCategories);
-        setCategories(mainCategories);
+          setSubCategories(subCategories);
+          setCategories(mainCategories);
+        }
       } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        toast.error("Failed to load categories");
       } finally {
         setIsLoading(false);
       }
     };
 
+    fetchProduct();
     fetchCategories();
     fetchUser();
   }, []);
@@ -209,6 +272,7 @@ const AddProductPage = () => {
       length: undefined,
       weight: undefined,
       is_sample_available: true,
+      is_active: true,
     },
   });
 
@@ -253,10 +317,41 @@ const AddProductPage = () => {
 
   const removeImage = (index: number) => {
     setProductImages((prev) => {
+      const imageToRemove = prev[index];
+
+      // If it's an existing image (has ID), mark for deletion instead of removing
+      if (imageToRemove.id && imageToRemove.isUploaded) {
+        const newImages = prev.map((img, i) =>
+          i === index ? { ...img, toDelete: true } : img
+        );
+        return newImages;
+      }
+
+      // If it's a new image, remove it completely
       const newImages = prev.filter((_, i) => i !== index);
-      // Reorder display orders
       return newImages.map((img, i) => ({ ...img, displayOrder: i }));
     });
+  };
+
+  const updateExistingImages = async (productId: string) => {
+    const imagesToDelete = productImages.filter(
+      (img) => img.toDelete && img.id
+    );
+    const imagesToUpdate = productImages.filter(
+      (img) => !img.toDelete && img.id
+    );
+
+    // Delete marked images
+    for (const image of imagesToDelete) {
+      await axios.delete(`/api/product-images/${image.id}`);
+    }
+
+    // Update display orders for remaining existing images
+    for (const image of imagesToUpdate) {
+      await axios.patch(`/api/product-images/${image.id}`, {
+        display_order: image.displayOrder,
+      });
+    }
   };
 
   const handleDragStart = (index: number) => {
@@ -354,36 +449,81 @@ const AddProductPage = () => {
         height: data.height || null,
         length: data.length || null,
         weight: data.weight || null,
+        is_active: data.is_active || null,
+        is_sample_available: data.is_sample_available || null,
       };
 
       // Create product first
-      const productResponse = await axios.post("/api/products", productData);
-      const productId = productResponse.data.id;
+      let productId;
+      if (!productIdParam) {
+        const productResponse = await axios.post("/api/products", productData);
+        productId = productResponse.data.id;
+      } else {
+        // Update existing product
+        productId = productIdParam;
+        await axios.patch(`/api/products/${productIdParam}`, productData);
 
-      console.log("Product ID:", productId);
+        // Handle existing images first
+        await updateExistingImages(productId);
+      }
 
-      // Upload images if any exist
-      if (productImages.length > 0) {
+      // Handle new images (both create and update scenarios)
+      const newImages = productImages.filter(
+        (img) => !img.isUploaded && !img.toDelete
+      );
+
+      if (newImages.length > 0) {
         setIsUploadingImages(true);
-        toast.info("Uploading product images...");
+        toast.info("Uploading new images...");
 
         try {
-          const imageUrls = await uploadImagesToStorage(productId);
-          await saveProductImages(productId, imageUrls);
-          toast.success("Product and images added successfully!");
+          // Upload only new images
+          const uploadedUrls: string[] = [];
+          for (const image of newImages) {
+            if (image.file) {
+              const formData = new FormData();
+              formData.append("file", image.file);
+              formData.append("productId", productId);
+              formData.append("displayOrder", image.displayOrder.toString());
+
+              const uploadResponse = await axios.post(
+                "/api/upload/product-image",
+                formData,
+                {
+                  headers: { "Content-Type": "multipart/form-data" },
+                }
+              );
+              uploadedUrls.push(uploadResponse.data.url);
+            }
+          }
+
+          // Save new image metadata
+          await saveProductImages(productId, uploadedUrls);
+
+          toast.success(
+            productIdParam
+              ? "Product updated successfully!"
+              : "Product created successfully!"
+          );
         } catch (imageError) {
           console.error("Image upload error:", imageError);
-          toast.warning("Product created but some images failed to upload");
+          toast.warning("Product saved but some images failed to upload");
         } finally {
           setIsUploadingImages(false);
         }
       } else {
-        toast.success("Product added successfully!");
+        toast.success(
+          productIdParam
+            ? "Product updated successfully!"
+            : "Product created successfully!"
+        );
       }
 
-      // Reset form and images
-      form.reset();
-      setProductImages([]);
+      // Reset form only if creating new product
+      if (!productIdParam) {
+        form.reset();
+        setProductImages([]);
+      }
     } catch (error: any) {
       console.error("Frontend API Error:", error);
 
@@ -464,43 +604,45 @@ const AddProductPage = () => {
               {/* Image Preview Grid */}
               {productImages.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                  {productImages.map((image, index) => (
-                    <div
-                      key={index}
-                      className="relative group border rounded-lg overflow-hidden cursor-move"
-                      draggable
-                      onDragStart={() => handleDragStart(index)}
-                      onDragOver={handleDragOver}
-                      onDrop={(e) => handleDrop(e, index)}
-                    >
-                      <div className="aspect-square">
-                        <img
-                          src={image.url}
-                          alt={`Product ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                  {productImages
+                    .filter((img) => !img.toDelete)
+                    .map((image, index) => (
+                      <div
+                        key={index}
+                        className="relative group border rounded-lg overflow-hidden cursor-move"
+                        draggable
+                        onDragStart={() => handleDragStart(index)}
+                        onDragOver={handleDragOver}
+                        onDrop={(e) => handleDrop(e, index)}
+                      >
+                        <div className="aspect-square">
+                          <img
+                            src={image.url}
+                            alt={`Product ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
 
-                      {/* Image Controls */}
-                      <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => removeImage(index)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                        <Move className="h-4 w-4 text-white" />
-                      </div>
+                        {/* Image Controls */}
+                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                          <Button
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => removeImage(index)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                          <Move className="h-4 w-4 text-white" />
+                        </div>
 
-                      {/* Display Order Badge */}
-                      <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
-                        {index + 1}
+                        {/* Display Order Badge */}
+                        <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded">
+                          {index + 1}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               )}
 
@@ -588,8 +730,10 @@ const AddProductPage = () => {
                         onValueChange={(value: string) => {
                           field.onChange(value);
                           setSelectedCategoryId(value);
+                          // Reset subcategory when category changes
+                          form.setValue("subcategory_id", "");
                         }}
-                        defaultValue={field.value || ""}
+                        value={field.value || ""}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -617,8 +761,8 @@ const AddProductPage = () => {
                       <FormLabel>Sub Category</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value || ""}
-                        disabled={!selectedCategoryId} // 🚫 disables until category selected
+                        value={field.value || ""}
+                        disabled={!selectedCategoryId}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -632,16 +776,16 @@ const AddProductPage = () => {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {subCategories.map((category) => {
-                            if (category.parent_id !== selectedCategoryId)
-                              return;
-
-                            return (
+                          {subCategories
+                            .filter(
+                              (category) =>
+                                category.parent_id === selectedCategoryId
+                            )
+                            .map((category) => (
                               <SelectItem key={category.id} value={category.id}>
                                 {category.name}
                               </SelectItem>
-                            );
-                          })}
+                            ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -725,6 +869,28 @@ const AddProductPage = () => {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={form.control}
+                  name="is_active"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-4">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-base">
+                          Sample Active
+                        </FormLabel>
+                        <FormDescription>
+                          Allow customers to order samples
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
               </div>
             </CardContent>
           </Card>
@@ -747,7 +913,7 @@ const AddProductPage = () => {
                       <FormLabel>Country of Origin</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        defaultValue={field.value || ""}
+                        value={field.value || ""}
                       >
                         <FormControl>
                           <SelectTrigger>
