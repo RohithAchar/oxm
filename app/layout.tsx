@@ -32,9 +32,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${openSans.variable} ${roboto.variable} ${inter.variable} antialiased`}
-      >
+      <body className={`${inter.variable} antialiased`}>
         <Providers>
           <Navbar />
           <div className="bg-muted p-4">{children}</div>

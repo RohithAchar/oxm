@@ -3,7 +3,6 @@ import {
   MousePointer2,
   Package,
   Settings,
-  Store,
   User,
 } from "lucide-react";
 import Link from "next/link";
@@ -57,7 +56,7 @@ export default async function Bag() {
         {hasBusiness ? (
           <Link
             className="flex items-center gap-3 text-muted-foreground hover:text-black"
-            href={"/dashboard"}
+            href={"/supplier"}
           >
             <LucideStore
               strokeWidth={1.5}
