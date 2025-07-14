@@ -16,7 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { X, Filter } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { X, Filter, Menu } from "lucide-react";
 
 interface Category {
   id: string;
@@ -32,7 +33,7 @@ interface FilterState {
 }
 
 const FilterSkeleton = () => (
-  <div className="w-80 border-r bg-background p-6">
+  <div className="space-y-4">
     <div className="flex items-center gap-2 mb-6">
       <Filter className="h-5 w-5" />
       <h2 className="text-lg font-semibold">Filters</h2>
@@ -52,22 +53,20 @@ const ActiveFilterBadge = ({
   name: string;
   onRemove: () => void;
 }) => (
-  <div className="flex items-center gap-2 p-2 bg-muted rounded-md">
-    <Badge variant="secondary" className="text-xs">
-      {name}
-    </Badge>
+  <Badge variant="secondary" className="flex items-center gap-1 pr-1">
+    <span className="text-xs">{name}</span>
     <Button
       variant="ghost"
       size="sm"
       onClick={onRemove}
-      className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+      className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground rounded-full"
     >
       <X className="h-3 w-3" />
     </Button>
-  </div>
+  </Badge>
 );
 
-export function ProductFilterSidebar() {
+const FilterContent = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<FilterState>({
@@ -237,130 +236,165 @@ export function ProductFilterSidebar() {
   }
 
   return (
-    <div className="w-80 border-r bg-background">
-      <div className="p-6 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Filter className="h-5 w-5" />
-            <h2 className="text-lg font-semibold">Filters</h2>
-            {activeFiltersCount > 0 && (
-              <Badge variant="secondary">{activeFiltersCount}</Badge>
-            )}
-          </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Filter className="h-5 w-5" />
+          <h2 className="text-lg font-semibold">Filters</h2>
           {activeFiltersCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={clearAllFilters}
-              className="h-8 px-2 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Clear
-            </Button>
+            <Badge variant="secondary" className="rounded-full">
+              {activeFiltersCount}
+            </Badge>
           )}
         </div>
+        {activeFiltersCount > 0 && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={clearAllFilters}
+            className="h-8 px-2 text-muted-foreground hover:text-foreground rounded-md"
+          >
+            <X className="h-4 w-4 mr-1" />
+            Clear
+          </Button>
+        )}
+      </div>
 
-        <ScrollArea className="h-[calc(100vh-200px)]">
-          <div className="space-y-6">
-            {/* Categories */}
-            <div>
-              <h3 className="font-medium mb-3 text-sm text-muted-foreground uppercase tracking-wide">
-                Categories
-              </h3>
-              <Accordion type="multiple" className="w-full">
-                {categories.map((category) => (
-                  <AccordionItem
-                    key={category.id}
-                    value={category.id}
-                    className="border-none"
+      {/* Active Filters */}
+      {activeFiltersCount > 0 && (
+        <div className="space-y-3">
+          <h3 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+            Active Filters
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {filters.categories.map((categoryId) => {
+              const category = findCategoryById(categoryId);
+              return category ? (
+                <ActiveFilterBadge
+                  key={categoryId}
+                  name={category.name}
+                  onRemove={() => toggleCategory(categoryId)}
+                />
+              ) : null;
+            })}
+            {filters.subcategories.map((subcategoryId) => {
+              const subcategory = findCategoryById(subcategoryId);
+              return subcategory ? (
+                <ActiveFilterBadge
+                  key={subcategoryId}
+                  name={subcategory.name}
+                  onRemove={() => toggleSubcategory(subcategoryId)}
+                />
+              ) : null;
+            })}
+          </div>
+          <Separator />
+        </div>
+      )}
+
+      {/* Categories */}
+      <div>
+        <h3 className="font-medium mb-3 text-sm text-muted-foreground uppercase tracking-wide">
+          Categories
+        </h3>
+        <Accordion type="multiple" className="w-full">
+          {categories.map((category) => (
+            <AccordionItem
+              key={category.id}
+              value={category.id}
+              className="border-none"
+            >
+              <AccordionTrigger className="py-3 hover:no-underline rounded-lg hover:bg-muted px-2">
+                <div className="flex items-center gap-3">
+                  <Checkbox
+                    id={`category-${category.id}`}
+                    checked={filters.categories.includes(category.id)}
+                    onCheckedChange={() => toggleCategory(category.id)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="rounded-md"
+                  />
+                  <Label
+                    htmlFor={`category-${category.id}`}
+                    className="text-sm font-medium cursor-pointer"
                   >
-                    <AccordionTrigger className="py-3 hover:no-underline">
-                      <div className="flex items-center gap-3">
+                    {category.name}
+                  </Label>
+                </div>
+              </AccordionTrigger>
+              {category.subcategories && category.subcategories.length > 0 && (
+                <AccordionContent className="pt-2 pb-4">
+                  <div className="pl-6 space-y-3">
+                    {category.subcategories.map((subcategory) => (
+                      <div
+                        key={subcategory.id}
+                        className="flex items-center gap-3 p-2 rounded-md hover:bg-muted/50"
+                      >
                         <Checkbox
-                          id={`category-${category.id}`}
-                          checked={filters.categories.includes(category.id)}
-                          onCheckedChange={() => toggleCategory(category.id)}
-                          onClick={(e) => e.stopPropagation()}
+                          id={`subcategory-${subcategory.id}`}
+                          checked={filters.subcategories.includes(
+                            subcategory.id
+                          )}
+                          onCheckedChange={() =>
+                            toggleSubcategory(subcategory.id)
+                          }
+                          className="rounded-md"
                         />
                         <Label
-                          htmlFor={`category-${category.id}`}
-                          className="text-sm font-medium cursor-pointer"
+                          htmlFor={`subcategory-${subcategory.id}`}
+                          className="text-sm cursor-pointer text-muted-foreground hover:text-foreground"
                         >
-                          {category.name}
+                          {subcategory.name}
                         </Label>
                       </div>
-                    </AccordionTrigger>
-                    {category.subcategories &&
-                      category.subcategories.length > 0 && (
-                        <AccordionContent className="pt-2 pb-4">
-                          <div className="pl-6 space-y-3">
-                            {category.subcategories.map((subcategory) => (
-                              <div
-                                key={subcategory.id}
-                                className="flex items-center gap-3"
-                              >
-                                <Checkbox
-                                  id={`subcategory-${subcategory.id}`}
-                                  checked={filters.subcategories.includes(
-                                    subcategory.id
-                                  )}
-                                  onCheckedChange={() =>
-                                    toggleSubcategory(subcategory.id)
-                                  }
-                                />
-                                <Label
-                                  htmlFor={`subcategory-${subcategory.id}`}
-                                  className="text-sm cursor-pointer text-muted-foreground hover:text-foreground"
-                                >
-                                  {subcategory.name}
-                                </Label>
-                              </div>
-                            ))}
-                          </div>
-                        </AccordionContent>
-                      )}
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </div>
-
-            {/* Active Filters */}
-            {activeFiltersCount > 0 && (
-              <>
-                <Separator />
-                <div>
-                  <h3 className="font-medium mb-3 text-sm text-muted-foreground uppercase tracking-wide">
-                    Active Filters
-                  </h3>
-                  <div className="space-y-2">
-                    {filters.categories.map((categoryId) => {
-                      const category = findCategoryById(categoryId);
-                      return category ? (
-                        <ActiveFilterBadge
-                          key={categoryId}
-                          name={category.name}
-                          onRemove={() => toggleCategory(categoryId)}
-                        />
-                      ) : null;
-                    })}
-                    {filters.subcategories.map((subcategoryId) => {
-                      const subcategory = findCategoryById(subcategoryId);
-                      return subcategory ? (
-                        <ActiveFilterBadge
-                          key={subcategoryId}
-                          name={subcategory.name}
-                          onRemove={() => toggleSubcategory(subcategoryId)}
-                        />
-                      ) : null;
-                    })}
+                    ))}
                   </div>
-                </div>
-              </>
-            )}
-          </div>
-        </ScrollArea>
+                </AccordionContent>
+              )}
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </div>
+  );
+};
+
+export function ProductFilterSidebar() {
+  return (
+    <>
+      {/* Mobile Filter */}
+      <div className="lg:hidden">
+        <div className="fixed bottom-4 left-4 z-50">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-lg shadow-md"
+              >
+                <Menu className="h-4 w-4 mr-2" />
+                Filters
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+              <ScrollArea className="h-full">
+                <div className="p-4">
+                  <FilterContent />
+                </div>
+              </ScrollArea>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+
+      {/* Desktop Filter */}
+      <div className="hidden lg:block w-80 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="p-6">
+          <ScrollArea className="h-[calc(100vh-200px)]">
+            <FilterContent />
+          </ScrollArea>
+        </div>
+      </div>
+    </>
   );
 }

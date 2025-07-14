@@ -286,17 +286,19 @@ export function SupplierBusinessForm({
 
   return (
     <>
-      <Card className="w-full max-w-2xl mx-auto p-6 mb-4">
-        <CardTitle className="text-red-500">Application Rejected</CardTitle>
-        <CardDescription>
-          Unfortunately, your supplier business application was not approved.
-          Please review the feedback below and make the necessary corrections
-          before resubmitting.
-        </CardDescription>
-        <CardContent>
-          <p className="text-sm text-red-700">{existingBusiness?.message}</p>
-        </CardContent>
-      </Card>
+      {existingBusiness && existingBusiness.status === "REJECTED" && (
+        <Card className="w-full max-w-2xl mx-auto p-6 mb-4">
+          <CardTitle className="text-red-500">Application Rejected</CardTitle>
+          <CardDescription>
+            Unfortunately, your supplier business application was not approved.
+            Please review the feedback below and make the necessary corrections
+            before resubmitting.
+          </CardDescription>
+          <CardContent>
+            <p className="text-sm text-red-700">{existingBusiness?.message}</p>
+          </CardContent>
+        </Card>
+      )}
 
       <Card className="w-full max-w-2xl mx-auto">
         <CardHeader>

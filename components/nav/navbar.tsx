@@ -36,7 +36,7 @@ export const Navbar = () => {
             )}
           />
         </Link>
-        <CategorySidebar />
+        {/* <CategorySidebar /> */}
       </div>
     </header>
   );
