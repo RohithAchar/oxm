@@ -12,6 +12,7 @@ export default async function SupplierLayout({
   const supabase = await createClient();
 
   const { data: user } = await supabase.auth.getUser();
+  let businessData = null;
   if (user.user?.id) {
     const { data: business } = await supabase
       .from("supplier_businesses")
@@ -26,11 +27,23 @@ export default async function SupplierLayout({
     if (business.is_verified === false) {
       redirect("/create-business");
     }
+
+    businessData = business;
   }
 
   return (
     <div className="flex">
-      <Sidebar />
+      <Sidebar
+        profileUrl={
+          businessData?.profile_avatar_url || "/placeholder-profile.png"
+        }
+        name={businessData?.business_name || ""}
+        username={user.user?.user_metadata.full_name || "Joe Bloggs"}
+        email={user.user?.user_metadata.email || "joe@example.com"}
+        userProfileUrl={
+          user.user?.user_metadata.picture || "/placeholder-profile.png"
+        }
+      />
       <main className="flex-1 p-6">{children}</main>
     </div>
   );
