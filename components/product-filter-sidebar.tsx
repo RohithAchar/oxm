@@ -388,7 +388,7 @@ export function ProductFilterSidebar() {
       </div>
 
       {/* Desktop Filter */}
-      <div className="hidden lg:block w-80 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="rounded-md hidden lg:block w-80 border-r bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="p-6">
           <ScrollArea className="h-[calc(100vh-200px)]">
             <FilterContent />

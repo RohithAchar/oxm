@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   ShoppingCart,
   Eye,
@@ -202,6 +205,10 @@ const ProductsPage = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("newest");
   const [loadingMore, setLoadingMore] = useState(false);
+  const [priceRange, setPriceRange] = useState([0, 10000]);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [appliedPriceRange, setAppliedPriceRange] = useState([0, 10000]);
 
   const searchParams = useSearchParams();
   const supabase = createClient();
@@ -211,7 +218,7 @@ const ProductsPage = () => {
     setProducts([]);
     setPage(0);
     setHasMore(true);
-  }, [searchParams]);
+  }, [searchParams, appliedPriceRange]);
 
   // Fetch products based on filters
   useEffect(() => {
@@ -226,11 +233,11 @@ const ProductsPage = () => {
           .from("products")
           .select(
             `
-            *,
-            category:categories!products_category_id_fkey(id, name, slug),
-            subcategory:categories!products_subcategory_id_fkey(id, name, slug),
-            supplier:profiles!products_supplier_id_fkey(id, full_name)
-          `
+          *,
+          category:categories!products_category_id_fkey(id, name, slug),
+          subcategory:categories!products_subcategory_id_fkey(id, name, slug),
+          supplier:profiles!products_supplier_id_fkey(id, full_name)
+        `
           )
           .eq("is_active", true);
 
@@ -262,6 +269,13 @@ const ProductsPage = () => {
         if (subcategoryFilters) {
           const subcategoryIds = subcategoryFilters.split(",");
           query = query.in("subcategory_id", subcategoryIds);
+        }
+
+        // Apply price range filter - using appliedPriceRange
+        if (appliedPriceRange[0] > 0 || appliedPriceRange[1] < 10000) {
+          query = query
+            .gte("sample_price", appliedPriceRange[0])
+            .lte("sample_price", appliedPriceRange[1]);
         }
 
         const limit = 12;
@@ -311,7 +325,7 @@ const ProductsPage = () => {
     };
 
     fetchProducts();
-  }, [searchParams, page, sortBy]);
+  }, [searchParams, page, sortBy, appliedPriceRange]);
 
   // Loading state
   if (loading && page === 0) {
@@ -361,7 +375,7 @@ const ProductsPage = () => {
   }
 
   return (
-    <div className="flex-1 p-2 lg:p-4 bg-background min-h-screen">
+    <div className="rounded-md flex-1 p-2 lg:p-4 bg-background min-h-screen">
       <div className="max-w-full mx-auto px-2 lg:px-4">
         {/* Header */}
         <div className="mb-8">
@@ -372,43 +386,120 @@ const ProductsPage = () => {
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-8">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{products.length} products found</span>
+        <div className="flex flex-col gap-4 mb-8">
+          {/* Price Range Filter */}
+          <div className="bg-card rounded-lg p-4 border">
+            <Label className="text-sm font-medium mb-3 block">
+              Price Range
+            </Label>
+            <div className="space-y-4">
+              <Slider
+                value={priceRange}
+                onValueChange={setPriceRange}
+                max={10000}
+                min={0}
+                step={100}
+                className="w-full"
+              />
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="min-price" className="text-xs">
+                    Min:
+                  </Label>
+                  <Input
+                    id="min-price"
+                    type="number"
+                    value={minPrice}
+                    onChange={(e) => setMinPrice(e.target.value)}
+                    placeholder={priceRange[0].toString()}
+                    className="w-20 h-8 text-xs"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="max-price" className="text-xs">
+                    Max:
+                  </Label>
+                  <Input
+                    id="max-price"
+                    type="number"
+                    value={maxPrice}
+                    onChange={(e) => setMaxPrice(e.target.value)}
+                    placeholder={priceRange[1].toString()}
+                    className="w-20 h-8 text-xs"
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    const newMin = minPrice
+                      ? parseInt(minPrice)
+                      : priceRange[0];
+                    const newMax = maxPrice
+                      ? parseInt(maxPrice)
+                      : priceRange[1];
+                    const newRange = [newMin, newMax];
+                    setPriceRange(newRange);
+                    setAppliedPriceRange(newRange); // This triggers the fetch
+                    setMinPrice("");
+                    setMaxPrice("");
+                  }}
+                  className="h-8 text-xs"
+                >
+                  Apply
+                </Button>
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>₹{priceRange[0]}</span>
+                <span>₹{priceRange[1]}</span>
+              </div>
+              {appliedPriceRange[0] !== priceRange[0] ||
+              appliedPriceRange[1] !== priceRange[1] ? (
+                <div className="text-xs text-muted-foreground mt-1">
+                  Applied: ₹{appliedPriceRange[0]} - ₹{appliedPriceRange[1]}
+                </div>
+              ) : null}
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* Sort */}
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-[140px] rounded-xl">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
-                <SelectItem value="oldest">Oldest</SelectItem>
-                <SelectItem value="name">Name</SelectItem>
-                <SelectItem value="price">Price</SelectItem>
-              </SelectContent>
-            </Select>
+          {/* Other Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>{products.length} products found</span>
+            </div>
 
-            {/* View Mode */}
-            <div className="flex items-center border rounded-xl p-1">
-              <Button
-                variant={viewMode === "grid" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-                className="h-8 w-8 p-0 rounded-lg"
-              >
-                <Grid3X3 className="h-4 w-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "ghost"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-                className="h-8 w-8 p-0 rounded-lg"
-              >
-                <List className="h-4 w-4" />
-              </Button>
+            <div className="flex items-center gap-4">
+              {/* Sort */}
+              <Select value={sortBy} onValueChange={setSortBy}>
+                <SelectTrigger className="w-[140px] rounded-lg">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="newest">Newest</SelectItem>
+                  <SelectItem value="oldest">Oldest</SelectItem>
+                  <SelectItem value="name">Name</SelectItem>
+                  <SelectItem value="price">Price</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* View Mode */}
+              <div className="flex items-center border rounded-lg p-1">
+                <Button
+                  variant={viewMode === "grid" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("grid")}
+                  className="h-8 w-8 p-0 rounded-md"
+                >
+                  <Grid3X3 className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className="h-8 w-8 p-0 rounded-md"
+                >
+                  <List className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>

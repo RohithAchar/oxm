@@ -48,13 +48,15 @@ export default async function ProductsLayout({
     <div
       className={`${inter.variable} ${roboto.variable} ${openSans.variable} antialiased`}
     >
-      <div className="flex min-h-screen bg-background">
+      <div className="flex min-h-screen">
         <Suspense
           fallback={
             <div className="w-80 border-r bg-background animate-pulse" />
           }
         >
-          <ProductFilterSidebar />
+          <div className="mr-4">
+            <ProductFilterSidebar />
+          </div>
         </Suspense>
 
         <main className="flex-1 overflow-hidden">
