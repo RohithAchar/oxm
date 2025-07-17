@@ -22,9 +22,11 @@ import {
   Phone,
   MapPin,
   ExternalLink,
+  List,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { Database } from "@/utils/supabase/database.types";
 
 interface Product {
   id: string;
@@ -83,6 +85,9 @@ interface PageProps {
   params: Promise<{ productId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
+
+type ProductSpecificationType =
+  Database["public"]["Tables"]["product_specifications"]["Row"];
 
 const ProductView = async ({ params }: PageProps) => {
   const supabase = await createClient();
@@ -154,6 +159,7 @@ const ProductView = async ({ params }: PageProps) => {
       { data: category },
       { data: subcategory },
       { data: productImages },
+      { data: productSpecifications },
     ] = await Promise.all([
       product.supplier_id
         ? supabase
@@ -188,6 +194,11 @@ const ProductView = async ({ params }: PageProps) => {
         .select("*")
         .eq("product_id", productId)
         .order("display_order", { ascending: true }),
+      supabase
+        .from("product_specifications")
+        .select("*")
+        .eq("product_id", productId)
+        .order("display_order", { ascending: true }),
     ]);
 
     const typedProduct = product as Product;
@@ -196,6 +207,8 @@ const ProductView = async ({ params }: PageProps) => {
     const typedCategory = category as Category;
     const typedSubcategory = subcategory as Category;
     const typedProductImages = productImages as ProductImage[];
+    const typedProductSpecifications =
+      productSpecifications as ProductSpecificationType[];
 
     // Image Gallery Component
     const ImageGallery = () => {
@@ -266,9 +279,11 @@ const ProductView = async ({ params }: PageProps) => {
             </nav>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:items-start">
             {/* Product Images */}
-            <ImageGallery />
+            <div className="lg:sticky lg:top-8">
+              <ImageGallery />
+            </div>
 
             {/* Product Details */}
             <div className="space-y-6">
@@ -304,9 +319,9 @@ const ProductView = async ({ params }: PageProps) => {
                 </p>
               </div>
 
-              {/* Product Specifications */}
+              {/* Basic Product Specifications */}
               <div className="space-y-4">
-                <h3 className="text-lg font-medium">Specifications</h3>
+                <h3 className="text-lg font-medium">Basic Specifications</h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex items-center gap-3">
@@ -368,6 +383,43 @@ const ProductView = async ({ params }: PageProps) => {
                   )}
                 </div>
               </div>
+
+              {/* Additional Product Specifications */}
+              {typedProductSpecifications &&
+                typedProductSpecifications.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-medium flex items-center gap-2">
+                      <List className="w-5 h-5 text-gray-400" />
+                      Additional Specifications
+                    </h3>
+
+                    <div className="bg-white rounded-lg p-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {typedProductSpecifications.map((spec) => (
+                          <div
+                            key={spec.id}
+                            className="flex items-center gap-3"
+                          >
+                            <div className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0"></div>
+                            <div>
+                              <p className="text-sm text-gray-600">
+                                {spec.spec_name}
+                              </p>
+                              <p className="font-medium">
+                                {spec.spec_value}
+                                {spec.spec_unit && (
+                                  <span className="text-gray-500 ml-1">
+                                    {spec.spec_unit}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
               {/* YouTube Link */}
               {typedProduct.youtube_link && (

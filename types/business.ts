@@ -39,6 +39,9 @@ export const formSchema = z.object({
   gst_certificate_url: z.any().optional(),
   profile_avatar_url: z.string().optional(),
   type: z.enum(businessTypeOptions),
+  alternate_phone: z
+    .string()
+    .min(10, `Phone number must be at least 10 digits`),
 });
 
 export type Business =

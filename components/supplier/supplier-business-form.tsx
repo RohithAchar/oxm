@@ -105,6 +105,7 @@ export function SupplierBusinessForm({
       state: existingBusiness?.state || "",
       pincode: existingBusiness?.pincode || "",
       type: existingBusiness?.type || "MANUFACTURER",
+      alternate_phone: existingBusiness?.alternate_phone || "",
     },
   });
 
@@ -435,6 +436,32 @@ export function SupplierBusinessForm({
                   )}
                 />
               </div>
+
+              <FormField
+                control={form.control}
+                name="alternate_phone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Alternate Phone</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter alternate phone number"
+                        {...field}
+                        onChange={(e) => {
+                          const value = e.target.value
+                            .replace(/\D/g, "")
+                            .slice(0, 15); // optional formatting
+                          field.onChange(value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Optional secondary contact number
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

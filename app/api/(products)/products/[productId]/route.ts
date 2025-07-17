@@ -2,14 +2,14 @@ import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 interface PageProps {
-  params: Promise<{ product: string }>;
+  params: Promise<{ productId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 // 👇 Fix: `params` argument gives you dynamic route values
 export async function GET(req: Request, { params }: PageProps) {
   try {
-    const { product } = await params;
+    const { productId } = await params;
     const supabase = await createClient();
 
     const { data: userData } = await supabase.auth.getUser();
@@ -19,20 +19,20 @@ export async function GET(req: Request, { params }: PageProps) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    if (!product) {
+    if (!productId) {
       return new Response("Product ID not found", { status: 400 });
     }
 
     const { data, error } = await supabase
       .from("products")
       .select("*")
-      .eq("id", product)
+      .eq("id", productId)
       .single();
 
     const { data: productImages } = await supabase
       .from("product_images")
       .select("*")
-      .eq("product_id", product)
+      .eq("product_id", productId)
       .order("display_order", { ascending: true });
 
     if (error) {
@@ -47,7 +47,7 @@ export async function GET(req: Request, { params }: PageProps) {
 
 export async function PATCH(req: Request, { params }: PageProps) {
   try {
-    const { product } = await params;
+    const { productId } = await params;
     const supabase = await createClient();
 
     const { data: userData } = await supabase.auth.getUser();
@@ -57,7 +57,7 @@ export async function PATCH(req: Request, { params }: PageProps) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    if (!product) {
+    if (!productId) {
       return new Response("Product ID not found", { status: 400 });
     }
 
@@ -66,7 +66,7 @@ export async function PATCH(req: Request, { params }: PageProps) {
     const { error } = await supabase
       .from("products")
       .update(body)
-      .eq("id", product);
+      .eq("id", productId);
 
     if (error) {
       return new Response("Error updating product", { status: 500 });

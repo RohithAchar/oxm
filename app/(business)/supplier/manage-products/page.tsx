@@ -146,59 +146,62 @@ const ManageProductsPage = () => {
   };
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="px-8 mx-auto py-8 space-y-8 bg-gray-50 min-h-screen rounded-lg">
       {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Manage Products</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-4xl font-light tracking-tight text-gray-900">
+            Manage Products
+          </h1>
+          <p className="text-lg text-gray-600 font-light mt-2">
             Manage your product catalog, inventory, and pricing
           </p>
         </div>
-        {/* <Button className="md:w-auto">
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </Button> */}
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Total Products
             </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <div className="h-10 w-10 bg-blue-50 rounded-full flex items-center justify-center">
+              <Package className="h-5 w-5 text-blue-600" />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             {loading ? (
               <CardSkeleton />
             ) : (
               <>
-                <div className="text-2xl font-bold">{products.length}</div>
-                <p className="text-xs text-muted-foreground">
-                  +2 from last month
-                </p>
+                <div className="text-3xl font-semibold text-gray-900">
+                  {products.length}
+                </div>
+                <p className="text-sm text-gray-500 mt-1">+2 from last month</p>
               </>
             )}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+
+        <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Active Products
             </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <div className="h-10 w-10 bg-green-50 rounded-full flex items-center justify-center">
+              <Package className="h-5 w-5 text-green-600" />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             {loading ? (
               <CardSkeleton />
             ) : (
               <>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-semibold text-gray-900">
                   {products.filter((p) => p.is_active).length}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-gray-500 mt-1">
                   {Math.round(
                     (products.filter((p) => p.is_active).length /
                       products.length) *
@@ -210,48 +213,52 @@ const ManageProductsPage = () => {
             )}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+
+        <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Sample Available
             </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <div className="h-10 w-10 bg-purple-50 rounded-full flex items-center justify-center">
+              <Package className="h-5 w-5 text-purple-600" />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             {loading ? (
               <CardSkeleton />
             ) : (
               <>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-semibold text-gray-900">
                   {products.filter((p) => p.is_sample_available).length}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Ready for sampling
-                </p>
+                <p className="text-sm text-gray-500 mt-1">Ready for sampling</p>
               </>
             )}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+
+        <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
+            <CardTitle className="text-sm font-medium text-gray-600">
               Avg. Sample Price
             </CardTitle>
-            <Package className="h-4 w-4 text-muted-foreground" />
+            <div className="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center">
+              <Package className="h-5 w-5 text-orange-600" />
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-6 pb-6">
             {loading ? (
               <CardSkeleton />
             ) : (
               <>
-                <div className="text-2xl font-bold">
+                <div className="text-3xl font-semibold text-gray-900">
                   $
                   {Math.round(
                     products.reduce((acc, p) => acc + p.sample_price, 0) /
                       products.length
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-sm text-gray-500 mt-1">
                   Average across all products
                 </p>
               </>
@@ -261,40 +268,42 @@ const ManageProductsPage = () => {
       </div>
 
       {/* Filters and Search */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Product Catalog</CardTitle>
-          <CardDescription>
+      <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
+        <CardHeader className="px-8 pt-8 pb-4">
+          <CardTitle className="text-2xl font-semibold text-gray-900">
+            Product Catalog
+          </CardTitle>
+          <CardDescription className="text-gray-600 text-base mt-2">
             Search, filter, and manage your products
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-8 pb-8">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-1 items-center space-x-2">
-              <Search className="h-4 w-4 text-muted-foreground" />
+            <div className="flex flex-1 items-center space-x-3 bg-gray-50 rounded-xl px-4 py-3">
+              <Search className="h-5 w-5 text-gray-400" />
               <Input
                 placeholder="Search products or brand..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm"
+                className="max-w-sm border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-gray-400"
               />
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[130px]">
+                <SelectTrigger className="w-[140px] border-gray-200 rounded-xl bg-white hover:bg-gray-50">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl border-gray-200">
                   <SelectItem value="all">All Status</SelectItem>
                   <SelectItem value="active">Active</SelectItem>
                   <SelectItem value="inactive">Inactive</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[140px]">
+                <SelectTrigger className="w-[150px] border-gray-200 rounded-xl bg-white hover:bg-gray-50">
                   <SelectValue placeholder="Category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl border-gray-200">
                   <SelectItem value="all">All</SelectItem>
                   {categroies.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
@@ -309,20 +318,35 @@ const ManageProductsPage = () => {
       </Card>
 
       {/* Products Table */}
-      <Card>
+      <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
         <CardContent className="p-0">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Product</TableHead>
-                {/* <TableHead>SKU</TableHead> */}
-                <TableHead>Brand</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>MOQ</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Sample</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+              <TableRow className="border-b border-gray-100 bg-gray-50">
+                <TableHead className="text-gray-600 font-medium py-4 px-6">
+                  Product
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium py-4 px-6">
+                  Brand
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium py-4 px-6">
+                  Category
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium py-4 px-6">
+                  Price
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium py-4 px-6">
+                  MOQ
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium py-4 px-6">
+                  Status
+                </TableHead>
+                <TableHead className="text-gray-600 font-medium py-4 px-6">
+                  Sample
+                </TableHead>
+                <TableHead className="text-right text-gray-600 font-medium py-4 px-6">
+                  Actions
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -330,71 +354,92 @@ const ManageProductsPage = () => {
                 <SkeletonProducts />
               ) : (
                 filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell>
+                  <TableRow
+                    key={product.id}
+                    className="border-b border-gray-50 hover:bg-gray-50 transition-colors"
+                  >
+                    <TableCell className="py-4 px-6">
                       <div className="space-y-1">
-                        <div className="font-medium">{product.name}</div>
-                        {/* <div className="text-sm text-muted-foreground line-clamp-1">
-                        {product.description}
-                      </div> */}
+                        <div className="font-medium text-gray-900">
+                          {product.name}
+                        </div>
                       </div>
                     </TableCell>
-                    {/* <TableCell className="font-mono text-sm">
-                      {product.sku}
-                    </TableCell> */}
-                    <TableCell>{product.brand}</TableCell>
-                    <TableCell className="capitalize">
+                    <TableCell className="py-4 px-6 text-gray-700">
+                      {product.brand}
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-gray-700 capitalize">
                       {
                         categroies.find(
                           (category) => category.id === product.category_id
                         )?.name
                       }
                     </TableCell>
-                    <TableCell>${product.sample_price}</TableCell>
-                    <TableCell>{product.minimum_order_quantity}</TableCell>
-                    <TableCell>
+                    <TableCell className="py-4 px-6 font-medium text-gray-900">
+                      ${product.sample_price}
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-gray-700">
+                      {product.minimum_order_quantity}
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
                       <Badge
-                        variant={product.is_active ? "default" : "secondary"}
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          product.is_active
+                            ? "bg-green-100 text-green-800 hover:bg-green-100"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-100"
+                        }`}
                       >
                         {product.is_active ? "Active" : "Inactive"}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="py-4 px-6">
                       <Badge
-                        variant={
-                          product.is_sample_available ? "outline" : "secondary"
-                        }
+                        className={`rounded-full px-3 py-1 text-xs font-medium ${
+                          product.is_sample_available
+                            ? "bg-blue-100 text-blue-800 hover:bg-blue-100"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-100"
+                        }`}
                       >
                         {product.is_sample_available
                           ? "Available"
                           : "Not Available"}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right py-4 px-6">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
+                          <Button
+                            variant="ghost"
+                            className="h-9 w-9 p-0 rounded-full hover:bg-gray-100"
+                          >
                             <span className="sr-only">Open menu</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuContent
+                          align="end"
+                          className="rounded-xl border-gray-200 shadow-lg"
+                        >
+                          <DropdownMenuLabel className="text-gray-600 font-medium">
+                            Actions
+                          </DropdownMenuLabel>
                           <DropdownMenuItem
                             onClick={() => handleViewProduct(product.id)}
+                            className="rounded-lg hover:bg-gray-50"
                           >
                             <Eye className="mr-2 h-4 w-4" />
                             View Details
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleEditProduct(product.id)}
+                            className="rounded-lg hover:bg-gray-50"
                           >
                             <Edit className="mr-2 h-4 w-4" />
                             Edit Product
                           </DropdownMenuItem>
-                          <DropdownMenuSeparator />
+                          <DropdownMenuSeparator className="bg-gray-100" />
                           <DropdownMenuItem
-                            className="text-destructive"
+                            className="text-red-600 hover:bg-red-50 rounded-lg"
                             onClick={() =>
                               handleToggleStatus(product.id, product)
                             }
@@ -413,15 +458,25 @@ const ManageProductsPage = () => {
       </Card>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex items-center justify-between bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div className="text-sm text-gray-600">
           Showing {filteredProducts.length} of {products.length} products
         </div>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline" size="sm" disabled>
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled
+            className="rounded-full border-gray-200 hover:bg-gray-50"
+          >
             Previous
           </Button>
-          <Button variant="outline" size="sm" disabled>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled
+            className="rounded-full border-gray-200 hover:bg-gray-50"
+          >
             Next
           </Button>
         </div>

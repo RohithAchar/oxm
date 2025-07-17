@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
       gst_certificate_url,
       profile_avatar_url,
       type,
+      alternate_phone,
     } = body;
 
     if (!user) {
@@ -51,7 +52,8 @@ export async function POST(req: NextRequest) {
       !city ||
       !state ||
       !pincode ||
-      !type
+      !type ||
+      !alternate_phone
     ) {
       return NextResponse.json(
         {
@@ -67,6 +69,9 @@ export async function POST(req: NextRequest) {
             state: !state ? "State is required" : null,
             pincode: !pincode ? "Pincode is required" : null,
             type: !type ? "Type is required" : null,
+            alternate_phone: !alternate_phone
+              ? "Alternate phone is required"
+              : null,
           },
         },
         { status: 400 }
@@ -108,10 +113,11 @@ export async function POST(req: NextRequest) {
           pincode,
           phone: profile.data?.phone_number + "",
           gst_certificate_url,
-          is_verified: false,
+          is_verified: true,
           profile_avatar_url,
           type,
-          status: "PENDING",
+          status: "APPROVED",
+          alternate_phone,
         })
         .eq("profile_id", profile.data?.id);
 
@@ -138,6 +144,7 @@ export async function POST(req: NextRequest) {
         profile_id: profile.data?.id,
         profile_avatar_url,
         type,
+        alternate_phone,
       });
 
       return NextResponse.json(

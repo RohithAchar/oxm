@@ -167,6 +167,47 @@ export type Database = {
           },
         ]
       }
+      product_specifications: {
+        Row: {
+          created_at: string | null
+          display_order: number | null
+          id: string
+          product_id: string
+          spec_name: string
+          spec_unit: string | null
+          spec_value: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          product_id: string
+          spec_name: string
+          spec_unit?: string | null
+          spec_value: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number | null
+          id?: string
+          product_id?: string
+          spec_name?: string
+          spec_unit?: string | null
+          spec_value?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_specifications_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           brand: string | null
@@ -537,6 +578,7 @@ export type Database = {
       }
       supplier_businesses: {
         Row: {
+          alternate_phone: string | null
           business_address: string
           business_name: string
           city: string
@@ -556,6 +598,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          alternate_phone?: string | null
           business_address: string
           business_name: string
           city: string
@@ -575,6 +618,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          alternate_phone?: string | null
           business_address?: string
           business_name?: string
           city?: string
@@ -652,7 +696,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_product_specifications: {
+        Args: { p_product_id: string }
+        Returns: {
+          spec_name: string
+          spec_value: string
+          spec_unit: string
+          display_order: number
+        }[]
+      }
     }
     Enums: {
       "business-type":

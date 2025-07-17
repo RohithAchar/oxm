@@ -44,7 +44,7 @@ export default async function SupplierLayout({
           user.user?.user_metadata.picture || "/placeholder-profile.png"
         }
       />
-      <main className="flex-1 p-6">{children}</main>
+      <main className="flex-1 px-4">{children}</main>
     </div>
   );
 }

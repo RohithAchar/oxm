@@ -34,7 +34,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 
 type SupplierDataType =
-  Database["public"]["Tables"]["supplier_businesses"]["Row"];
+  Database["public"]["Tables"]["supplier_businesses"]["Row"] & {
+    alternate_phone?: string | null;
+  };
 
 const LabelValue = ({
   label,
@@ -45,14 +47,18 @@ const LabelValue = ({
   value?: string | number | boolean | null;
   icon?: any;
 }) => (
-  <div className="group p-4 rounded-lg">
-    <div className="flex items-center gap-2 mb-2">
-      {Icon && <Icon className="h-4 w-4 text-primary" />}
-      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+  <div className="group p-6 rounded-2xl bg-white/60 backdrop-blur-sm border border-gray-100/50 hover:bg-white/80 hover:border-gray-200/50 transition-all duration-300 hover:shadow-lg hover:shadow-gray-100/50">
+    <div className="flex items-center gap-3 mb-3">
+      {Icon && (
+        <div className="p-2 rounded-full bg-gray-100/80 group-hover:bg-blue-100/80 transition-colors duration-300">
+          <Icon className="h-4 w-4 text-gray-600 group-hover:text-blue-600" />
+        </div>
+      )}
+      <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
         {label}
       </span>
     </div>
-    <span className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+    <span className="font-semibold text-gray-900 group-hover:text-blue-900 transition-colors duration-300">
       {value || "—"}
     </span>
   </div>
@@ -67,28 +73,28 @@ const StatusBadge = ({ status }: { status: StatusEnum | null }) => {
           variant: "default" as const,
           icon: CheckCircle,
           text: "Verified",
-          className: "bg-green-100 text-green-800 border-green-200",
+          className: "bg-green-50 text-green-700 border-green-200/50 shadow-sm",
         };
       case "PENDING":
         return {
           variant: "secondary" as const,
           icon: Clock,
           text: "Pending",
-          className: "bg-yellow-100 text-yellow-800 border-yellow-200",
+          className: "bg-amber-50 text-amber-700 border-amber-200/50 shadow-sm",
         };
       case "REJECTED":
         return {
           variant: "destructive" as const,
           icon: XCircle,
           text: "Rejected",
-          className: "bg-red-100 text-red-800 border-red-200",
+          className: "bg-red-50 text-red-700 border-red-200/50 shadow-sm",
         };
       default:
         return {
           variant: "outline" as const,
           icon: Shield,
           text: "Unverified",
-          className: "bg-gray-100 text-gray-800 border-gray-200",
+          className: "bg-gray-50 text-gray-700 border-gray-200/50 shadow-sm",
         };
     }
   };
@@ -99,7 +105,7 @@ const StatusBadge = ({ status }: { status: StatusEnum | null }) => {
   return (
     <Badge
       variant={config.variant}
-      className={`${config.className} flex items-center gap-1 px-3 py-1`}
+      className={`${config.className} flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-200 hover:scale-105`}
     >
       <Icon className="h-3 w-3" />
       {config.text}
@@ -124,7 +130,7 @@ const ViewProfile = ({
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<ViewProfileSchema>({
+  } = useForm<ViewProfileSchema & { alternate_phone?: string }>({
     resolver: zodResolver(viewProfileSchema),
     defaultValues: {
       business_name: data?.business_name || "",
@@ -132,6 +138,7 @@ const ViewProfile = ({
       city: data?.city || "",
       state: data?.state || "",
       pincode: data?.pincode || "",
+      alternate_phone: data?.alternate_phone || "",
     },
   });
 
@@ -159,7 +166,9 @@ const ViewProfile = ({
     toast.success("Profile picture selected.");
   };
 
-  const onSubmit = async (formData: ViewProfileSchema) => {
+  const onSubmit = async (
+    formData: ViewProfileSchema & { alternate_phone?: string }
+  ) => {
     let profilePicUrl = data?.profile_avatar_url;
     if (profilePic) {
       const picFormData = new FormData();
@@ -197,13 +206,14 @@ const ViewProfile = ({
     } else {
       toast.success("Profile updated");
       setEditMode(false);
-      // Optional: refresh or mutate
     }
   };
 
   const handleCancel = () => {
     reset();
     setEditMode(false);
+    setPreviewUrl(null);
+    setProfilePic(null);
   };
 
   useEffect(() => {
@@ -213,28 +223,40 @@ const ViewProfile = ({
 
   if (loading) {
     return (
-      <Card className="container mx-auto p-6 max-w-4xl">
-        <CardHeader>
-          <CardTitle>
-            <Skeleton className="h-6 w-40" />
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-4 w-full" />
-          ))}
-        </CardContent>
-      </Card>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-12">
+        <div className="container mx-auto px-6 max-w-5xl">
+          <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl shadow-gray-100/50 rounded-3xl">
+            <CardHeader className="p-8">
+              <CardTitle>
+                <Skeleton className="h-8 w-48 rounded-xl" />
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-6 w-full rounded-xl" />
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     );
   }
 
   if (error || !data) {
     return (
-      <Alert variant="destructive" className="mx-auto max-w-2xl">
-        <AlertTriangle className="h-5 w-5" />
-        <AlertTitle>Error loading profile</AlertTitle>
-        <AlertDescription>{error || "No profile data found."}</AlertDescription>
-      </Alert>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-12">
+        <div className="container mx-auto px-6 max-w-2xl">
+          <Alert className="backdrop-blur-sm bg-red-50/80 border-red-200/50 rounded-3xl shadow-lg">
+            <AlertTriangle className="h-6 w-6 text-red-600" />
+            <AlertTitle className="text-red-800 font-semibold">
+              Error loading profile
+            </AlertTitle>
+            <AlertDescription className="text-red-700">
+              {error || "No profile data found."}
+            </AlertDescription>
+          </Alert>
+        </div>
+      </div>
     );
   }
 
@@ -248,196 +270,245 @@ const ViewProfile = ({
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      {/* Header Card with Gradient Background */}
-      <Card className="mb-6">
-        <CardHeader className="pb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-            <div className="relative">
-              <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
-                <AvatarImage
-                  src={data.profile_avatar_url || ""}
-                  alt="Profile"
-                />
-                <AvatarFallback className="bg-white/20 text-white text-xl font-bold">
-                  {data.business_name?.charAt(0).toUpperCase() || "?"}
-                </AvatarFallback>
-              </Avatar>
-              {data.is_verified && (
-                <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1 shadow-md">
-                  <CheckCircle className="h-4 w-4 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-indigo-50/30 py-12 rounded-lg">
+      <div className="container mx-auto px-6 max-w-5xl">
+        {/* Header Card */}
+        <Card className="mb-8 backdrop-blur-sm bg-white/80 border-0 shadow-2xl shadow-gray-100/50 rounded-3xl overflow-hidden">
+          <CardHeader className="p-8 text-gray-900 relative overflow-hidden">
+            {/* <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-indigo-600/90 backdrop-blur-sm"></div> */}
+            <div className="relative z-10">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-r from-white/30 to-white/10 rounded-full blur opacity-75 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <Avatar className="relative h-24 w-24 border-4 border-white/20 shadow-2xl shadow-black/10 transition-transform duration-300 group-hover:scale-105">
+                    <AvatarImage
+                      src={data.profile_avatar_url || ""}
+                      alt="Profile"
+                      className="object-cover"
+                    />
+                    <AvatarFallback className="bg-white/20 text-white text-2xl font-bold backdrop-blur-sm">
+                      {data.business_name?.charAt(0).toUpperCase() || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  {data.is_verified && (
+                    <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1.5 shadow-lg border-2 border-white">
+                      <CheckCircle className="h-4 w-4 text-white" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <div className="flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-3">
-                <div className="flex items-center gap-2">
-                  <Building2 className="h-6 w-6" />
-                  <CardTitle className="text-2xl font-bold">
-                    {data.business_name || "Business Name"}
-                  </CardTitle>
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <Building2 className="h-7 w-7 text-black/90" />
+                      <CardTitle className="text-3xl font-bold text-black truncate">
+                        {data.business_name || "Business Name"}
+                      </CardTitle>
+                    </div>
+                    <StatusBadge status={data.status} />
+                  </div>
+
+                  <div className="flex flex-wrap gap-3 text-sm">
+                    {data.type && (
+                      <Badge className="bg-gray-100 text-black border-gray-300 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 px-3 py-1 rounded-full">
+                        {data.type}
+                      </Badge>
+                    )}
+                    {data.gst_number && (
+                      <Badge className="bg-gray-100 text-black border-gray-300 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 px-3 py-1 rounded-full">
+                        GST: {data.gst_number}
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-                <StatusBadge status={data.status} />
-              </div>
-
-              <div className="flex flex-wrap gap-2 text-sm opacity-90">
-                {data.type && (
-                  <Badge
-                    variant="secondary"
-                    className="bg-white/20 text-white border-white/30"
-                  >
-                    {data.type}
-                  </Badge>
-                )}
-                {data.gst_number && (
-                  <Badge
-                    variant="secondary"
-                    className="bg-white/20 text-white border-white/30"
-                  >
-                    GST: {data.gst_number}
-                  </Badge>
-                )}
               </div>
             </div>
-          </div>
-        </CardHeader>
-      </Card>
+          </CardHeader>
+        </Card>
 
-      {/* Main Content Card */}
-      <Card className="">
-        <CardContent className="p-8">
-          {editMode ? (
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-            >
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium">Profile Picture</label>
-                  <div className="mt-2">
-                    <div className="flex items-center justify-center w-full">
-                      <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                          <>
-                            <Upload className="w-8 h-8 mb-2 text-gray-400" />
-                            <p className="text-sm text-gray-600">
+        {/* Main Content Card */}
+        <Card className="backdrop-blur-sm bg-white/80 border-0 shadow-2xl shadow-gray-100/50 rounded-3xl overflow-hidden">
+          <CardContent className="p-8">
+            {editMode ? (
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="lg:col-span-1">
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Profile Picture
+                    </label>
+                    <div className="relative">
+                      <div className="flex items-center justify-center w-full">
+                        <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-3xl cursor-pointer bg-gray-50/50 hover:bg-gray-100/50 transition-all duration-300 hover:border-blue-400">
+                          <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <div className="p-3 bg-blue-100 rounded-full mb-3">
+                              <Upload className="w-6 h-6 text-blue-600" />
+                            </div>
+                            <p className="text-sm text-gray-600 text-center">
                               <span className="font-semibold">
                                 Click to upload
-                              </span>{" "}
-                              profile picture
+                              </span>
+                              <br />
+                              <span className="text-xs text-gray-500">
+                                JPG or PNG, max 2MB
+                              </span>
                             </p>
-                            <p className="text-xs text-gray-500">
-                              JPG or PNG, max 2MB
-                            </p>
-                          </>
-                        </div>
-                        <input
-                          type="file"
-                          accept=".png,.jpg,.jpeg"
-                          onChange={handleProfilePicUpload}
-                          className="hidden"
-                        />
-                      </label>
+                          </div>
+                          <input
+                            type="file"
+                            accept=".png,.jpg,.jpeg"
+                            onChange={handleProfilePicUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </div>
                       {previewUrl && (
-                        <div className="mt-4 ml-4 flex justify-center">
-                          <Avatar className="w-18 h-18">
+                        <div className="mt-4 flex justify-center">
+                          <Avatar className="w-20 h-20 border-4 border-white shadow-lg">
                             <AvatarImage src={previewUrl} alt="Preview" />
-                            <AvatarFallback>CN</AvatarFallback>
+                            <AvatarFallback>Preview</AvatarFallback>
                           </Avatar>
                         </div>
                       )}
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="col-span-2">
-                <Input
-                  {...register("business_name")}
-                  placeholder="Business Name"
-                />
-                {errors.business_name && (
-                  <p className="text-sm text-red-500">
-                    {errors.business_name.message}
-                  </p>
-                )}
-              </div>
-              <div className="col-span-2">
-                <Input
-                  {...register("business_address")}
-                  placeholder="Address"
-                />
-                {errors.business_address && (
-                  <p className="text-sm text-red-500">
-                    {errors.business_address.message}
-                  </p>
-                )}
-              </div>
-              <Input {...register("city")} placeholder="City" />
-              <Input {...register("state")} placeholder="State" />
-              <Input {...register("pincode")} placeholder="Pincode" />
-              <div className="col-span-2 flex gap-2 justify-end">
-                <Button type="button" variant="outline" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "Saving..." : "Save"}
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                <LabelValue
-                  label="Business Name"
-                  value={data?.business_name}
-                  icon={Building2}
-                />
-                <LabelValue label="Phone" value={data?.phone} icon={Phone} />
-                <LabelValue
-                  label="GST Number"
-                  value={data?.gst_number}
-                  icon={Shield}
-                />
-                <div className="sm:col-span-2 lg:col-span-3">
-                  <LabelValue
-                    label="Address"
-                    value={`${data?.business_address}, ${data?.city}, ${data?.state} - ${data?.pincode}`}
-                    icon={MapPin}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="md:col-span-2">
+                    <Input
+                      {...register("business_name")}
+                      placeholder="Business Name"
+                      className="h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                    />
+                    {errors.business_name && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.business_name.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <Input
+                      {...register("business_address")}
+                      placeholder="Business Address"
+                      className="h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                    />
+                    {errors.business_address && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.business_address.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <Input
+                    {...register("city")}
+                    placeholder="City"
+                    className="h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                  />
+
+                  <Input
+                    {...register("state")}
+                    placeholder="State"
+                    className="h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                  />
+
+                  <Input
+                    {...register("pincode")}
+                    placeholder="Pincode"
+                    className="h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
+                  />
+
+                  <Input
+                    {...register("alternate_phone")}
+                    placeholder="Alternate Phone"
+                    className="h-12 rounded-2xl border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200"
                   />
                 </div>
-                <LabelValue
-                  label="Created"
-                  value={formatDate(data?.created_at)}
-                  icon={Calendar}
-                />
-                <LabelValue
-                  label="Last Updated"
-                  value={formatDate(data?.updated_at)}
-                  icon={Calendar}
-                />
-              </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-end pt-6 border-t border-slate-200 dark:border-slate-700">
-                {data.gst_certificate_url && (
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Download className="h-4 w-4" />
-                    Download GST Certificate
+                <div className="flex gap-4 justify-end pt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCancel}
+                    className="px-8 py-3 rounded-2xl border-gray-200 hover:bg-gray-50 transition-all duration-200"
+                  >
+                    Cancel
                   </Button>
-                )}
-                <Button
-                  onClick={() => setEditMode(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Edit3 className="h-4 w-4" />
-                  Edit Profile
-                </Button>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-8 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
+                  >
+                    {isSubmitting ? "Saving..." : "Save Changes"}
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
+                  <LabelValue
+                    label="Business Name"
+                    value={data?.business_name}
+                    icon={Building2}
+                  />
+                  <LabelValue
+                    label="Primary Phone"
+                    value={data?.phone}
+                    icon={Phone}
+                  />
+                  <LabelValue
+                    label="Alternate Phone"
+                    value={data?.alternate_phone}
+                    icon={Phone}
+                  />
+                  <LabelValue
+                    label="GST Number"
+                    value={data?.gst_number}
+                    icon={Shield}
+                  />
+                  <div className="md:col-span-2 xl:col-span-3">
+                    <LabelValue
+                      label="Business Address"
+                      value={`${data?.business_address}, ${data?.city}, ${data?.state} - ${data?.pincode}`}
+                      icon={MapPin}
+                    />
+                  </div>
+                  <LabelValue
+                    label="Created"
+                    value={formatDate(data?.created_at)}
+                    icon={Calendar}
+                  />
+                  <LabelValue
+                    label="Last Updated"
+                    value={formatDate(data?.updated_at)}
+                    icon={Calendar}
+                  />
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-end pt-8 border-t border-gray-200/50">
+                  {data.gst_certificate_url && (
+                    <Button
+                      variant="outline"
+                      className="flex items-center gap-3 px-6 py-3 rounded-2xl border-gray-200 hover:bg-gray-50 transition-all duration-200 hover:shadow-md"
+                    >
+                      <Download className="h-4 w-4" />
+                      Download GST Certificate
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => setEditMode(true)}
+                    className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/20 hover:shadow-blue-700/30"
+                  >
+                    <Edit3 className="h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                </div>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

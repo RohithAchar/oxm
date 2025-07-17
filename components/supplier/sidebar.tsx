@@ -46,7 +46,7 @@ export function Sidebar({
   console.log("userProfileUrl:", userProfileUrl);
 
   return (
-    <div className="h-screen w-64 bg-gray-50/80 backdrop-blur-xl border-r border-gray-200/50 flex flex-col">
+    <div className="rounded-lg h-screen w-64 bg-gray-50/80 backdrop-blur-xl border-r border-gray-200/50 flex flex-col">
       {/* Header */}
       <div className="px-6 py-6 border-b border-gray-200/50">
         <div className="flex items-center space-x-3">
