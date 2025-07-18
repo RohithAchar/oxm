@@ -6,13 +6,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
-  Users,
-  Settings,
   UserCircle,
   CirclePlus,
   Boxes,
   ClipboardList,
+  BarChart3,
 } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -20,12 +18,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const sidebarItems = [
   { name: "Profile", href: "/supplier/view-profile", icon: UserCircle },
+  { name: "Overview", href: "/supplier/overview", icon: BarChart3 },
   { name: "Add New Product", href: "/supplier/add-product", icon: CirclePlus },
   { name: "Products", href: "/supplier/manage-products", icon: Boxes },
   { name: "Orders", href: "/supplier/orders", icon: ClipboardList },
-  { name: "Dashboard", href: "/supplier/dashboard", icon: LayoutDashboard },
-  { name: "User Management", href: "/supplier/users", icon: Users },
-  { name: "Settings", href: "/supplier/settings", icon: Settings },
 ];
 
 export function Sidebar({
