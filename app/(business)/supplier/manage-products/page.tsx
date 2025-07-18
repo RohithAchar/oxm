@@ -236,35 +236,6 @@ const ManageProductsPage = () => {
             )}
           </CardContent>
         </Card>
-
-        <Card className="bg-white border-0 shadow-sm rounded-2xl overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
-            <CardTitle className="text-sm font-medium text-gray-600">
-              Avg. Sample Price
-            </CardTitle>
-            <div className="h-10 w-10 bg-orange-50 rounded-full flex items-center justify-center">
-              <Package className="h-5 w-5 text-orange-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            {loading ? (
-              <CardSkeleton />
-            ) : (
-              <>
-                <div className="text-3xl font-semibold text-gray-900">
-                  $
-                  {Math.round(
-                    products.reduce((acc, p) => acc + p.sample_price, 0) /
-                      products.length
-                  )}
-                </div>
-                <p className="text-sm text-gray-500 mt-1">
-                  Average across all products
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       {/* Filters and Search */}
@@ -333,12 +304,6 @@ const ManageProductsPage = () => {
                   Category
                 </TableHead>
                 <TableHead className="text-gray-600 font-medium py-4 px-6">
-                  Price
-                </TableHead>
-                <TableHead className="text-gray-600 font-medium py-4 px-6">
-                  MOQ
-                </TableHead>
-                <TableHead className="text-gray-600 font-medium py-4 px-6">
                   Status
                 </TableHead>
                 <TableHead className="text-gray-600 font-medium py-4 px-6">
@@ -374,12 +339,6 @@ const ManageProductsPage = () => {
                           (category) => category.id === product.category_id
                         )?.name
                       }
-                    </TableCell>
-                    <TableCell className="py-4 px-6 font-medium text-gray-900">
-                      ${product.sample_price}
-                    </TableCell>
-                    <TableCell className="py-4 px-6 text-gray-700">
-                      {product.minimum_order_quantity}
                     </TableCell>
                     <TableCell className="py-4 px-6">
                       <Badge

@@ -25,7 +25,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
   Package,
@@ -63,10 +62,6 @@ interface ProductImage {
 const productFormSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Description is required"),
-  minimum_order_quantity: z.coerce
-    .number()
-    .min(1, "Minimum order quantity must be at least 1"),
-  sample_price: z.coerce.number().min(0, "Sample price must be 0 or greater"),
   brand: z.string().min(1, "Brand is required"),
   category_id: z.string().min(1, "Category is required"),
   subcategory_id: z.string().min(1, "Sub category is required"),
@@ -110,6 +105,9 @@ type ProductSpecificationInsertType = Pick<
   ProductSpecificationType,
   "display_order" | "spec_name" | "spec_unit" | "spec_value"
 >;
+type TierPricingType =
+  Database["public"]["Tables"]["product_tier_pricing"]["Row"];
+type TierPricingInsertType = Pick<TierPricingType, "price" | "quantity">;
 
 const AddProductPage = () => {
   const [productSpecifications, setProductSpecifications] = useState<
@@ -125,6 +123,8 @@ const AddProductPage = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
+  const [tierPricing, setTierPricing] = useState<TierPricingInsertType[]>([]);
+
   const searchParams = useSearchParams();
 
   const productIdParam = searchParams.get("id");
@@ -148,8 +148,6 @@ const AddProductPage = () => {
         form.reset({
           name: product.name || "",
           description: product.description || "",
-          minimum_order_quantity: product.minimum_order_quantity || 1,
-          sample_price: product.sample_price || 0,
           brand: product.brand || "",
           category_id: product.category_id || "",
           subcategory_id: product.subcategory_id || "",
@@ -188,6 +186,16 @@ const AddProductPage = () => {
         .select("*")
         .eq("product_id", productIdParam)
         .order("display_order", { ascending: true });
+
+      const { data: tierPricingData } = await supabase
+        .from("product_tier_pricing")
+        .select("*")
+        .eq("product_id", productIdParam)
+        .order("quantity", { ascending: true });
+
+      if (tierPricingData) {
+        setTierPricing(tierPricingData);
+      }
 
       if (specifications) {
         setProductSpecifications(specifications);
@@ -279,8 +287,6 @@ const AddProductPage = () => {
     defaultValues: {
       name: "",
       description: "",
-      minimum_order_quantity: 1,
-      sample_price: 0,
       brand: business?.business_name || "",
       category_id: "",
       subcategory_id: "",
@@ -503,6 +509,50 @@ const AddProductPage = () => {
     }
   };
 
+  // Tier pricing
+  const addTierPricing = () => {
+    const newTier: TierPricingInsertType = {
+      quantity: 1,
+      price: 0,
+    };
+    setTierPricing([...tierPricing, newTier]);
+  };
+  const removeTierPricing = (index: number) => {
+    const updatedTiers = tierPricing.filter((_, i) => i !== index);
+    setTierPricing(updatedTiers);
+  };
+  const updateTierPricing = (
+    index: number,
+    field: keyof TierPricingInsertType,
+    value: number
+  ) => {
+    const updatedTiers = tierPricing.map((tier, i) =>
+      i === index ? { ...tier, [field]: value } : tier
+    );
+    setTierPricing(updatedTiers);
+  };
+  const saveTierPricing = async (productId: string) => {
+    if (tierPricing.length === 0) return;
+
+    try {
+      // First, delete existing tier pricing for this product
+      await axios.delete(`/api/products/${productId}/tier-pricing`);
+
+      // Then create new tier pricing
+      const tierPromises = tierPricing.map((tier) =>
+        axios.post("/api/product-tier-pricing", {
+          ...tier,
+          product_id: productId,
+        })
+      );
+
+      await Promise.all(tierPromises);
+    } catch (error) {
+      console.error("Error saving tier pricing:", error);
+      throw error;
+    }
+  };
+
   const onSubmit = async (data: ProductFormValues) => {
     setIsLoading(true);
     try {
@@ -542,6 +592,14 @@ const AddProductPage = () => {
       } catch (specError) {
         console.error("Specification save error:", specError);
         toast.warning("Product saved but specifications failed to save");
+      }
+
+      // Save tier pricing first (for both create and update)
+      try {
+        await saveTierPricing(productId);
+      } catch (tierPricingError) {
+        console.error("Tier pricing save error:", tierPricingError);
+        toast.warning("Product saved but tier pricing failed to save");
       }
 
       // Handle existing images for updates
@@ -606,6 +664,7 @@ const AddProductPage = () => {
         form.reset();
         setProductImages([]);
         setProductSpecifications([]);
+        setTierPricing([]);
       }
     } catch (error: any) {
       console.error("Frontend API Error:", error);
@@ -916,51 +975,103 @@ const AddProductPage = () => {
                 </h2>
               </div>
               <div className="p-8 space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="minimum_order_quantity"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          Minimum Order Quantity
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="1"
-                            placeholder="Enter MOQ"
-                            {...field}
-                            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <div className="">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900">
+                        Tier Pricing
+                      </h3>
+                      <p className="text-sm text-gray-600">
+                        Set different prices based on quantity
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addTierPricing}
+                      className="rounded-full border-gray-200 hover:bg-gray-50"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
 
-                  <FormField
-                    control={form.control}
-                    name="sample_price"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium text-gray-700">
-                          Sample Price
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="Enter sample price"
-                            {...field}
-                            className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-base"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {tierPricing.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-200 rounded-xl">
+                      <Tag className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+                      <p className="text-base font-medium mb-1">
+                        No tier pricing added yet
+                      </p>
+                      <p className="text-sm">
+                        Click the + button to add your first pricing tier
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {tierPricing.map((tier, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200"
+                        >
+                          <div className="cursor-move text-gray-400">
+                            <GripVertical className="h-5 w-5" />
+                          </div>
+
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Minimum Quantity
+                              </label>
+                              <Input
+                                type="number"
+                                min="1"
+                                placeholder="e.g., 100"
+                                value={tier.quantity}
+                                onChange={(e) =>
+                                  updateTierPricing(
+                                    index,
+                                    "quantity",
+                                    parseInt(e.target.value) || 0
+                                  )
+                                }
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Price per Unit (₹)
+                              </label>
+                              <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                placeholder="e.g., 25.00"
+                                value={tier.price}
+                                onChange={(e) =>
+                                  updateTierPricing(
+                                    index,
+                                    "price",
+                                    parseFloat(e.target.value) || 0
+                                  )
+                                }
+                                className="w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                              />
+                            </div>
+                          </div>
+
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => removeTierPricing(index)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -23,6 +23,7 @@ import {
   MapPin,
   ExternalLink,
   List,
+  DollarSign,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -34,8 +35,6 @@ interface Product {
   category_id: string | null;
   name: string;
   description: string;
-  sample_price: number;
-  minimum_order_quantity: number;
   is_sample_available: boolean;
   is_active: boolean;
   weight: number | null;
@@ -48,6 +47,16 @@ interface Product {
   subcategory_id: string | null;
   youtube_link: string | null;
   created_at: string;
+}
+
+interface ProductTierPricing {
+  id: string;
+  product_id: string;
+  quantity: number;
+  price: number;
+  is_active: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 interface ProductImage {
@@ -160,6 +169,7 @@ const ProductView = async ({ params }: PageProps) => {
       { data: subcategory },
       { data: productImages },
       { data: productSpecifications },
+      { data: productTierPricing },
     ] = await Promise.all([
       product.supplier_id
         ? supabase
@@ -199,6 +209,12 @@ const ProductView = async ({ params }: PageProps) => {
         .select("*")
         .eq("product_id", productId)
         .order("display_order", { ascending: true }),
+      supabase
+        .from("product_tier_pricing")
+        .select("*")
+        .eq("product_id", productId)
+        .eq("is_active", true)
+        .order("quantity", { ascending: true }),
     ]);
 
     const typedProduct = product as Product;
@@ -209,6 +225,7 @@ const ProductView = async ({ params }: PageProps) => {
     const typedProductImages = productImages as ProductImage[];
     const typedProductSpecifications =
       productSpecifications as ProductSpecificationType[];
+    const typedProductTierPricing = productTierPricing as ProductTierPricing[];
 
     // Image Gallery Component
     const ImageGallery = () => {
@@ -251,6 +268,52 @@ const ProductView = async ({ params }: PageProps) => {
               </>
             )}
           </Carousel>
+        </div>
+      );
+    };
+
+    // Pricing Component
+    const PricingTiers = () => {
+      const pricingTiers = typedProductTierPricing || [];
+
+      if (pricingTiers.length === 0) {
+        return (
+          <div className="bg-white rounded-lg p-4">
+            <p className="text-gray-600">No pricing information available</p>
+          </div>
+        );
+      }
+
+      return (
+        <div className="bg-white rounded-lg p-4">
+          <div className="space-y-3">
+            {pricingTiers.map((tier, index) => (
+              <div
+                key={tier.id}
+                className={`flex items-center justify-between p-3 rounded-lg border ${
+                  index === 0 ? "border-blue-200 bg-blue-50" : "border-gray-200"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <Package className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="font-medium">
+                      {tier.quantity.toLocaleString()} units
+                    </p>
+                    {index === 0 && (
+                      <p className="text-xs text-blue-600">Minimum order</p>
+                    )}
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium text-lg">
+                    ₹{tier.price.toLocaleString()}
+                  </p>
+                  <p className="text-sm text-gray-600">per unit</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       );
     };
@@ -307,16 +370,18 @@ const ProductView = async ({ params }: PageProps) => {
                   <p className="text-gray-600 mb-4">by {typedProduct.brand}</p>
                 )}
 
-                <div className="text-2xl font-medium text-gray-900 mb-4">
-                  ₹{typedProduct.sample_price.toLocaleString()}{" "}
-                  <span className="text-base font-normal text-gray-600">
-                    sample price
-                  </span>
-                </div>
-
                 <p className="text-gray-700 leading-relaxed">
                   {typedProduct.description}
                 </p>
+              </div>
+
+              {/* Pricing Tiers */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-gray-400" />
+                  Pricing
+                </h3>
+                <PricingTiers />
               </div>
 
               {/* Basic Product Specifications */}
@@ -324,18 +389,6 @@ const ProductView = async ({ params }: PageProps) => {
                 <h3 className="text-lg font-medium">Basic Specifications</h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="flex items-center gap-3">
-                    <Package className="w-5 h-5 text-gray-400" />
-                    <div>
-                      <p className="text-sm text-gray-600">
-                        Min. Order Quantity
-                      </p>
-                      <p className="font-medium">
-                        {typedProduct.minimum_order_quantity.toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-
                   {typedProduct.weight && (
                     <div className="flex items-center gap-3">
                       <Weight className="w-5 h-5 text-gray-400" />

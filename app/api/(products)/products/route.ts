@@ -25,9 +25,7 @@ export async function POST(req: NextRequest) {
 
       is_sample_available,
       length,
-      minimum_order_quantity,
       name,
-      sample_price,
 
       supplier_id,
       weight,
@@ -43,16 +41,6 @@ export async function POST(req: NextRequest) {
     if (!supplier_id) errors.supplier_id = "Supplier ID is required";
 
     // Numeric validations
-    if (
-      minimum_order_quantity != null &&
-      (isNaN(minimum_order_quantity) || minimum_order_quantity < 0)
-    ) {
-      errors.minimum_order_quantity =
-        "Minimum order quantity must be a non-negative number";
-    }
-    if (sample_price != null && (isNaN(sample_price) || sample_price < 0)) {
-      errors.sample_price = "Sample price must be a non-negative number";
-    }
     if (weight != null && (isNaN(weight) || weight < 0)) {
       errors.weight = "Weight must be a non-negative number";
     }

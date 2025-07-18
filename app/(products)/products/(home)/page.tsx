@@ -19,6 +19,7 @@ import {
   Grid3X3,
   List,
   SlidersHorizontal,
+  Layers,
 } from "lucide-react";
 import {
   Select,
@@ -43,6 +44,10 @@ type Product = Tables<"products"> & {
   product_images: Pick<
     Tables<"product_images">,
     "id" | "image_url" | "display_order"
+  >[];
+  product_tier_pricing: Pick<
+    Tables<"product_tier_pricing">,
+    "id" | "price" | "quantity" | "is_active"
   >[];
 };
 
@@ -77,13 +82,32 @@ const ProductCard = ({ product }: { product: Product }) => {
   const primaryImage =
     product.product_images?.[0]?.image_url || "/placeholder-product.jpg";
 
+  // Get active tier pricing sorted by quantity
+  const activeTierPricing =
+    product.product_tier_pricing
+      ?.filter((tier) => tier.is_active)
+      .sort((a, b) => a.quantity - b.quantity) || [];
+
+  // Get the lowest price (usually the highest quantity tier)
+  const lowestPrice =
+    activeTierPricing.length > 0
+      ? Math.min(...activeTierPricing.map((tier) => tier.price))
+      : null;
+
+  // Get the starting price (lowest quantity tier)
+  const startingPrice =
+    activeTierPricing.length > 0 ? activeTierPricing[0].price : null;
+
+  // Get minimum order quantity
+  const minOrderQty =
+    activeTierPricing.length > 0 ? activeTierPricing[0].quantity : null;
+
   return (
     <Card
       onClick={() => router.push(`/products/${product.id}`)}
-      className="group w-full rounded-2xl border-0 shadow-sm bg-card hover:shadow-md transition-all duration-300 overflow-hidden"
+      className="group w-full rounded-2xl border-0 shadow-sm bg-card hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer"
     >
-      {/* <CardHeader className="p-0"> */}
-      <div className="relative -translate-y-6 w-full aspect-square overflow-hidden rounded-t-2xl">
+      <div className="relative w-full aspect-square overflow-hidden rounded-t-2xl">
         <Image
           src={primaryImage}
           alt={product.name}
@@ -101,12 +125,35 @@ const ProductCard = ({ product }: { product: Product }) => {
           {product.category?.name || "Uncategorized"}
         </Badge>
 
+        {/* Tier pricing indicator */}
+        {activeTierPricing.length > 1 && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge
+                  variant="default"
+                  className="absolute top-3 right-12 bg-primary/90 backdrop-blur-sm text-xs rounded-full px-2 py-1"
+                >
+                  <Layers className="w-3 h-3 mr-1" />
+                  {activeTierPricing.length}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{activeTierPricing.length} pricing tiers available</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
         {/* Like button */}
         <Button
           variant="ghost"
           size="sm"
           className="absolute top-3 right-3 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsLiked(!isLiked);
+          }}
         >
           <Heart
             className={`h-4 w-4 ${
@@ -115,9 +162,8 @@ const ProductCard = ({ product }: { product: Product }) => {
           />
         </Button>
       </div>
-      {/* </CardHeader> */}
 
-      <CardContent className="p-4 pt-0 space-y-3">
+      <CardContent className="p-4 space-y-3">
         <div className="space-y-1">
           <h3 className="font-semibold text-base line-clamp-1 group-hover:text-primary transition-colors">
             {product.name}
@@ -142,11 +188,25 @@ const ProductCard = ({ product }: { product: Product }) => {
         </p>
 
         <div className="flex items-center justify-between pt-2">
-          <div className="flex items-center gap-2">
-            <span className="text-lg font-bold text-primary">
-              ₹{product.sample_price || "N/A"}
-            </span>
-            <span className="text-xs text-muted-foreground">sample</span>
+          <div className="flex flex-col gap-1">
+            {startingPrice && (
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-bold text-primary">
+                  ₹{startingPrice}
+                </span>
+                {lowestPrice && lowestPrice !== startingPrice && (
+                  <span className="text-xs text-muted-foreground line-through">
+                    ₹{lowestPrice}
+                  </span>
+                )}
+              </div>
+            )}
+            {minOrderQty && (
+              <span className="text-xs text-muted-foreground">
+                Min: {minOrderQty}{" "}
+                {product.product_tier_pricing[0].quantity || "pcs"}
+              </span>
+            )}
           </div>
 
           <TooltipProvider>
@@ -154,34 +214,62 @@ const ProductCard = ({ product }: { product: Product }) => {
               <TooltipTrigger asChild>
                 <Badge
                   variant={
-                    product.is_sample_available ? "default" : "secondary"
+                    activeTierPricing.length > 0 ? "default" : "secondary"
                   }
                   className="text-xs rounded-full"
                 >
-                  {product.is_sample_available ? "Available" : "Out of Stock"}
+                  {activeTierPricing.length > 0 ? "Available" : "Out of Stock"}
                 </Badge>
               </TooltipTrigger>
               <TooltipContent>
                 <p>
-                  Sample{" "}
-                  {product.is_sample_available ? "available" : "not available"}
+                  Product{" "}
+                  {activeTierPricing.length > 0 ? "available" : "not available"}
                 </p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
 
+        {/* Tier pricing preview */}
+        {activeTierPricing.length > 1 && (
+          <div className="bg-muted/50 rounded-lg p-2 space-y-1">
+            <div className="text-xs font-medium text-muted-foreground">
+              Bulk Pricing:
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span>{activeTierPricing[0].quantity}+ units</span>
+              <span className="font-medium">₹{activeTierPricing[0].price}</span>
+            </div>
+            {activeTierPricing.length > 1 && (
+              <div className="flex items-center justify-between text-xs">
+                <span>
+                  {activeTierPricing[activeTierPricing.length - 1].quantity}+
+                  units
+                </span>
+                <span className="font-medium text-primary">
+                  ₹{activeTierPricing[activeTierPricing.length - 1].price}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="flex gap-2 pt-2">
           <Button
             className="flex-1 rounded-xl h-9 text-sm"
-            disabled={!product.is_sample_available}
+            disabled={activeTierPricing.length === 0}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Add to cart logic here
+            }}
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
-            Add Sample
+            Add to Cart
           </Button>
           <Button
             onClick={(e) => {
-              e.stopPropagation(); // prevent card click
+              e.stopPropagation();
               router.push(`/products/${product.id}`);
             }}
             variant="outline"
@@ -218,7 +306,7 @@ const ProductsPage = () => {
     setProducts([]);
     setPage(0);
     setHasMore(true);
-  }, [searchParams, appliedPriceRange]);
+  }, [searchParams, appliedPriceRange, sortBy]);
 
   // Fetch products based on filters
   useEffect(() => {
@@ -233,29 +321,14 @@ const ProductsPage = () => {
           .from("products")
           .select(
             `
-          *,
-          category:categories!products_category_id_fkey(id, name, slug),
-          subcategory:categories!products_subcategory_id_fkey(id, name, slug),
-          supplier:profiles!products_supplier_id_fkey(id, full_name)
-        `
+            *,
+            category:categories!products_category_id_fkey(id, name, slug),
+            subcategory:categories!products_subcategory_id_fkey(id, name, slug),
+            supplier:profiles!products_supplier_id_fkey(id, full_name),
+            product_tier_pricing(id, price, quantity, is_active)
+          `
           )
           .eq("is_active", true);
-
-        // Apply sorting
-        switch (sortBy) {
-          case "newest":
-            query = query.order("created_at", { ascending: false });
-            break;
-          case "oldest":
-            query = query.order("created_at", { ascending: true });
-            break;
-          case "name":
-            query = query.order("name", { ascending: true });
-            break;
-          case "price":
-            query = query.order("sample_price", { ascending: true });
-            break;
-        }
 
         // Apply category filters
         const categoryFilters = searchParams.get("categories");
@@ -269,13 +342,6 @@ const ProductsPage = () => {
         if (subcategoryFilters) {
           const subcategoryIds = subcategoryFilters.split(",");
           query = query.in("subcategory_id", subcategoryIds);
-        }
-
-        // Apply price range filter - using appliedPriceRange
-        if (appliedPriceRange[0] > 0 || appliedPriceRange[1] < 10000) {
-          query = query
-            .gte("sample_price", appliedPriceRange[0])
-            .lte("sample_price", appliedPriceRange[1]);
         }
 
         const limit = 12;
@@ -308,13 +374,62 @@ const ProductsPage = () => {
           })
         );
 
-        if (page === 0) {
-          setProducts(productsWithImages);
-        } else {
-          setProducts((prev) => [...prev, ...productsWithImages]);
+        // Filter by price range if applied
+        let filteredProducts = productsWithImages;
+        if (appliedPriceRange[0] > 0 || appliedPriceRange[1] < 10000) {
+          filteredProducts = productsWithImages.filter((product) => {
+            const activeTiers =
+              product.product_tier_pricing?.filter((tier) => tier.is_active) ||
+              [];
+            if (activeTiers.length === 0) return false;
+
+            const minPrice = Math.min(...activeTiers.map((tier) => tier.price));
+            const maxPrice = Math.max(...activeTiers.map((tier) => tier.price));
+
+            return (
+              minPrice >= appliedPriceRange[0] &&
+              maxPrice <= appliedPriceRange[1]
+            );
+          });
         }
 
-        if (productsWithImages.length < limit) setHasMore(false);
+        // Apply sorting
+        filteredProducts.sort((a, b) => {
+          switch (sortBy) {
+            case "newest":
+              if (a.created_at !== null && b.created_at !== null)
+                return (
+                  new Date(b.created_at).getTime() -
+                  new Date(a.created_at).getTime()
+                );
+            case "oldest":
+              if (a.created_at !== null && b.created_at !== null)
+                return (
+                  new Date(a.created_at).getTime() -
+                  new Date(b.created_at).getTime()
+                );
+            case "name":
+              return a.name.localeCompare(b.name);
+            case "price":
+              const aPrice =
+                a.product_tier_pricing?.find((tier) => tier.is_active)?.price ||
+                0;
+              const bPrice =
+                b.product_tier_pricing?.find((tier) => tier.is_active)?.price ||
+                0;
+              return aPrice - bPrice;
+            default:
+              return 0;
+          }
+        });
+
+        if (page === 0) {
+          setProducts(filteredProducts);
+        } else {
+          setProducts((prev) => [...prev, ...filteredProducts]);
+        }
+
+        if (filteredProducts.length < limit) setHasMore(false);
       } catch (err) {
         console.error("Error fetching products:", err);
         setError("An unexpected error occurred. Please try again.");
@@ -381,7 +496,7 @@ const ProductsPage = () => {
         <div className="mb-8">
           <h1 className="text-2xl lg:text-3xl font-bold mb-2">Products</h1>
           <p className="text-muted-foreground">
-            Discover and sample products from verified suppliers
+            Discover products with flexible tier pricing from verified suppliers
           </p>
         </div>
 
@@ -439,7 +554,7 @@ const ProductsPage = () => {
                       : priceRange[1];
                     const newRange = [newMin, newMax];
                     setPriceRange(newRange);
-                    setAppliedPriceRange(newRange); // This triggers the fetch
+                    setAppliedPriceRange(newRange);
                     setMinPrice("");
                     setMaxPrice("");
                   }}

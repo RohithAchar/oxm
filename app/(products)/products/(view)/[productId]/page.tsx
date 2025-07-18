@@ -37,12 +37,14 @@ type Product = Tables<"products">;
 type ProductImage = Tables<"product_images">;
 type Category = Tables<"categories">;
 type Profile = Tables<"profiles">;
+type ProductTierPricing = Tables<"product_tier_pricing">;
 
 interface ProductWithRelations extends Product {
   product_images: ProductImage[];
   category: Category | null;
   subcategory: Category | null;
   supplier: Profile | null;
+  product_tier_pricing: ProductTierPricing[];
 }
 
 const ProductView = async ({ params }: PageProps) => {
@@ -102,6 +104,13 @@ const ProductView = async ({ params }: PageProps) => {
         id,
         full_name,
         avatar_url
+      ),
+      product_tier_pricing (
+        id,
+        quantity,
+        price,
+        is_active,
+        created_at
       )
     `
     )
@@ -122,6 +131,12 @@ const ProductView = async ({ params }: PageProps) => {
     ) || [];
 
   const primaryImage = sortedImages[0]?.image_url || "/placeholder-product.jpg";
+
+  // Sort tier pricing by quantity and filter active ones
+  const sortedTierPricing =
+    typedProduct.product_tier_pricing
+      ?.filter((tier) => tier.is_active !== false)
+      ?.sort((a, b) => a.quantity - b.quantity) || [];
 
   return (
     <div className="min-h-screen bg-white">
@@ -251,12 +266,44 @@ const ProductView = async ({ params }: PageProps) => {
                 )}
               </div>
 
-              <div className="text-3xl font-light text-gray-900 mb-8">
-                ₹{typedProduct.sample_price.toLocaleString()}
-                <span className="text-base text-gray-500 ml-2">
-                  sample price
-                </span>
-              </div>
+              {/* Tier Pricing */}
+              {sortedTierPricing.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4">
+                    Tier Pricing
+                  </h3>
+                  <div className="space-y-3">
+                    {sortedTierPricing.map((tier, index) => (
+                      <div
+                        key={tier.id}
+                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+                            {index + 1}
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {tier.quantity.toLocaleString()} units
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {tier.quantity === 1
+                                ? "Minimum order"
+                                : "Bulk pricing"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-2xl font-light text-gray-900">
+                            ₹{tier.price.toLocaleString()}
+                          </p>
+                          <p className="text-sm text-gray-600">per unit</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Product Actions */}
@@ -266,7 +313,7 @@ const ProductView = async ({ params }: PageProps) => {
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />
-                Add Sample to Cart
+                Add to Cart
               </Button>
 
               <div className="grid grid-cols-2 gap-4">
@@ -306,7 +353,7 @@ const ProductView = async ({ params }: PageProps) => {
                       Minimum Order
                     </h4>
                     <p className="text-gray-600">
-                      {typedProduct.minimum_order_quantity} units
+                      {typedProduct.product_tier_pricing[0].quantity} units
                     </p>
                   </div>
 
@@ -423,7 +470,7 @@ const ProductView = async ({ params }: PageProps) => {
                 <div className="space-y-2 text-sm text-gray-600">
                   <p>• Free shipping on orders above ₹500</p>
                   <p>• Estimated delivery: 5-7 business days</p>
-                  <p>• Sample available for quality check</p>
+                  <p>• Bulk orders available with custom pricing</p>
                 </div>
               </div>
             </div>
