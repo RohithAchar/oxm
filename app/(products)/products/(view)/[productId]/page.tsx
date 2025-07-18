@@ -1,5 +1,7 @@
 // app/(products)/products/[productId]/page.tsx
 
+import { Metadata } from "next";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -45,6 +47,50 @@ interface ProductWithRelations extends Product {
   subcategory: Category | null;
   supplier: Profile | null;
   product_tier_pricing: ProductTierPricing[];
+}
+
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
+  const supabase = await createClient();
+  const { productId } = await params;
+
+  const { data: product, error: productError } = await supabase
+    .from("products")
+    .select("*, product_images(id, image_url)")
+    .eq("id", productId)
+    .eq("is_active", true)
+    .single();
+
+  if (!product) {
+    notFound(); // same as your page
+  }
+
+  if (productError) {
+    notFound(); // same as your page
+  }
+
+  return {
+    title: `${product.name} – OpenXmart`,
+    description:
+      product.description ||
+      "View product details and request a sample on OpenXmart.",
+    openGraph: {
+      title: `${product.name} – OpenXmart`,
+      description:
+        product.description ||
+        "View product details and request a sample on OpenXmart.",
+      images: [
+        {
+          url:
+            product.product_images?.[0]?.image_url ||
+            "/placeholder-product.jpg",
+          width: 1200,
+          height: 630,
+        },
+      ],
+    },
+  };
 }
 
 const ProductView = async ({ params }: PageProps) => {

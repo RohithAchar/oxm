@@ -4,6 +4,18 @@ import { Sidebar } from "@/components/supplier/sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
+export const metadata = {
+  title: "Suppliers – OpenXmart",
+  description:
+    "Connect with trusted B2B suppliers. Manage your business profile, products, and orders.",
+  keywords: [
+    "B2B suppliers",
+    "supplier portal",
+    "manage products",
+    "OpenXmart business",
+  ],
+};
+
 export default async function SupplierLayout({
   children,
 }: Readonly<{

@@ -20,6 +20,18 @@ const openSans = Open_Sans({
   subsets: ["latin"],
 });
 
+export const metadata = {
+  title: "Products – OpenXmart",
+  description:
+    "Explore a wide range of B2B products from verified suppliers. Request samples and place orders easily.",
+  keywords: [
+    "OpenXmart products",
+    "B2B products India",
+    "product samples",
+    "bulk orders",
+  ],
+};
+
 export default async function ProductsLayout({
   children,
 }: Readonly<{
