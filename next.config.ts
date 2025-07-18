@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
   },
   // Optional: if you're using middleware
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  generateMetadata: false,
 };
 
 export default nextConfig;
