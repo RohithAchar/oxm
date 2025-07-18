@@ -20,11 +20,41 @@ const openSans = Open_Sans({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title:
-    "OpenXMart - The Future of B2B Sampling | Secure Sample Ordering Platform",
+export const metadata = {
+  title: "OpenXmart – B2B Marketplace for Indian Businesses",
   description:
-    "Connect with trusted suppliers and order samples seamlessly. OpenXMart makes B2B sampling simple, secure, and efficient for modern businesses.",
+    "Discover and connect with suppliers. Order product samples and manage business purchases in one platform.",
+  keywords: [
+    "B2B Marketplace",
+    "Supplier Platform",
+    "Product Samples",
+    "Business Orders",
+    "OpenXmart",
+  ],
+  openGraph: {
+    title: "OpenXmart",
+    description:
+      "Indian B2B Marketplace – Order product samples and connect with verified suppliers.",
+    url: "https://openxmart.com",
+    siteName: "OpenXmart",
+    // images: [
+    //   {
+    //     url: "/og-image.jpg", // Add a relevant image in public/
+    //     width: 1200,
+    //     height: 630,
+    //   },
+    // ],
+    locale: "en_IN",
+    type: "website",
+  },
+  // twitter: {
+  //   card: "summary_large_image",
+  //   title: "OpenXmart",
+  //   description:
+  //     "Order samples, connect with suppliers – India's B2B Marketplace.",
+  //   images: ["/og-image.jpg"],
+  // },
+  metadataBase: new URL("https://openxmart.com"),
 };
 
 export default async function RootLayout({
