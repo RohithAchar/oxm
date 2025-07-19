@@ -11,6 +11,9 @@ import {
   Boxes,
   ClipboardList,
   BarChart3,
+  MessageCircle,
+  Shield,
+  Flag,
 } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -22,6 +25,10 @@ const sidebarItems = [
   { name: "Add New Product", href: "/supplier/add-product", icon: CirclePlus },
   { name: "Products", href: "/supplier/manage-products", icon: Boxes },
   { name: "Orders", href: "/supplier/orders", icon: ClipboardList },
+  { name: "Enquiry", href: "/supplier/enquiry", icon: MessageCircle },
+  { name: "Trust Score", href: "/supplier/trust-score", icon: Shield },
+  { name: "Tips", href: "/supplier/tips", icon: CirclePlus },
+  { name: "Notice", href: "/supplier/notice", icon: Flag },
 ];
 
 export function Sidebar({
