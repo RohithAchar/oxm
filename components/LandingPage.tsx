@@ -1,344 +1,191 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowRight,
-  Shield,
+  ChevronLeft,
+  ChevronRight,
+  Package,
   Users,
-  Zap,
-  CheckCircle,
-  Star,
-  TrendingUp,
+  GraduationCap,
+  Truck,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 
-interface PageProps {
-  isLoggedIn: boolean;
-}
+// Import your existing components
+import RecentlyViewedList from "./recently-viewed-list";
+import NewLaunchedItems from "./new-launched-list";
+import { BannerCarousel } from "./banner-view";
 
-const LandingPage = ({ isLoggedIn }: PageProps) => {
-  const router = useRouter();
-  console.log("isLoggedIn:", isLoggedIn);
+const LandingPage = ({ isLoggedIn = false }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
+
+  const navigationItems = [
+    {
+      title: "Explore",
+      description: "Discover our complete product range",
+      icon: Package,
+      href: "/products",
+      gradient: "from-blue-500 to-cyan-400",
+      hoverGradient: "from-blue-600 to-cyan-500",
+    },
+    {
+      title: "My Box",
+      description: "Connect with trusted suppliers",
+      icon: Users,
+      href: "/supplier",
+      gradient: "from-purple-500 to-pink-400",
+      hoverGradient: "from-purple-600 to-pink-500",
+    },
+    {
+      title: "Learn X",
+      description: "Master new skills and insights",
+      icon: GraduationCap,
+      href: "/learn",
+      gradient: "from-green-500 to-emerald-400",
+      hoverGradient: "from-green-600 to-emerald-500",
+    },
+    {
+      title: "Dropship",
+      description: "Start your dropshipping journey",
+      icon: Truck,
+      href: "/dropship",
+      gradient: "from-orange-500 to-red-400",
+      hoverGradient: "from-orange-600 to-red-500",
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50 py-20 px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 mb-6 tracking-tight">
-              The Future of
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                {" "}
-                B2B Sampling
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Connect with trusted suppliers, order samples seamlessly, and
-              scale your business with confidence. OpenXMart makes B2B sampling
-              simple, secure, and efficient.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button
-                onClick={() => {
-                  if (isLoggedIn) {
-                    router.push("/supplier");
-                  } else {
-                    router.push("/login");
-                  }
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center gap-2"
-              >
-                Start Sampling Today
-                <ArrowRight className="w-5 h-5" />
-              </button>
-              <button className="border-2 border-gray-300 hover:border-gray-400 text-gray-700 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 hover:bg-gray-50">
-                Watch Demo
-              </button>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      {/* Hero Carousel Section */}
+      <section
+        className={`px-6 md:px-12 py-12 transition-all duration-1000 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <BannerCarousel />
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 px-6 bg-white">
+      {/* Navigation Cards Section */}
+      <section
+        className={`px-6 md:px-12 py-20 transition-all duration-1000 delay-200 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Why Choose OpenXMart?
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Experience the power of seamless B2B sampling with our
-              industry-leading platform
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Secure & Trusted
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Enterprise-grade security with verified suppliers and encrypted
-                transactions. Your business data is always protected.
-              </p>
-            </div>
-
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Lightning Fast
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Streamlined ordering process that reduces sample procurement
-                time by 70%. Get samples in your hands faster.
-              </p>
-            </div>
-
-            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-              <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Users className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Global Network
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Access thousands of verified suppliers worldwide. Find the
-                perfect products for your business needs.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works Section */}
-      <section className="py-20 px-6 bg-gray-50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              How OpenXMart Works
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Simple, efficient, and designed for modern businesses
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">
-                1
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Browse & Discover
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Explore our curated marketplace of verified suppliers and
-                high-quality products across multiple industries.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">
-                2
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Order Samples
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Request samples with just a few clicks. Our streamlined process
-                ensures quick turnaround times.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white text-2xl font-bold">
-                3
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                Scale Your Business
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                Make informed decisions with quality samples and build lasting
-                partnerships with trusted suppliers.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Benefits Section */}
-      <section className="py-20 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
-                Built for Modern Businesses
-              </h2>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      Quality Assurance
-                    </h3>
-                    <p className="text-gray-600">
-                      Every supplier is thoroughly vetted and verified for
-                      quality and reliability.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      Real-time Tracking
-                    </h3>
-                    <p className="text-gray-600">
-                      Monitor your sample orders from request to delivery with
-                      live updates.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      Dedicated Support
-                    </h3>
-                    <p className="text-gray-600">
-                      24/7 customer support to help you every step of the way.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-3xl p-8 text-white">
-              <div className="text-center">
-                <TrendingUp className="w-16 h-16 mx-auto mb-6" />
-                <h3 className="text-3xl font-bold mb-4">
-                  Join 10,000+ Businesses
-                </h3>
-                <p className="text-xl opacity-90 mb-6">
-                  Companies worldwide trust OpenXMart for their B2B sampling
-                  needs
-                </p>
-                <div className="flex justify-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-6 h-6 fill-current text-yellow-400"
-                    />
-                  ))}
-                </div>
-                <p className="text-lg opacity-90">4.9/5 average rating</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-6 bg-gradient-to-r from-blue-600 to-purple-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your Sampling Process?
+          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+            Explore Our Platform
           </h2>
-          <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of businesses already using OpenXMart to streamline
-            their B2B sampling workflow.
+          <p className="text-xl text-gray-600 text-center mb-16 font-light">
+            Everything you need, beautifully integrated
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white hover:bg-gray-100 text-blue-600 px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
-              Get Started Free
-              <ArrowRight className="w-5 h-5" />
-            </button>
-            <button className="border-2 border-white hover:bg-white hover:text-blue-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300">
-              Contact Sales
-            </button>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {navigationItems.map((item, index) => (
+              <div
+                key={item.title}
+                className={`cursor-pointer ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-8"
+                }`}
+                style={{ transitionDelay: `${300 + index * 100}ms` }}
+              >
+                <div className="relative overflow-hidden rounded-3xl p-8 h-80 flex flex-col justify-between bg-white border border-gray-100">
+                  <div className="relative z-10">
+                    <div
+                      className={`w-16 h-16 rounded-2xl bg-gradient-to-r ${item.gradient} flex items-center justify-center mb-6`}
+                    >
+                      <item.icon size={32} className="text-white" />
+                    </div>
+
+                    <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 mb-6">{item.description}</p>
+                  </div>
+
+                  <div className="relative z-10 flex items-center text-gray-400">
+                    <span className="text-sm font-medium mr-2">Learn more</span>
+                    <ArrowRight size={16} />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-6">
+      {/* Recently Viewed Section */}
+      <section
+        className={`px-6 md:px-12 py-20 bg-gradient-to-r from-gray-50 to-white transition-all duration-1000 delay-500 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
         <div className="max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="flex items-center justify-between mb-12">
             <div>
-              <h3 className="text-2xl font-bold mb-4">OpenXMart</h3>
-              <p className="text-gray-400">
-                The future of B2B sampling. Secure, trusted, and efficient.
+              <h2 className="text-4xl font-bold text-gray-900 mb-2">
+                Recently Viewed
+              </h2>
+              <p className="text-gray-600 font-light">
+                Pick up where you left off
               </p>
             </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Product</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Features
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Pricing
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    API
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Company</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Support</h4>
-              <ul className="space-y-2 text-gray-400">
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Help Center
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-white transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
-              </ul>
-            </div>
+            <button className="flex items-center text-blue-600 font-medium">
+              View All
+              <ArrowRight size={18} className="ml-2" />
+            </button>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-            <p>&copy; 2025 OpenXMart. All rights reserved.</p>
+          <RecentlyViewedList />
+        </div>
+      </section>
+
+      {/* New Launches Section */}
+      <section
+        className={`px-6 md:px-12 py-20 transition-all duration-1000 delay-700 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+              Latest Launches
+            </h2>
+            <p className="text-xl text-gray-600 font-light">
+              Discover what's new and exciting
+            </p>
+          </div>
+          <NewLaunchedItems />
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section
+        className={`px-6 md:px-12 py-20 transition-all duration-1000 delay-900 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-12 md:p-16 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10"></div>
+            <div className="relative z-10">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                Ready to Get Started?
+              </h2>
+              <p className="text-xl text-gray-300 mb-8 font-light">
+                Join thousands of users who trust our platform
+              </p>
+              <button className="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full font-semibold text-lg">
+                Start Your Journey
+              </button>
+            </div>
           </div>
         </div>
-      </footer>
+      </section>
     </div>
   );
 };

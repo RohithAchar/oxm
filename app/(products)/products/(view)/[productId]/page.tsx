@@ -30,6 +30,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 
+import RecentlyViewedTracker from "@/components/recently-viewed-tracker";
+
 interface PageProps {
   params: Promise<{ productId: string }>;
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -523,6 +525,17 @@ const ProductView = async ({ params }: PageProps) => {
           </div>
         </div>
       </div>
+      <RecentlyViewedTracker
+        product={{
+          id: typedProduct.id,
+          name: typedProduct.name,
+          brand: typedProduct.brand,
+          image_url: primaryImage,
+          category: typedProduct.category,
+          supplier: typedProduct.supplier,
+          base_price: sortedTierPricing[0]?.price,
+        }}
+      />
     </div>
   );
 };

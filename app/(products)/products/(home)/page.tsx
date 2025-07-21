@@ -146,7 +146,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         )}
 
         {/* Like button */}
-        <Button
+        {/* <Button
           variant="ghost"
           size="sm"
           className="absolute top-3 right-3 h-8 w-8 rounded-full bg-background/90 backdrop-blur-sm hover:bg-background opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -160,7 +160,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               isLiked ? "fill-red-500 text-red-500" : "text-muted-foreground"
             }`}
           />
-        </Button>
+        </Button> */}
       </div>
 
       <CardContent className="p-4 space-y-3">

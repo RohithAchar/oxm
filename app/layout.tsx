@@ -67,7 +67,7 @@ export default async function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <Providers>
           <Navbar />
-          <div className="bg-muted p-4">{children}</div>
+          <div className="bg-muted">{children}</div>
         </Providers>
       </body>
     </html>
