@@ -27,8 +27,8 @@ const menuItems = [
 
 const MobileMenu = () => {
   return (
-    <div className="bg-muted md:hidden fixed bottom-0 left-0 z-50 w-full">
-      <div className="flex justify-center items-center py-4 gap-4">
+    <div className="bg-muted md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 p-4 rounded-2xl z-50">
+      <div className="flex justify-center items-center gap-4">
         {menuItems.map((item) => (
           <Button size={"lg"} variant={"outline"} asChild key={item.name}>
             <Link href={item.href}>{item.icon}</Link>
