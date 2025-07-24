@@ -235,7 +235,7 @@ export default function NewLaunchedItems({
       <div
         className={`grid gap-4 ${
           variant === "grid"
-            ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
+            ? "grid-cols-2 sm:grid-cols-2 lg:grid-cols-4"
             : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
         }`}
       >
@@ -247,7 +247,7 @@ export default function NewLaunchedItems({
           return (
             <Link key={product.id} href={`/products/${product.id}`}>
               <Card className="group h-full flex flex-col hover:shadow-lg transition-all duration-200 hover:-translate-y-1 border border-gray-100">
-                <CardContent className="p-3 flex flex-col h-full">
+                <CardContent className="p-3 flex flex-col h-full -mt-4 -mb-4">
                   {/* Product Image */}
                   <div className="relative aspect-square mb-3 bg-gray-50 rounded-lg overflow-hidden">
                     <Image
@@ -260,8 +260,8 @@ export default function NewLaunchedItems({
 
                     {/* New Badge */}
                     <div className="absolute top-2 left-2">
-                      <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-xs px-2 py-1">
-                        <Sparkles className="h-3 w-3 mr-1" />
+                      <Badge className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-[8px] px-2 py-1">
+                        <Sparkles className="h-2 w-2 mr-1" />
                         NEW
                       </Badge>
                     </div>
