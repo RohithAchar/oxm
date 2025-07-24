@@ -11,7 +11,7 @@ const ViewProfilePage = async () => {
     return (
       <div className="min-h-[calc(100vh-50px)] bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6 text-center">
+          <div className="bg-white shadow-sm rounded-lg p-6 text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 mb-4">
               <svg
                 className="h-6 w-6 text-red-600"

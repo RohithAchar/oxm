@@ -701,8 +701,8 @@ const AddProductPage = () => {
   // Replace the existing return statement with this Apple-styled version:
 
   return (
-    <div className="min-h-screen bg-gray-50 rounded-lg">
-      <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="min-h-screen bg-gray-50 rounded-lg lg:my-4 border">
+      <div className="max-w-4xl mx-auto px-6 py-8 pb-24 md:pb-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-light text-gray-900 mb-2">

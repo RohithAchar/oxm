@@ -104,9 +104,6 @@ const LandingPage = ({ isLoggedIn = false }) => {
         </div>
       </section>
 
-      {/* Recently Viewed Section */}
-      <RecentlyViewedList />
-
       {/* New Launches Section */}
       <section
         className={`px-6 md:px-12 py-20 transition-all duration-1000 delay-700 ${
@@ -125,6 +122,9 @@ const LandingPage = ({ isLoggedIn = false }) => {
           <NewLaunchedItems />
         </div>
       </section>
+
+      {/* Recently Viewed Section */}
+      <RecentlyViewedList />
 
       {/* Footer CTA */}
       <Footer />

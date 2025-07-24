@@ -275,7 +275,7 @@ const OverviewPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background p-6">
+      <div className="min-h-screen rounded-2xl bg-background p-6">
         <div className="max-w-7xl mx-auto">
           <div className="space-y-6">
             <Skeleton className="h-8 w-48" />
@@ -316,18 +316,18 @@ const OverviewPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="min-h-screen bg-background rounded-2xl p-6 pb-24 md:pb-12 lg:mt-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Overview</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-3xl font-light">Overview</h1>
+            <p className="text-muted-foreground mt-1 font-light">
               Welcome back! Here's what's happening with your business.
             </p>
           </div>
-          <div className="flex gap-3">
-            <Button variant="outline">
+          <div className="flex gap-3 flex-wrap">
+            <Button variant="outline" className="w-full md:w-auto">
               <Settings className="w-4 h-4 mr-2" />
               Settings
             </Button>

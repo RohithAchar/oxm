@@ -146,7 +146,7 @@ const ManageProductsPage = () => {
   };
 
   return (
-    <div className="px-8 mx-auto py-8 space-y-8 bg-gray-50 min-h-screen rounded-lg">
+    <div className="mx-auto p-4 pb-24 md:pb-2 space-y-4 lg:my-4 bg-gray-50 min-h-screen rounded-lg">
       {/* Header */}
       <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
         <div>
