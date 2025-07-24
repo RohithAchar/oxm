@@ -1,15 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import {
-  ArrowRight,
-  ChevronLeft,
-  ChevronRight,
-  Package,
-  Users,
-  GraduationCap,
-  Truck,
-} from "lucide-react";
+import { ArrowRight, Package, Users, GraduationCap, Truck } from "lucide-react";
 
 // Import your existing components
 import RecentlyViewedList from "./recently-viewed-list";

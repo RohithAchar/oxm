@@ -4,6 +4,8 @@ import "./globals.css";
 import Providers from "@/lib/Providers";
 
 import { Navbar } from "@/components/nav/navbar";
+import MobileMenu from "@/components/nav/mobile-menu";
+import { Suspense } from "react";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -67,7 +69,10 @@ export default async function RootLayout({
       <body className={`${inter.variable} antialiased`}>
         <Providers>
           <Navbar />
-          <div className="bg-muted">{children}</div>
+          <MobileMenu />
+          <Suspense>
+            <div className="bg-muted">{children}</div>
+          </Suspense>
         </Providers>
       </body>
     </html>
