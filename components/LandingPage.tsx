@@ -63,10 +63,9 @@ const LandingPage = ({ isLoggedIn = false }) => {
       >
         <BannerCarousel />
       </section>
-
       {/* SEO Hero Section */}
       <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 ${
+        className={`hidden px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
@@ -82,7 +81,6 @@ const LandingPage = ({ isLoggedIn = false }) => {
           </p>
         </div>
       </section>
-
       {/* Navigation Cards Section */}
       <section
         className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-400 ${
@@ -119,7 +117,6 @@ const LandingPage = ({ isLoggedIn = false }) => {
           })}
         </div>
       </section>
-
       {/* How it Works Section */}
       <section
         className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-600 ${
@@ -171,7 +168,7 @@ const LandingPage = ({ isLoggedIn = false }) => {
       </section>
 
       {/* New Launches Section */}
-      {/* <section
+      <section
         className={`px-4 sm:px-6 md:px-12 py-8 md:py-20 transition-all duration-1000 delay-700 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
@@ -184,14 +181,12 @@ const LandingPage = ({ isLoggedIn = false }) => {
             <p className="text-xl text-gray-600 font-light">
               Discover what's new and exciting
             </p>
-          </div> */}
-      {/* <NewLaunchedItems /> */}
-      {/* </div>
-      </section> */}
-
+          </div>
+          <NewLaunchedItems />
+        </div>
+      </section>
       {/* Recently Viewed Section */}
       <RecentlyViewedList />
-
       {/* Footer CTA */}
       <Footer />
     </div>
