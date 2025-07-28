@@ -57,31 +57,89 @@ const LandingPage = ({ isLoggedIn = false }) => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       {/* Hero Carousel Section */}
       <section
-        className={`px-6 md:px-12 py-12 transition-all duration-1000 ${
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 delay-200 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <BannerCarousel />
       </section>
 
+      {/* SEO Hero Section */}
+      <section
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent leading-tight">
+            BUY SAMPLES & BULK PRODUCTS FROM VERIFIED SUPPLIERS | OPENXMART B2B
+            INDIA
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
+            Avoid scams, OpenXmart helps you buy product samples and bulk
+            directly from verified Indian suppliers. Trusted by ecom sellers,
+            dropshippers, retailers and d2c brands.
+          </p>
+        </div>
+      </section>
+
       {/* Navigation Cards Section */}
       <section
-        className={`px-6 md:px-12 py-20 transition-all duration-1000 delay-200 ${
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-400 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}
+      >
+        <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
+          {navigationItems.map((item) => {
+            return (
+              <Button
+                className="px-3 pt-4 lg:py-4 sm:px-4  lg:px-6 h-auto"
+                asChild
+                variant={"outline"}
+                key={item.title}
+              >
+                <Link
+                  className="flex flex-col items-center sm:items-start text-center sm:text-left"
+                  href={item.href}
+                >
+                  <div className="mb-2">
+                    <item.icon size={24} className="sm:w-8 sm:h-8" />
+                  </div>
+                  <span className="text-sm sm:text-base font-medium mb-1">
+                    {item.title}
+                  </span>
+                  <div>
+                    <p className="hidden lg:block text-gray-600 text-sm text-wrap">
+                      {item.description}
+                    </p>
+                  </div>
+                </Link>
+              </Button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-600 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+          <div className="mb-12 md:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-center mb-6 md:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
               How openxmart works for you
             </h2>
-            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
               <div className="text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-blue-600 font-bold text-lg">1</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Browse Products</h3>
-                <p className="text-gray-600">
+                <h3 className="text-lg sm:text-xl font-light mb-2">
+                  Browse Products
+                </h3>
+                <p className="text-gray-600 font-light text-sm sm:text-base">
                   Explore product from verified Indian supplier
                 </p>
               </div>
@@ -89,54 +147,32 @@ const LandingPage = ({ isLoggedIn = false }) => {
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-blue-600 font-bold text-lg">2</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Order Samples</h3>
-                <p className="text-gray-600">
+                <h3 className="text-lg sm:text-xl font-light mb-2">
+                  Order Samples
+                </h3>
+                <p className="text-gray-600 font-light text-sm sm:text-base">
                   Test product quality before bulk buying
                 </p>
               </div>
-              <div className="text-center">
+              <div className="text-center sm:col-span-2 md:col-span-1">
                 <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <span className="text-blue-600 font-bold text-lg">3</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">
+                <h3 className="text-lg sm:text-xl font-light mb-2">
                   Contact Suppliers
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 font-light text-sm sm:text-base">
                   Buy directly and build long-term partnership
                 </p>
               </div>
             </div>
-          </div>
-          <div className="grid gap-2 grid-cols-4">
-            {navigationItems.map((item) => {
-              return (
-                <Button
-                  className="py-8 px-2 lg:py-16 lg:px-6"
-                  asChild
-                  variant={"outline"}
-                  key={item.title}
-                >
-                  <Link className="flex flex-col items-start" href={item.href}>
-                    <div>
-                      <item.icon size={32} />
-                    </div>
-                    {item.title}
-                    <div>
-                      <p className="hidden lg:block text-gray-600 mt-2 text-wrap">
-                        {item.description}
-                      </p>
-                    </div>
-                  </Link>
-                </Button>
-              );
-            })}
           </div>
         </div>
       </section>
 
       {/* New Launches Section */}
       {/* <section
-        className={`px-6 md:px-12 py-20 transition-all duration-1000 delay-700 ${
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-20 transition-all duration-1000 delay-700 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
