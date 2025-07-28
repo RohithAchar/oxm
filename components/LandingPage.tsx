@@ -71,12 +71,42 @@ const LandingPage = ({ isLoggedIn = false }) => {
         }`}
       >
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
-            Explore Our Platform
-          </h2>
-          <p className="text-xl text-gray-600 text-center mb-16 font-light">
-            Everything you need, beautifully integrated
-          </p>
+          <div className="mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+              How openxmart works for you
+            </h2>
+            <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-blue-600 font-bold text-lg">1</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Browse Products</h3>
+                <p className="text-gray-600">
+                  Explore product from verified Indian supplier
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-blue-600 font-bold text-lg">2</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Order Samples</h3>
+                <p className="text-gray-600">
+                  Test product quality before bulk buying
+                </p>
+              </div>
+              <div className="text-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-blue-600 font-bold text-lg">3</span>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">
+                  Contact Suppliers
+                </h3>
+                <p className="text-gray-600">
+                  Buy directly and build long-term partnership
+                </p>
+              </div>
+            </div>
+          </div>
           <div className="grid gap-2 grid-cols-4">
             {navigationItems.map((item) => {
               return (
@@ -105,7 +135,7 @@ const LandingPage = ({ isLoggedIn = false }) => {
       </section>
 
       {/* New Launches Section */}
-      <section
+      {/* <section
         className={`px-6 md:px-12 py-20 transition-all duration-1000 delay-700 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
@@ -118,10 +148,10 @@ const LandingPage = ({ isLoggedIn = false }) => {
             <p className="text-xl text-gray-600 font-light">
               Discover what's new and exciting
             </p>
-          </div>
-          <NewLaunchedItems />
-        </div>
-      </section>
+          </div> */}
+      {/* <NewLaunchedItems /> */}
+      {/* </div>
+      </section> */}
 
       {/* Recently Viewed Section */}
       <RecentlyViewedList />
