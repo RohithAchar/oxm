@@ -65,8 +65,10 @@ const LandingPage = ({ isLoggedIn = false }) => {
       </section>
       {/* SEO Hero Section */}
       <section
-        className={`hidden px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        className={`sr-only sm:not-sr-only px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 ${
+          isVisible
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-8 pointer-events-none"
         }`}
       >
         <div className="max-w-4xl mx-auto text-center">
