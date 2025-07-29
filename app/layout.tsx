@@ -23,9 +23,10 @@ const openSans = Open_Sans({
 });
 
 export const metadata = {
-  title: "OpenXmart – B2B Marketplace for Indian Businesses",
+  title:
+    "BUY SAMPLES & BULK PRODUCTS FROM VERIFIED SUPPLIERS | OPENXMART B2BINDIA",
   description:
-    "Discover and connect with suppliers. Order product samples and manage business purchases in one platform.",
+    "Avoid scams, OpenXmart helps you buy product samples and bulk directly from verified Indian suppliers. Trusted by ecom sellers,dropshippers, retailers and d2c brands.",
   keywords: [
     "B2B Marketplace",
     "Supplier Platform",
@@ -71,7 +72,7 @@ export default async function RootLayout({
           <Navbar />
           <MobileMenu />
           <Suspense>
-            <div className="bg-muted">{children}</div>
+            <div>{children}</div>
           </Suspense>
         </Providers>
       </body>

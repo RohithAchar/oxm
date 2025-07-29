@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import { Suspense } from "react";
 import { ArrowRight, Package, Users, GraduationCap, Truck } from "lucide-react";
 
 // Import your existing components
@@ -10,14 +8,9 @@ import { BannerCarousel } from "./banner-view";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import Footer from "./footer";
+import { BannerViewSkeleton } from "./skeleton/banner-view-skeleton";
 
 const LandingPage = ({ isLoggedIn = false }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
   const navigationItems = [
     {
       title: "Explore",
@@ -57,11 +50,11 @@ const LandingPage = ({ isLoggedIn = false }) => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
       {/* Hero Carousel Section */}
       <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 delay-200 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 delay-200`}
       >
-        <BannerCarousel />
+        <Suspense fallback={<BannerViewSkeleton />}>
+          <BannerCarousel />
+        </Suspense>
       </section>
       {/* SEO Hero Section */}
       <section
@@ -81,9 +74,7 @@ const LandingPage = ({ isLoggedIn = false }) => {
       </section>
       {/* Navigation Cards Section */}
       <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-400 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-400`}
       >
         <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
           {navigationItems.map((item) => {
@@ -117,9 +108,7 @@ const LandingPage = ({ isLoggedIn = false }) => {
       </section>
       {/* How it Works Section */}
       <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-600 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-600`}
       >
         <div className="max-w-7xl mx-auto">
           <div className="mb-12 md:mb-16">
@@ -167,9 +156,7 @@ const LandingPage = ({ isLoggedIn = false }) => {
 
       {/* New Launches Section */}
       <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-20 transition-all duration-1000 delay-700 ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-        }`}
+        className={`px-4 sm:px-6 md:px-12 py-8 md:py-20 transition-all duration-1000 delay-700`}
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">

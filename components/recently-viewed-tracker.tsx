@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRecentlyViewedStore } from "@/stores/recently-viewed";
 
 interface RecentlyViewedTrackerProps {
@@ -26,6 +26,11 @@ export default function RecentlyViewedTracker({
   product,
 }: RecentlyViewedTrackerProps) {
   const addProduct = useRecentlyViewedStore((state) => state.addProduct);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     addProduct({

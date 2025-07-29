@@ -19,13 +19,23 @@ export default function RecentlyViewedList({
   const getRecentProducts = useRecentlyViewedStore(
     (state) => state.getRecentProducts
   );
-  const recentProducts = getRecentProducts(limit);
-
+  const [hasMounted, setHasMounted] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     setIsVisible(true);
   }, []);
+
+  // Only read recentProducts after mount
+  if (!hasMounted) {
+    return null;
+  }
+
+  const recentProducts = getRecentProducts(limit);
 
   if (recentProducts.length === 0) {
     return null;

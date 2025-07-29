@@ -20,7 +20,7 @@ const menuItems = [
   },
   {
     name: "My Account",
-    href: "/supplier",
+    href: "/account",
     icon: <User />,
   },
 ];
