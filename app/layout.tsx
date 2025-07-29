@@ -67,7 +67,7 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} antialiased`}>
+      <body className={`${roboto.variable} antialiased`}>
         <Providers>
           <Navbar />
           <MobileMenu />
