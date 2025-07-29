@@ -23,7 +23,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const sidebarItems = [
-  { name: "Profile", href: "/supplier/view-profile", icon: UserCircle },
+  { name: "Profile", href: "/supplier/profile", icon: UserCircle },
   { name: "Overview", href: "/supplier/overview", icon: BarChart3 },
   { name: "Add New Product", href: "/supplier/add-product", icon: CirclePlus },
   { name: "Products", href: "/supplier/manage-products", icon: Boxes },
@@ -131,7 +131,7 @@ export function Sidebar({
       </div>
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex rounded-lg h-screen w-64 bg-gray-50/80 backdrop-blur-xl border-r border flex-col my-4 ml-4">
+      <div className="hidden lg:flex rounded-2xl h-screen w-64 backdrop-blur-xl border flex-col ml-4">
         {/* Header */}
         <div className="px-6 py-6 border-b border-gray-200/50">
           <div className="flex items-center space-x-3">

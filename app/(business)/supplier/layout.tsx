@@ -44,7 +44,7 @@ export default async function SupplierLayout({
   }
 
   return (
-    <div className="flex flex-col lg:flex-row">
+    <div className="flex flex-col lg:flex-row py-6">
       <Sidebar
         profileUrl={
           businessData?.profile_avatar_url || "/placeholder-profile.png"
