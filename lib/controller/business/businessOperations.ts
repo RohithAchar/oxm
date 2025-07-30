@@ -15,3 +15,16 @@ export const getBusiness = async (userId: string) => {
 
   return data;
 };
+
+export const getBusinessById = async (id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("supplier_businesses")
+    .select("*")
+    .eq("id", id)
+    .single();
+  if (error) {
+    throw error;
+  }
+  return data;
+};

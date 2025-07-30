@@ -5,8 +5,8 @@ export const ProfileCard = async () => {
   const { user } = await getUser();
 
   return (
-    <div className="flex items-center gap-2 bg-muted p-4 rounded-lg">
-      <Avatar className="w-12 h-12">
+    <div className="flex items-center gap-2 bg-muted p-4 rounded-lg border">
+      <Avatar className="w-12 h-12 border">
         <AvatarImage
           src={user.user_metadata.avatar_url || "/placeholder-profile.png"}
           alt="User Avatar"

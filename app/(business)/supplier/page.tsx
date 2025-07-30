@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 const SupplierDashboard = () => {
-  redirect("/supplier/add-product");
+  redirect("/supplier/profile");
   return <div>SupplierDashboard</div>;
 };
 

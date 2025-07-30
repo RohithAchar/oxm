@@ -53,7 +53,7 @@ export const Profile = async () => {
           <p className="text-muted-foreground">{business.type}</p>
         </div>
         <Button asChild>
-          <Link href={"/supplier/profile/edit"}>Edit</Link>
+          <Link href={`/supplier/profile/${business.id}/edit`}>Edit</Link>
         </Button>
       </div>
     </div>
