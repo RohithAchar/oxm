@@ -96,7 +96,7 @@ const LandingPage = ({ isLoggedIn = false }) => {
                     {item.title}
                   </span>
                   <div>
-                    <p className="hidden lg:block text-gray-600 text-sm text-wrap">
+                    <p className="hidden lg:block text-muted-foreground text-sm text-wrap">
                       {item.description}
                     </p>
                   </div>

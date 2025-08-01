@@ -13,7 +13,21 @@ export const businessType = [
 ] as const;
 
 // Create the business update schema
-export const BusinessUpdateSchema = z.object({
+export const BusinessProfileUpdateSchema = z.object({
+  profile_pic: z
+    .custom<File>(
+      (file) => {
+        if (!(file instanceof File)) return false;
+        const validTypes = ["image/jpeg", "image/png", "image/webp"];
+        const isValidType = validTypes.includes(file.type);
+        const isValidSize = file.size <= 1024 * 1024; // 1MB
+        return isValidType && isValidSize;
+      },
+      {
+        message: "Profile picture must be JPG, PNG, or WEBP and under 1MB",
+      }
+    )
+    .optional(),
   business_name: z.string().min(1, "Business name is required"),
   business_address: z.string().min(1, "Business address is required"),
   city: z.string().min(1, "City is required"),
@@ -26,7 +40,7 @@ export const BusinessUpdateSchema = z.object({
 });
 
 // Infer the TypeScript type from the schema
-export type FormData = z.infer<typeof BusinessUpdateSchema>;
+export type UpdateProfileFormData = z.infer<typeof BusinessProfileUpdateSchema>;
 
 // Alternative approach using .refine() for custom error messages
 export const BusinessUpdateSchemaWithCustomErrors = z.object({

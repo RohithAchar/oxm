@@ -37,9 +37,6 @@ export const getLatestProducts = async () => {
     throw new Error("Failed to fetch product prices and quantities");
   }
 
-  // 2sec delay
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-
   return data.map((product, idx) => {
     return {
       ...product,

@@ -48,7 +48,7 @@ export const ProductCard = ({
           </div>
         )}
       </div>
-      <Button className="w-full" asChild>
+      <Button className="w-full bg-foreground" asChild>
         <Link href={`/products/${id}`}>View Product</Link>
       </Button>
     </div>

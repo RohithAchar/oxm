@@ -98,6 +98,7 @@ export function Sidebar({
               const isActive = pathname === href;
               return (
                 <Button
+                  key={name}
                   variant={"link"}
                   asChild
                   className={cn(

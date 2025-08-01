@@ -13,8 +13,8 @@ const NewLaunchedItems = async () => {
       className={`px-4 sm:px-6 md:px-12 py-8 md:py-20 transition-all duration-1000 delay-700`}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl text-foreground font-light">
             Latest Launches
           </h2>
           <p className="text-xl text-gray-600 font-light">

@@ -17,14 +17,14 @@ const AccountPage = async () => {
           <Button
             asChild
             variant={"link"}
-            className="bg-primary text-primary-foreground"
+            className="bg-foreground text-background"
           >
             <Link href={"/supplier/profile"}>Supplier Hub</Link>
           </Button>
           <Button
             asChild
             variant={"link"}
-            className="bg-primary text-primary-foreground"
+            className="bg-foreground text-background"
           >
             <Link href={"/dropship"}>Dropship Store</Link>
           </Button>
