@@ -1,4 +1,4 @@
-import LandingPage from "@/components/LandingPage";
+import LandingPage from "@/components/home/LandingPage";
 import { createClient } from "@/utils/supabase/server";
 
 const Home = async () => {

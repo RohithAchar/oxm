@@ -32,7 +32,7 @@ const MobileMenu = () => {
   const pathname = usePathname();
 
   return (
-    <div className="bg-muted border md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 p-4 rounded-2xl z-50">
+    <div className="bg-background border md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 p-4 rounded-2xl z-50">
       <div className="flex justify-center items-center gap-4">
         {menuItems.map((item) => (
           <Button

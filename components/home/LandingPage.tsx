@@ -4,11 +4,11 @@ import { ArrowRight, Package, Users, GraduationCap, Truck } from "lucide-react";
 // Import your existing components
 import RecentlyViewedList from "./recently-viewed-list";
 import NewLaunchedItems from "./new-launched-list";
-import { BannerCarousel } from "./banner-view";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import Link from "next/link";
-import Footer from "./footer";
-import { BannerViewSkeleton } from "./skeleton/banner-view-skeleton";
+import Footer from "../footer";
+import { BannerCarousel } from "./banner-view";
+import { BannerViewSkeleton, ProductCardSkeleton } from "./skeletons";
 
 const LandingPage = ({ isLoggedIn = false }) => {
   const navigationItems = [
@@ -47,10 +47,10 @@ const LandingPage = ({ isLoggedIn = false }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Hero Carousel Section */}
       <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 delay-200`}
+        className={`max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 delay-200`}
       >
         <Suspense fallback={<BannerViewSkeleton />}>
           <BannerCarousel />
@@ -74,22 +74,22 @@ const LandingPage = ({ isLoggedIn = false }) => {
       </section>
       {/* Navigation Cards Section */}
       <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-400`}
+        className={`max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-400`}
       >
         <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
           {navigationItems.map((item) => {
             return (
               <Button
-                className="px-3 pt-4 lg:py-4 sm:px-4  lg:px-6 h-auto"
+                className="px-3 pt-4 lg:py-4 sm:px-4 lg:px-6 h-auto bg-card border text-foreground"
                 asChild
-                variant={"outline"}
+                variant={"link"}
                 key={item.title}
               >
                 <Link
                   className="flex flex-col items-center sm:items-start text-center sm:text-left"
                   href={item.href}
                 >
-                  <div className="mb-2">
+                  <div className="">
                     <item.icon size={24} className="sm:w-8 sm:h-8" />
                   </div>
                   <span className="text-sm sm:text-base font-medium mb-1">
@@ -112,40 +112,46 @@ const LandingPage = ({ isLoggedIn = false }) => {
       >
         <div className="max-w-7xl mx-auto">
           <div className="mb-12 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-center mb-6 md:mb-8 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-center mb-6 md:mb-8 text-foreground">
               How openxmart works for you
             </h2>
             <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
               <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-blue-600 font-bold text-lg">1</span>
+                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-accent-foreground font-bold text-lg">
+                    1
+                  </span>
                 </div>
                 <h3 className="text-lg sm:text-xl font-light mb-2">
                   Browse Products
                 </h3>
-                <p className="text-gray-600 font-light text-sm sm:text-base">
+                <p className="text-muted-foreground font-light text-sm sm:text-base">
                   Explore product from verified Indian supplier
                 </p>
               </div>
               <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-blue-600 font-bold text-lg">2</span>
+                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-accent-foreground font-bold text-lg">
+                    2
+                  </span>
                 </div>
                 <h3 className="text-lg sm:text-xl font-light mb-2">
                   Order Samples
                 </h3>
-                <p className="text-gray-600 font-light text-sm sm:text-base">
+                <p className="text-muted-foreground font-light text-sm sm:text-base">
                   Test product quality before bulk buying
                 </p>
               </div>
               <div className="text-center sm:col-span-2 md:col-span-1">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-blue-600 font-bold text-lg">3</span>
+                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-accent-foreground font-bold text-lg">
+                    3
+                  </span>
                 </div>
                 <h3 className="text-lg sm:text-xl font-light mb-2">
                   Contact Suppliers
                 </h3>
-                <p className="text-gray-600 font-light text-sm sm:text-base">
+                <p className="text-muted-foreground font-light text-sm sm:text-base">
                   Buy directly and build long-term partnership
                 </p>
               </div>
@@ -155,21 +161,9 @@ const LandingPage = ({ isLoggedIn = false }) => {
       </section>
 
       {/* New Launches Section */}
-      <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-20 transition-all duration-1000 delay-700`}
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-500 bg-clip-text text-transparent">
-              Latest Launches
-            </h2>
-            <p className="text-xl text-gray-600 font-light">
-              Discover what's new and exciting
-            </p>
-          </div>
-          <NewLaunchedItems />
-        </div>
-      </section>
+      <Suspense fallback={<ProductCardSkeleton />}>
+        <NewLaunchedItems />
+      </Suspense>
       {/* Recently Viewed Section */}
       <RecentlyViewedList />
       {/* Footer CTA */}

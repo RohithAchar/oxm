@@ -16,7 +16,7 @@ export const Profile = async () => {
           Manage your business profile and settings.
         </p>
       </div>
-      <div className="bg-muted p-4 rounded-xl flex gap-2 border">
+      <div className="bg-card p-4 rounded-xl flex gap-2 border">
         <Avatar className="w-12 h-12 border">
           <AvatarImage
             src={business.profile_avatar_url || "/placeholder-profile.png"}
@@ -31,7 +31,7 @@ export const Profile = async () => {
           <p className="text-muted-foreground">{business.phone}</p>
         </div>
       </div>
-      <div className="bg-muted p-4 rounded-xl flex flex-col gap-4 border">
+      <div className="bg-card p-4 rounded-xl flex flex-col gap-4 border">
         <div>
           <p>GST Number</p>
           <p className="text-muted-foreground">{business.gst_number}</p>
