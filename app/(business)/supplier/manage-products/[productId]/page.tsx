@@ -86,7 +86,7 @@ interface SupplierBusiness {
   city: string;
   state: string;
   pincode: string;
-  phone: string;
+  phone: number;
   is_verified: boolean;
 }
 

@@ -665,7 +665,7 @@ export type Database = {
           id: string
           is_verified: boolean | null
           message: string | null
-          phone: string
+          phone: number
           pincode: string
           profile_avatar_url: string | null
           profile_id: string | null
@@ -685,7 +685,7 @@ export type Database = {
           id?: string
           is_verified?: boolean | null
           message?: string | null
-          phone: string
+          phone: number
           pincode: string
           profile_avatar_url?: string | null
           profile_id?: string | null
@@ -705,7 +705,7 @@ export type Database = {
           id?: string
           is_verified?: boolean | null
           message?: string | null
-          phone?: string
+          phone?: number
           pincode?: string
           profile_avatar_url?: string | null
           profile_id?: string | null

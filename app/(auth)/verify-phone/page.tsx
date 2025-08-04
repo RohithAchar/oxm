@@ -141,35 +141,23 @@ export default function PhoneVerification() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-50px)] bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-[calc(100vh-50px)] bg-background flex flex-col justify-center py-12 px-4 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mb-8">
-            <svg
-              className="w-10 h-10 text-white"
-              viewBox="0 0 24 24"
-              fill="currentColor"
-            >
-              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-            </svg>
-          </div>
-        </div>
-
-        <Card className="border-0 shadow-sm">
+        <Card className="border shadow-sm">
           <CardHeader className="space-y-1 pb-4">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-foreground">
               {step === "phone" ? (
-                <Phone className="h-6 w-6 text-gray-600" />
+                <Phone className="h-6 w-6 text-background" />
               ) : (
                 <Shield className="h-6 w-6 text-green-600" />
               )}
             </div>
-            <CardTitle className="text-2xl font-medium text-center text-gray-900">
+            <CardTitle className="text-2xl font-medium text-center text-foreground">
               {step === "phone"
                 ? "Verify Phone Number"
                 : "Enter Verification Code"}
             </CardTitle>
-            <CardDescription className="text-center text-gray-600">
+            <CardDescription className="text-center text-muted-foreground">
               {step === "phone"
                 ? "We'll send you a verification code to confirm your number"
                 : `Enter the 6-digit code sent to ${phoneNumber}`}
@@ -195,14 +183,11 @@ export default function PhoneVerification() {
 
             {step === "phone" ? (
               <div className="space-y-2">
-                <Label
-                  htmlFor="phone"
-                  className="text-sm font-medium text-gray-700"
-                >
+                <Label htmlFor="phone" className="text-sm font-medium">
                   Phone Number
                 </Label>
                 <div className="flex">
-                  <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                  <span className="inline-flex items-center px-3 rounded-l-md border bg-foreground text-muted-foreground text-sm">
                     +91
                   </span>
                   <Input
@@ -213,7 +198,7 @@ export default function PhoneVerification() {
                     onChange={(e) =>
                       setPhoneNumber(e.target.value.replace(/\D/g, ""))
                     }
-                    className="rounded-l-none h-11 text-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    className="rounded-l-none h-11 text-sm border"
                     maxLength={10}
                   />
                 </div>
@@ -222,7 +207,7 @@ export default function PhoneVerification() {
               <div className="space-y-2">
                 <Label
                   htmlFor="otp"
-                  className="text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-muted-foreground"
                 >
                   Verification Code
                 </Label>
@@ -233,7 +218,7 @@ export default function PhoneVerification() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
                   maxLength={6}
-                  className="text-center text-lg tracking-widest h-11 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                  className="text-center text-lg tracking-widest h-11 border"
                 />
               </div>
             )}
@@ -242,9 +227,10 @@ export default function PhoneVerification() {
           <CardFooter className="flex flex-col space-y-2">
             {step === "phone" ? (
               <Button
+                variant={"default"}
                 onClick={sendOTP}
                 disabled={loading || !phoneNumber}
-                className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+                className="w-full h-11 font-medium transition-colors"
               >
                 {loading ? (
                   <>
@@ -258,9 +244,10 @@ export default function PhoneVerification() {
             ) : (
               <>
                 <Button
+                  variant={"default"}
                   onClick={verifyOTP}
                   disabled={loading || otp.length !== 6}
-                  className="w-full h-11 bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+                  className="w-full h-11 font-medium transition-colors"
                 >
                   {loading ? (
                     <>
@@ -274,7 +261,7 @@ export default function PhoneVerification() {
                 <Button
                   variant="outline"
                   onClick={resetFlow}
-                  className="w-full h-11 text-sm font-medium border-gray-300 hover:bg-gray-50 transition-colors"
+                  className="w-full h-11 text-sm font-medium border transition-colors"
                 >
                   Change Phone Number
                 </Button>

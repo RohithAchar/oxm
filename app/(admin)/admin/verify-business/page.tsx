@@ -123,7 +123,6 @@ const AdminBusinessVerification = () => {
         business.business_name
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        business.phone.includes(searchTerm) ||
         business.gst_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
         business.city.toLowerCase().includes(searchTerm.toLowerCase());
 

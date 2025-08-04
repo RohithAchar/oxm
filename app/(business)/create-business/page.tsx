@@ -1,33 +1,39 @@
 // app/(business)/create-business/page.tsx
 
-import { SupplierBusinessForm } from "@/components/supplier/supplier-business-form";
-import { createClient } from "@/utils/supabase/server";
+import SupplierBusinessForm from "@/components/supplier/supplier-business-form";
+import { Card } from "@/components/ui/card";
+import { isBusinessExists } from "@/lib/controller/business/businessOperations";
+import { getUser } from "@/lib/controller/user/userOperations";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 const CreateBusinessPage = async () => {
-  const supabase = await createClient();
-
-  const { data: user } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user.user?.id) {
     redirect("/login");
   }
 
-  // Fetch existing business data
-  const { data: business, error } = await supabase
-    .from("supplier_businesses")
-    .select("*")
-    .eq("profile_id", user.user.id)
-    .single();
+  const isBusiness = await isBusinessExists(user.user.id);
 
   // If business exists and is verified, redirect to supplier dashboard
-  if (business && business.is_verified === true) {
-    redirect("/supplier");
+  if (isBusiness) {
+    redirect("/supplier/profile");
   }
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <SupplierBusinessForm existingBusiness={business} />
+    <div className="container mx-auto py-8 md:pb-16 px-4">
+      <main className="pb-24 md:pb-0 grid md:grid-cols-2">
+        <Card className="hidden md:block h-full rounded-r-none relative overflow-hidden">
+          <Image
+            fill
+            src="/create-business.jpg"
+            alt="Create Business"
+            className="object-cover"
+          />
+        </Card>
+        <SupplierBusinessForm userId={user.user.id} />
+      </main>
     </div>
   );
 };
