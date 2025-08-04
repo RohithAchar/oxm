@@ -55,6 +55,7 @@ export const getBusinessById = async (id: string) => {
     return data;
   } catch (error) {
     console.log(error);
+    throw error;
   }
 };
 
