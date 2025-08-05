@@ -22,3 +22,18 @@ export const getUserId = async () => {
   }
   return data.user.id;
 };
+
+export const getProfile = async (id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};
