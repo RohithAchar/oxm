@@ -2,6 +2,7 @@
 
 import { productFormSchema } from "@/components/product/types";
 import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 import z from "zod";
 
 export const getLatestProducts = async () => {
@@ -186,6 +187,7 @@ export const addProduct = async (
       );
     }
 
+    revalidatePath("/supplier/profile");
     return productData;
   } catch (error) {
     console.log(error);

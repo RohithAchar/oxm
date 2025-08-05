@@ -121,6 +121,7 @@ export const ProductForm = ({
     try {
       await addProduct(business.profile_id!, values);
       toast.success("Product added successfully");
+      form.reset();
     } catch (error) {
       toast.error("Failed to add product. Please try again or contact support");
     } finally {
