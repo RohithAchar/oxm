@@ -1,18 +1,32 @@
 import { z } from "zod";
 
+const imageSchema = z.custom<File | undefined>(
+  (file) => {
+    if (!(file instanceof File)) return false;
+
+    const maxSizeInBytes = 0.5 * 1024 * 1024; // 500KB
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+    return file.size <= maxSizeInBytes && allowedTypes.includes(file.type);
+  },
+  {
+    message: "Profile picture must be JPEG, PNG, or WEBP and under 1MB",
+  }
+);
+
 const tierPriceSchema = z.object({
   qty: z.number().min(1, "Quantity is required"),
   price: z.number().min(1, "Price is required"),
   isActive: z.boolean().default(true).optional(),
   height: z.number().min(1, "Product height is required"),
-  weight: z.number().min(1, "Product weight is required"),
+  weight: z.number().min(0.01, "Product weight is required"),
   length: z.number().min(1, "Product length is required"),
   breadth: z.number().min(1, "Product breadth is required"),
 });
 
 const specificationSchema = z.object({
-  spec_name: z.string().min(1, "Specification name is required"),
-  spec_value: z.string().min(1, "Specification value is required"),
+  spec_name: z.string().optional(),
+  spec_value: z.string().optional(),
   spec_unit: z.string().optional(),
 });
 
@@ -29,10 +43,20 @@ export const productFormSchema = z.object({
   sample_available: z.boolean().default(true).optional(),
   is_active: z.boolean().default(true).optional(),
   country_of_origin: z.string().optional(),
-  hsn_code: z.string().optional(),
+  hsn_code: z
+    .string()
+    .regex(/^\d{4,8}$/, "Invalid HSN code")
+    .optional(),
   youtube_link: z.string().optional(),
   supplier_id: z.string().optional(),
-  specifications: z
-    .array(specificationSchema)
-    .min(1, "At least one spec is required"),
+  specifications: z.array(specificationSchema).optional(),
+  images: z
+    .array(
+      z.object({
+        image: imageSchema,
+        display_order: z.number().min(1, "Display order is required"),
+      })
+    )
+    .min(1, "At least one image is required")
+    .max(5, "Maximum 5 images allowed"),
 });

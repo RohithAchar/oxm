@@ -215,7 +215,6 @@ export type Database = {
       product_specifications: {
         Row: {
           created_at: string | null
-          display_order: number | null
           id: string
           product_id: string
           spec_name: string
@@ -225,7 +224,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          display_order?: number | null
           id?: string
           product_id: string
           spec_name: string
@@ -235,7 +233,6 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
-          display_order?: number | null
           id?: string
           product_id?: string
           spec_name?: string
@@ -255,31 +252,43 @@ export type Database = {
       }
       product_tier_pricing: {
         Row: {
+          breadth: number
           created_at: string | null
+          height: number
           id: string
           is_active: boolean | null
+          length: number
           price: number
           product_id: string
           quantity: number
           updated_at: string | null
+          weight: number
         }
         Insert: {
+          breadth: number
           created_at?: string | null
+          height: number
           id?: string
           is_active?: boolean | null
+          length: number
           price: number
           product_id: string
           quantity: number
           updated_at?: string | null
+          weight: number
         }
         Update: {
+          breadth?: number
           created_at?: string | null
+          height?: number
           id?: string
           is_active?: boolean | null
+          length?: number
           price?: number
           product_id?: string
           quantity?: number
           updated_at?: string | null
+          weight?: number
         }
         Relationships: [
           {
@@ -294,62 +303,50 @@ export type Database = {
       products: {
         Row: {
           brand: string | null
-          breadth: number | null
           category_id: string | null
           country_of_origin: string | null
           created_at: string | null
           description: string
-          height: number | null
           hsn_code: string | null
           id: string
           is_active: boolean | null
           is_sample_available: boolean | null
-          length: number | null
           name: string
           subcategory_id: string | null
           supplier_id: string | null
           updated_at: string | null
-          weight: number | null
           youtube_link: string | null
         }
         Insert: {
           brand?: string | null
-          breadth?: number | null
           category_id?: string | null
           country_of_origin?: string | null
           created_at?: string | null
           description: string
-          height?: number | null
           hsn_code?: string | null
           id?: string
           is_active?: boolean | null
           is_sample_available?: boolean | null
-          length?: number | null
           name: string
           subcategory_id?: string | null
           supplier_id?: string | null
           updated_at?: string | null
-          weight?: number | null
           youtube_link?: string | null
         }
         Update: {
           brand?: string | null
-          breadth?: number | null
           category_id?: string | null
           country_of_origin?: string | null
           created_at?: string | null
           description?: string
-          height?: number | null
           hsn_code?: string | null
           id?: string
           is_active?: boolean | null
           is_sample_available?: boolean | null
-          length?: number | null
           name?: string
           subcategory_id?: string | null
           supplier_id?: string | null
           updated_at?: string | null
-          weight?: number | null
           youtube_link?: string | null
         }
         Relationships: [

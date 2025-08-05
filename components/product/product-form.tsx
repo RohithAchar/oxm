@@ -28,8 +28,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { Info, Plus, Trash } from "lucide-react";
+import {
+  ImageIcon,
+  Info,
+  MoveDown,
+  MoveUp,
+  Plus,
+  Trash,
+  Upload,
+  X,
+} from "lucide-react";
 import { Switch } from "../ui/switch";
+import { addProduct } from "@/lib/controller/product/productOperations";
+import { toast } from "sonner";
 
 type BusinessSchema =
   Database["public"]["Tables"]["supplier_businesses"]["Row"];
@@ -45,6 +56,12 @@ export const ProductForm = ({
   const form = useForm<z.infer<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
+      images: [
+        {
+          image: undefined,
+          display_order: 1,
+        },
+      ],
       name: "",
       description: "",
       brand: business.business_name,
@@ -91,10 +108,23 @@ export const ProductForm = ({
     name: "specifications",
   });
 
-  function onSubmit(values: z.infer<typeof productFormSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  const {
+    fields: images,
+    append: appendImage,
+    remove: removeImage,
+  } = useFieldArray({
+    control: form.control,
+    name: "images",
+  });
+
+  async function onSubmit(values: z.infer<typeof productFormSchema>) {
+    try {
+      await addProduct(business.profile_id!, values);
+      toast.success("Product added successfully");
+    } catch (error) {
+      toast.error("Failed to add product. Please try again or contact support");
+    } finally {
+    }
   }
 
   const selectedCategoryId = form.watch("categoryId");
@@ -253,10 +283,241 @@ export const ProductForm = ({
               </div>
             </div>
 
+            {/* Image Upload Section - Insert after Basic Information */}
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold">Product Images</h2>
+                <p className="text-sm text-muted-foreground">
+                  Upload up to 5 product images. First image will be the main
+                  display image.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {images.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="border rounded-lg p-4 bg-muted/50"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium">
+                        Image {index + 1} {index === 0 && "(Main Image)"}
+                      </h4>
+                      <div className="flex items-center gap-2">
+                        {images.length > 1 && index > 0 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const currentOrder = form.getValues(
+                                `images.${index}.display_order`
+                              );
+                              const prevOrder = form.getValues(
+                                `images.${index - 1}.display_order`
+                              );
+                              form.setValue(
+                                `images.${index}.display_order`,
+                                prevOrder
+                              );
+                              form.setValue(
+                                `images.${index - 1}.display_order`,
+                                currentOrder
+                              );
+                              // Swap the items in the array
+                              const temp = images[index];
+                              images[index] = images[index - 1];
+                              images[index - 1] = temp;
+                            }}
+                          >
+                            <MoveUp className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {images.length > 1 && index < images.length - 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const currentOrder = form.getValues(
+                                `images.${index}.display_order`
+                              );
+                              const nextOrder = form.getValues(
+                                `images.${index + 1}.display_order`
+                              );
+                              form.setValue(
+                                `images.${index}.display_order`,
+                                nextOrder
+                              );
+                              form.setValue(
+                                `images.${index + 1}.display_order`,
+                                currentOrder
+                              );
+                              // Swap the items in the array
+                              const temp = images[index];
+                              images[index] = images[index + 1];
+                              images[index + 1] = temp;
+                            }}
+                          >
+                            <MoveDown className="w-4 h-4" />
+                          </Button>
+                        )}
+                        {images.length > 1 && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeImage(index)}
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                          >
+                            <Trash className="w-4 h-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+
+                    <FormField
+                      control={form.control}
+                      name={`images.${index}.image`}
+                      render={({ field: { value, onChange, ...field } }) => (
+                        <FormItem>
+                          <FormLabel>Upload Image</FormLabel>
+                          <FormControl>
+                            <div className="space-y-4">
+                              <div className="flex items-center gap-4">
+                                <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50">
+                                  {value ? (
+                                    <div className="relative w-full h-full">
+                                      <img
+                                        src={URL.createObjectURL(value)}
+                                        alt={`Preview ${index + 1}`}
+                                        className="w-full h-full object-cover rounded-lg"
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          onChange(undefined);
+                                        }}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                      <Upload className="w-8 h-8 mb-2 text-gray-400" />
+                                      <p className="text-xs text-gray-500">
+                                        Click to upload
+                                      </p>
+                                    </div>
+                                  )}
+                                  <input
+                                    type="file"
+                                    className="hidden"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        onChange(file);
+                                      }
+                                    }}
+                                    {...field}
+                                  />
+                                </label>
+
+                                {value && (
+                                  <div className="flex-1 space-y-2">
+                                    <p className="text-sm font-medium">
+                                      {value.name}
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {(value.size / 1024 / 1024).toFixed(2)} MB
+                                    </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {value.type}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </FormControl>
+                          <FormDescription>
+                            Upload JPEG, PNG, or WEBP image under 500KB
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`images.${index}.display_order`}
+                      render={({ field }) => (
+                        <FormItem className="mt-4">
+                          <FormLabel>Display Order</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              max="5"
+                              {...field}
+                              onChange={(e) =>
+                                field.onChange(Number(e.target.value))
+                              }
+                              value={field.value}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Order in which this image will be displayed (1 =
+                            first)
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                ))}
+
+                {images.length < 5 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() =>
+                      appendImage({
+                        image: undefined,
+                        display_order: images.length + 1,
+                      })
+                    }
+                    className="flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Another Image ({images.length}/5)
+                  </Button>
+                )}
+
+                {images.length > 1 && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div className="flex items-start gap-2">
+                      <ImageIcon className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div className="text-sm text-blue-800">
+                        <p className="font-medium mb-1">Image Display Tips</p>
+                        <ul className="text-xs space-y-1">
+                          <li>• First image is your main product image</li>
+                          <li>• Use high-quality, well-lit photos</li>
+                          <li>• Show different angles and details</li>
+                          <li>• Use the move buttons to reorder images</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="space-y-8">
               <div>
                 <h2 className="text-lg font-semibold">
-                  Pricings, Quantity and Dimensions
+                  Sample order pricings and quantities
                 </h2>
                 <p className="text-sm text-muted-foreground">
                   Specify the pricing, quantity and dimensions for each tier.
@@ -300,7 +561,6 @@ export const ProductForm = ({
                                 <div className="relative">
                                   <Input
                                     type="number"
-                                    min="1"
                                     placeholder="e.g., 10"
                                     className="pr-12"
                                     onChange={(e) => {
@@ -332,7 +592,7 @@ export const ProductForm = ({
                               <FormControl>
                                 <div className="relative">
                                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                    $
+                                    ₹
                                   </span>
                                   <Input
                                     type="number"
@@ -375,7 +635,6 @@ export const ProductForm = ({
                                 <div className="relative">
                                   <Input
                                     type="number"
-                                    min="1"
                                     placeholder="e.g., 10"
                                     className="pr-12"
                                     onChange={(e) => {
@@ -407,7 +666,6 @@ export const ProductForm = ({
                                 <div className="relative">
                                   <Input
                                     type="number"
-                                    min="1"
                                     placeholder="e.g., 10"
                                     className="pr-12"
                                     onChange={(e) => {
@@ -439,7 +697,6 @@ export const ProductForm = ({
                                 <div className="relative">
                                   <Input
                                     type="number"
-                                    min="1"
                                     placeholder="e.g., 10"
                                     className="pr-12"
                                     onChange={(e) => {
@@ -471,7 +728,6 @@ export const ProductForm = ({
                                 <div className="relative">
                                   <Input
                                     type="number"
-                                    min="1"
                                     placeholder="e.g., 10"
                                     className="pr-12"
                                     onChange={(e) => {
@@ -485,7 +741,7 @@ export const ProductForm = ({
                                 </div>
                               </FormControl>
                               <FormDescription className="text-xs">
-                                Weight of the product in the specified cm.
+                                Weight of the product in the specified kg.
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -496,7 +752,7 @@ export const ProductForm = ({
                   ))}
                 </div>
 
-                <div className="flex flex-col sm:flex-row gap-3">
+                {/* <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     type="button"
                     variant="outline"
@@ -538,7 +794,7 @@ export const ProductForm = ({
                       Add First Pricing Tier
                     </Button>
                   )}
-                </div>
+                </div> */}
 
                 {fields.length > 1 && (
                   <div className="bg-secondary border rounded-lg p-3">
@@ -759,6 +1015,18 @@ export const ProductForm = ({
                         </FormItem>
                       )}
                     />
+                    {specifications.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeSpec(index)}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash className="w-4 h-4 mr-1" />
+                        Remove
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>

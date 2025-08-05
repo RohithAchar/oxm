@@ -9,99 +9,103 @@ type ProductTierPricingInsert =
 
 export async function POST(req: NextRequest) {
   try {
-    const supabase = await createClient();
-    // Parse request body
-    const body = await req.json();
+    // const supabase = await createClient();
+    // // Parse request body
+    // const body = await req.json();
 
-    // Input validation
-    const { product_id, quantity, price }: ProductTierPricingInsert = body;
+    // // Input validation
+    // const { product_id, quantity, price }: ProductTierPricingInsert = body;
 
-    if (!product_id) {
-      return NextResponse.json(
-        {
-          error: "Product ID is required",
-          message: "Please provide a valid product ID",
-        },
-        { status: 400 }
-      );
-    }
+    // if (!product_id) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Product ID is required",
+    //       message: "Please provide a valid product ID",
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
 
-    if (!quantity) {
-      return NextResponse.json(
-        {
-          error: "Quantity is required",
-          message: "Please provide a valid quantity",
-        },
-        { status: 400 }
-      );
-    }
+    // if (!quantity) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Quantity is required",
+    //       message: "Please provide a valid quantity",
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
 
-    if (!price) {
-      return NextResponse.json(
-        {
-          error: "Price is required",
-          message: "Please provide a valid price",
-        },
-        { status: 400 }
-      );
-    }
+    // if (!price) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Price is required",
+    //       message: "Please provide a valid price",
+    //     },
+    //     { status: 400 }
+    //   );
+    // }
 
-    const { data: user } = await supabase.auth.getUser();
+    // const { data: user } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json(
-        {
-          error: "Unauthorized",
-          message: "You are not authorized to perform this action",
-        },
-        { status: 401 }
-      );
-    }
+    // if (!user) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Unauthorized",
+    //       message: "You are not authorized to perform this action",
+    //     },
+    //     { status: 401 }
+    //   );
+    // }
 
-    const { data: product, error: productError } = await supabase
-      .from("products")
-      .select("*")
-      .eq("id", product_id)
-      .single();
+    // const { data: product, error: productError } = await supabase
+    //   .from("products")
+    //   .select("*")
+    //   .eq("id", product_id)
+    //   .single();
 
-    if (!product) {
-      return NextResponse.json(
-        {
-          error: "Product not found",
-          message: "The specified product was not found",
-        },
-        { status: 404 }
-      );
-    }
+    // if (!product) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Product not found",
+    //       message: "The specified product was not found",
+    //     },
+    //     { status: 404 }
+    //   );
+    // }
 
-    if (productError) {
-      return NextResponse.json(
-        {
-          error: "Error fetching product",
-          message: "An error occurred while fetching the product",
-        },
-        { status: 500 }
-      );
-    }
+    // if (productError) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Error fetching product",
+    //       message: "An error occurred while fetching the product",
+    //     },
+    //     { status: 500 }
+    //   );
+    // }
 
-    const result = await supabase
-      .from("product_tier_pricing")
-      .insert({
-        product_id,
-        quantity,
-        price,
-      })
-      .select("id")
-      .single();
+    // const result = await supabase
+    //   .from("product_tier_pricing")
+    //   .insert({
+    //     product_id,
+    //     quantity,
+    //     price,
+    //   })
+    //   .select("id")
+    //   .single();
 
-    return NextResponse.json(
-      {
-        success: true,
-        id: result.data?.id,
-        message: "Operation completed successfully",
-      },
-      { status: 200 }
-    );
+    // return NextResponse.json(
+    //   {
+    //     success: true,
+    //     id: result.data?.id,
+    //     message: "Operation completed successfully",
+    //   },
+    //   { status: 200 }
+    // );
+    return NextResponse.json({
+      success: true,
+      message: "Operation completed successfully",
+    });
   } catch (error: any) {
     console.error("API Error:", error);
 
