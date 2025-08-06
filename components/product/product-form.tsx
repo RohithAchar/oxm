@@ -1206,7 +1206,7 @@ export const ProductForm = ({
 
                               {/* Autocomplete Dropdown */}
                               {isTagPopoverOpen && (
-                                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                                <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-y-auto">
                                   {/* Existing tags */}
                                   {filteredTags.length > 0 && (
                                     <div className="p-2">
@@ -1221,10 +1221,10 @@ export const ProductForm = ({
                                           <button
                                             key={tag.id}
                                             type="button"
-                                            className={`w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm ${
+                                            className={`w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm ${
                                               isSelected
-                                                ? "bg-gray-100 text-gray-500"
-                                                : ""
+                                                ? "bg-accent text-muted-foreground"
+                                                : "text-popover-foreground"
                                             }`}
                                             onClick={() => {
                                               if (!isSelected) {
@@ -1246,10 +1246,10 @@ export const ProductForm = ({
 
                                   {/* Add new tag option */}
                                   {tagInput.trim() && sanitizeTag(tagInput) && (
-                                    <div className="border-t p-2">
+                                    <div className="border-t border-border p-2">
                                       <button
                                         type="button"
-                                        className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm text-blue-600"
+                                        className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm text-primary"
                                         onClick={() => handleTagAdd(tagInput)}
                                       >
                                         <Plus className="w-3 h-3" />
@@ -1260,7 +1260,7 @@ export const ProductForm = ({
 
                                   {filteredTags.length === 0 &&
                                     !tagInput.trim() && (
-                                      <div className="p-4 text-sm text-gray-500 text-center">
+                                      <div className="p-4 text-sm text-muted-foreground text-center">
                                         Start typing to search or create tags
                                       </div>
                                     )}
@@ -1268,7 +1268,7 @@ export const ProductForm = ({
                                   {filteredTags.length === 0 &&
                                     tagInput.trim() &&
                                     !sanitizeTag(tagInput) && (
-                                      <div className="p-4 text-sm text-gray-500 text-center">
+                                      <div className="p-4 text-sm text-muted-foreground text-center">
                                         Invalid tag format. Use letters,
                                         numbers, spaces, and hyphens only.
                                       </div>
