@@ -577,11 +577,9 @@ export const ProductForm = ({
 
             <div className="space-y-8">
               <div>
-                <h2 className="text-lg font-semibold">
-                  Sample order pricings and quantities
-                </h2>
+                <h2 className="text-lg font-semibold">MOQ price</h2>
                 <p className="text-sm text-muted-foreground">
-                  Specify the pricing, quantity and dimensions for each tier.
+                  Specify the minimum order quantity and price for each tier.
                 </p>
               </div>
               <div className="space-y-6">
@@ -616,7 +614,7 @@ export const ProductForm = ({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-sm font-medium">
-                                Total Quantity
+                                Minimum order
                               </FormLabel>
                               <FormControl>
                                 <div className="relative">
@@ -651,7 +649,7 @@ export const ProductForm = ({
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-sm font-medium">
-                                Total Price
+                                Price per unit
                               </FormLabel>
                               <FormControl>
                                 <div className="relative">
@@ -675,7 +673,7 @@ export const ProductForm = ({
                                 </div>
                               </FormControl>
                               <FormDescription className="text-xs">
-                                Total price charged for this quantity.
+                                Price per unit.
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
