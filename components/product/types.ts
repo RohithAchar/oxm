@@ -15,13 +15,9 @@ const imageSchema = z.custom<File | undefined>(
 );
 
 const tierPriceSchema = z.object({
-  qty: z.number().min(1, "Quantity is required"),
-  price: z.number().min(1, "Price is required"),
+  qty: z.number().min(1, "Quantity is required").or(z.undefined()),
+  price: z.number().min(1, "Price is required").or(z.undefined()),
   isActive: z.boolean().default(true).optional(),
-  height: z.number().min(1, "Product height is required"),
-  weight: z.number().min(0.01, "Product weight is required"),
-  length: z.number().min(1, "Product length is required"),
-  breadth: z.number().min(1, "Product breadth is required"),
 });
 
 const specificationSchema = z.object({
@@ -59,4 +55,12 @@ export const productFormSchema = z.object({
     )
     .min(1, "At least one image is required")
     .max(5, "Maximum 5 images allowed"),
+  height: z.number().min(1, "Product height is required"),
+  weight: z.number().min(0.01, "Product weight is required"),
+  length: z.number().min(1, "Product length is required"),
+  breadth: z.number().min(1, "Product breadth is required"),
+  tags: z
+    .array(z.string().min(1, "Tag cannot be empty"))
+    .min(1, "At least one tag is required")
+    .max(5, "You can add up to 5 tags only"),
 });

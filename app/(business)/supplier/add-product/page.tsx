@@ -1,14 +1,16 @@
 import { ProductForm } from "@/components/product/product-form";
 import { getBusiness } from "@/lib/controller/business/businessOperations";
 import { getCategories } from "@/lib/controller/categories/categoriesOperation";
+import { getTags } from "@/lib/controller/product/productOperations";
 import { getUserId } from "@/lib/controller/user/userOperations";
 
 const AddProductPage = async () => {
   const userId = await getUserId();
 
-  const [buisness, categories] = await Promise.all([
+  const [buisness, categories, tags] = await Promise.all([
     getBusiness(userId),
     getCategories(),
+    getTags(),
   ]);
 
   return (
@@ -19,7 +21,7 @@ const AddProductPage = async () => {
           Add your product to the marketplace.
         </p>
       </div>
-      <ProductForm business={buisness!} categories={categories!} />
+      <ProductForm business={buisness!} categories={categories!} tags={tags!} />
     </main>
   );
 };

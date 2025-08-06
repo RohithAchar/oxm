@@ -29,11 +29,13 @@ import {
   SelectValue,
 } from "../ui/select";
 import {
+  Check,
   ImageIcon,
   Info,
   MoveDown,
   MoveUp,
   Plus,
+  Tag,
   Trash,
   Upload,
   X,
@@ -41,21 +43,31 @@ import {
 import { Switch } from "../ui/switch";
 import { addProduct } from "@/lib/controller/product/productOperations";
 import { toast } from "sonner";
+import { useMemo, useState } from "react";
+import { Badge } from "../ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 type BusinessSchema =
   Database["public"]["Tables"]["supplier_businesses"]["Row"];
 type CategorySchema = Database["public"]["Tables"]["categories"]["Row"];
+type TagSchema = Database["public"]["Tables"]["tags"]["Row"];
 
 export const ProductForm = ({
   business,
   categories,
+  tags,
 }: {
   business: BusinessSchema;
   categories: CategorySchema[];
+  tags: TagSchema[];
 }) => {
+  const [tagInput, setTagInput] = useState("");
+  const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false);
+
   const form = useForm<z.infer<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
+      tags: [],
       images: [
         {
           image: undefined,
@@ -67,15 +79,15 @@ export const ProductForm = ({
       brand: business.business_name,
       categoryId: "",
       subCategoryId: "",
+      length: undefined,
+      breadth: undefined,
+      height: undefined,
+      weight: undefined,
       tiers: [
         {
-          qty: 1,
-          price: 0,
+          qty: undefined,
+          price: undefined,
           isActive: true,
-          length: 0,
-          breadth: 0,
-          height: 0,
-          weight: 0,
         },
       ],
       sample_available: true,
@@ -130,160 +142,56 @@ export const ProductForm = ({
 
   const selectedCategoryId = form.watch("categoryId");
 
+  const sanitizeTag = (tag: string): string => {
+    return tag
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s-]/g, "") // Remove special characters except spaces and hyphens
+      .replace(/\s+/g, "-") // Replace spaces with hyphens
+      .replace(/-+/g, "-") // Replace multiple hyphens with single hyphen
+      .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
+  };
+
+  const filteredTags = useMemo(() => {
+    if (!tagInput.trim()) return tags;
+
+    const searchTerm = tagInput.toLowerCase();
+    return tags.filter((tag) => tag.name.toLowerCase().includes(searchTerm));
+  }, [tagInput, tags]);
+
+  const handleTagAdd = (tagName: string) => {
+    const sanitized = sanitizeTag(tagName);
+    if (!sanitized) return;
+
+    const currentTags = form.getValues("tags") || [];
+    if (currentTags.includes(sanitized)) {
+      toast.error("Tag already exists");
+      return;
+    }
+
+    if (currentTags.length >= 5) {
+      toast.error("Maximum 5 tags allowed");
+      return;
+    }
+
+    form.setValue("tags", [...currentTags, sanitized]);
+    setTagInput("");
+    setIsTagPopoverOpen(false);
+  };
+
+  const handleTagRemove = (tagToRemove: string) => {
+    const currentTags = form.getValues("tags") || [];
+    form.setValue(
+      "tags",
+      currentTags.filter((tag) => tag !== tagToRemove)
+    );
+  };
+
   return (
     <Card>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-12">
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold">Basic Information</h2>
-                <p className="text-sm text-muted-foreground">
-                  Provide basic details about the product.
-                </p>
-              </div>
-              <div className="space-y-8 bg-muted/50 border rounded-lg p-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Product Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Enter product name (e.g., iPhone 14 Pro Max)"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Enter a clear and descriptive name for your product.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Product Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Describe your product features, specifications, and benefits (10-500 characters)"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Provide a detailed description of your product (10-500
-                        characters).
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="brand"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Brand</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Brand name" {...field} disabled />
-                      </FormControl>
-                      <FormDescription>
-                        Brand is automatically set based on your business name.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="categoryId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Category</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <SelectTrigger className="w-full bg-primary-foreground">
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Category</SelectLabel>
-                              {categories.map((category) => {
-                                if (category.parent_id === null)
-                                  return (
-                                    <SelectItem
-                                      key={category.id}
-                                      value={category.id}
-                                    >
-                                      {category.name}
-                                    </SelectItem>
-                                  );
-                              })}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormDescription>
-                        Choose the main category that best describes your
-                        product.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="subCategoryId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Sub-Category</FormLabel>
-                      <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                          disabled={!selectedCategoryId}
-                        >
-                          <SelectTrigger className="w-full bg-primary-foreground">
-                            <SelectValue placeholder="Select a sub-category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectGroup>
-                              <SelectLabel>Sub-Category</SelectLabel>
-                              {selectedCategoryId &&
-                                categories
-                                  .filter(
-                                    (c) => c.parent_id === selectedCategoryId
-                                  )
-                                  .map((category) => (
-                                    <SelectItem
-                                      key={category.id}
-                                      value={category.id}
-                                    >
-                                      {category.name}
-                                    </SelectItem>
-                                  ))}
-                            </SelectGroup>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormDescription>
-                        Select a specific sub-category after choosing the main
-                        category.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
             {/* Image Upload Section - Insert after Basic Information */}
             <div className="space-y-6">
               <div>
@@ -462,9 +370,12 @@ export const ProductForm = ({
                               type="number"
                               max="5"
                               {...field}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value === "" ? undefined : Number(value)
+                                );
+                              }}
                               value={field.value}
                             />
                           </FormControl>
@@ -489,7 +400,7 @@ export const ProductForm = ({
                         display_order: images.length + 1,
                       })
                     }
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 w-full"
                   >
                     <Plus className="w-4 h-4" />
                     Add Another Image ({images.length}/5)
@@ -512,6 +423,155 @@ export const ProductForm = ({
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold">Basic Information</h2>
+                <p className="text-sm text-muted-foreground">
+                  Provide basic details about the product.
+                </p>
+              </div>
+              <div className="space-y-8 bg-muted/50 border rounded-lg p-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Product Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Enter product name (e.g., iPhone 14 Pro Max)"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Enter a clear and descriptive name for your product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Product Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="Describe your product features, specifications, and benefits (10-500 characters)"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        Provide a detailed description of your product (10-500
+                        characters).
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="brand"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Brand</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Brand name" {...field} disabled />
+                      </FormControl>
+                      <FormDescription>
+                        Brand is automatically set based on your business name.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="categoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <SelectTrigger className="w-full bg-primary-foreground">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Category</SelectLabel>
+                              {categories.map((category) => {
+                                if (category.parent_id === null)
+                                  return (
+                                    <SelectItem
+                                      key={category.id}
+                                      value={category.id}
+                                    >
+                                      {category.name}
+                                    </SelectItem>
+                                  );
+                              })}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormDescription>
+                        Choose the main category that best describes your
+                        product.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="subCategoryId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sub-Category</FormLabel>
+                      <FormControl>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                          disabled={!selectedCategoryId}
+                        >
+                          <SelectTrigger className="w-full bg-primary-foreground">
+                            <SelectValue placeholder="Select a sub-category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Sub-Category</SelectLabel>
+                              {selectedCategoryId &&
+                                categories
+                                  .filter(
+                                    (c) => c.parent_id === selectedCategoryId
+                                  )
+                                  .map((category) => (
+                                    <SelectItem
+                                      key={category.id}
+                                      value={category.id}
+                                    >
+                                      {category.name}
+                                    </SelectItem>
+                                  ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormDescription>
+                        Select a specific sub-category after choosing the main
+                        category.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
@@ -565,7 +625,10 @@ export const ProductForm = ({
                                     placeholder="e.g., 10"
                                     className="pr-12"
                                     onChange={(e) => {
-                                      field.onChange(Number(e.target.value));
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === "" ? undefined : Number(value)
+                                      );
                                     }}
                                     value={field.value}
                                   />
@@ -602,7 +665,10 @@ export const ProductForm = ({
                                     placeholder="0.00"
                                     className="pl-8"
                                     onChange={(e) => {
-                                      field.onChange(Number(e.target.value));
+                                      const value = e.target.value;
+                                      field.onChange(
+                                        value === "" ? undefined : Number(value)
+                                      );
                                     }}
                                     value={field.value}
                                   />
@@ -623,137 +689,11 @@ export const ProductForm = ({
                           💰 Bulk discount tier
                         </div>
                       )}
-                      <div className="grid grid-cols-2 gap-2 mt-6">
-                        <FormField
-                          control={form.control}
-                          name={`tiers.${index}.length`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-sm font-medium">
-                                Length
-                              </FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Input
-                                    type="number"
-                                    placeholder="e.g., 10"
-                                    className="pr-12"
-                                    onChange={(e) => {
-                                      field.onChange(Number(e.target.value));
-                                    }}
-                                    value={field.value}
-                                  />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                    cm
-                                  </span>
-                                </div>
-                              </FormControl>
-                              <FormDescription className="text-xs">
-                                Length of the product in the specified cm.
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`tiers.${index}.breadth`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-sm font-medium">
-                                Breadth
-                              </FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Input
-                                    type="number"
-                                    placeholder="e.g., 10"
-                                    className="pr-12"
-                                    onChange={(e) => {
-                                      field.onChange(Number(e.target.value));
-                                    }}
-                                    value={field.value}
-                                  />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                    cm
-                                  </span>
-                                </div>
-                              </FormControl>
-                              <FormDescription className="text-xs">
-                                Breadth of the product in the specified cm.
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`tiers.${index}.height`}
-                          render={({ field }) => (
-                            <FormItem className="col-span-2">
-                              <FormLabel className="text-sm font-medium">
-                                Height
-                              </FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Input
-                                    type="number"
-                                    placeholder="e.g., 10"
-                                    className="pr-12"
-                                    onChange={(e) => {
-                                      field.onChange(Number(e.target.value));
-                                    }}
-                                    value={field.value}
-                                  />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                    cm
-                                  </span>
-                                </div>
-                              </FormControl>
-                              <FormDescription className="text-xs">
-                                Height of the product in the specified cm.
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`tiers.${index}.weight`}
-                          render={({ field }) => (
-                            <FormItem className="col-span-2">
-                              <FormLabel className="text-sm font-medium">
-                                Weight
-                              </FormLabel>
-                              <FormControl>
-                                <div className="relative">
-                                  <Input
-                                    type="number"
-                                    placeholder="e.g., 10"
-                                    className="pr-12"
-                                    onChange={(e) => {
-                                      field.onChange(Number(e.target.value));
-                                    }}
-                                    value={field.value}
-                                  />
-                                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                                    kg
-                                  </span>
-                                </div>
-                              </FormControl>
-                              <FormDescription className="text-xs">
-                                Weight of the product in the specified kg.
-                              </FormDescription>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
                     </div>
                   ))}
                 </div>
 
-                {/* <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <Button
                     type="button"
                     variant="outline"
@@ -763,11 +703,7 @@ export const ProductForm = ({
                           fields.length > 0
                             ? Math.max(...fields.map((f) => f.qty || 0)) + 1
                             : 1,
-                        price: 0,
-                        length: 0,
-                        breadth: 0,
-                        height: 0,
-                        weight: 0,
+                        price: undefined,
                       })
                     }
                     className="flex items-center gap-2"
@@ -783,10 +719,6 @@ export const ProductForm = ({
                         append({
                           qty: 1,
                           price: 0,
-                          length: 0,
-                          breadth: 0,
-                          height: 0,
-                          weight: 0,
                         })
                       }
                       className="flex items-center gap-2"
@@ -795,7 +727,7 @@ export const ProductForm = ({
                       Add First Pricing Tier
                     </Button>
                   )}
-                </div> */}
+                </div>
 
                 {fields.length > 1 && (
                   <div className="bg-secondary border rounded-lg p-3">
@@ -812,6 +744,155 @@ export const ProductForm = ({
                     </div>
                   </div>
                 )}
+              </div>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold">Dimensions</h2>
+                <p className="text-sm text-muted-foreground">
+                  Specify the dimensions of your product.
+                </p>
+              </div>
+
+              {/* Fields here */}
+              <div className="p-4 bg-muted/50 border rounded-lg space-y-6">
+                <FormField
+                  control={form.control}
+                  name="length"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Length
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            placeholder="e.g., 10"
+                            className="pr-12"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === "" ? undefined : Number(value)
+                              );
+                            }}
+                            value={field.value}
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            cm
+                          </span>
+                        </div>
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        Length of the product in the specified cm.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="breadth"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Breadth
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            placeholder="e.g., 10"
+                            className="pr-12"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === "" ? undefined : Number(value)
+                              );
+                            }}
+                            value={field.value}
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            cm
+                          </span>
+                        </div>
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        Breadth of the product in the specified cm.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="height"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel className="text-sm font-medium">
+                        Height
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            placeholder="e.g., 10"
+                            className="pr-12"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === "" ? undefined : Number(value)
+                              );
+                            }}
+                            value={field.value}
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            cm
+                          </span>
+                        </div>
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        Height of the product in the specified cm.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="weight"
+                  render={({ field }) => (
+                    <FormItem className="col-span-2">
+                      <FormLabel className="text-sm font-medium">
+                        Weight
+                      </FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            type="number"
+                            placeholder="e.g., 10"
+                            className="pr-12"
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              field.onChange(
+                                value === "" ? undefined : Number(value)
+                              );
+                            }}
+                            value={field.value}
+                          />
+                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                            kg
+                          </span>
+                        </div>
+                      </FormControl>
+                      <FormDescription className="text-xs">
+                        Weight of the product in the specified kg.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
@@ -1041,11 +1122,212 @@ export const ProductForm = ({
                     spec_unit: "",
                   })
                 }
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 w-full"
               >
                 <Plus className="w-4 h-4" />
                 Add Another Specification
               </Button>
+            </div>
+
+            {/* Tags Section */}
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-lg font-semibold">Product Tags</h2>
+                <p className="text-sm text-muted-foreground">
+                  Add up to 5 tags to help customers find your product easily.
+                </p>
+              </div>
+
+              <div className="p-4 bg-muted/50 border rounded-lg space-y-4">
+                <FormField
+                  control={form.control}
+                  name="tags"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tags</FormLabel>
+                      <FormControl>
+                        <div className="space-y-3">
+                          {/* Selected Tags Display */}
+                          {field.value && field.value.length > 0 && (
+                            <div className="flex flex-wrap gap-2">
+                              {field.value.map((tag, index) => (
+                                <Badge
+                                  key={index}
+                                  variant="secondary"
+                                  className="flex items-center gap-1 pr-1"
+                                >
+                                  <Tag className="w-3 h-3" />
+                                  {tag}
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    className="h-4 w-4 p-0 hover:bg-destructive/20"
+                                    onClick={() => handleTagRemove(tag)}
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </Button>
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Tag Input with Autocomplete */}
+                          <div className="flex gap-2">
+                            <div className="relative flex-1">
+                              <Input
+                                placeholder="Type to search or add new tags..."
+                                value={tagInput}
+                                onChange={(e) => {
+                                  setTagInput(e.target.value);
+                                  setIsTagPopoverOpen(
+                                    e.target.value.length > 0
+                                  );
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    if (tagInput.trim()) {
+                                      handleTagAdd(tagInput);
+                                    }
+                                  }
+                                  if (e.key === "Escape") {
+                                    setIsTagPopoverOpen(false);
+                                  }
+                                }}
+                                onFocus={() => {
+                                  if (tagInput.length > 0) {
+                                    setIsTagPopoverOpen(true);
+                                  }
+                                }}
+                                className="pr-10"
+                              />
+                              <Tag className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+
+                              {/* Autocomplete Dropdown */}
+                              {isTagPopoverOpen && (
+                                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                                  {/* Existing tags */}
+                                  {filteredTags.length > 0 && (
+                                    <div className="p-2">
+                                      <div className="text-xs font-medium text-muted-foreground mb-2 px-2">
+                                        Existing Tags
+                                      </div>
+                                      {filteredTags.map((tag) => {
+                                        const isSelected =
+                                          field.value?.includes(tag.name) ||
+                                          false;
+                                        return (
+                                          <button
+                                            key={tag.id}
+                                            type="button"
+                                            className={`w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm ${
+                                              isSelected
+                                                ? "bg-gray-100 text-gray-500"
+                                                : ""
+                                            }`}
+                                            onClick={() => {
+                                              if (!isSelected) {
+                                                handleTagAdd(tag.name);
+                                              }
+                                            }}
+                                            disabled={isSelected}
+                                          >
+                                            <Tag className="w-3 h-3" />
+                                            {tag.name}
+                                            {isSelected && (
+                                              <Check className="w-3 h-3 ml-auto" />
+                                            )}
+                                          </button>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+
+                                  {/* Add new tag option */}
+                                  {tagInput.trim() && sanitizeTag(tagInput) && (
+                                    <div className="border-t p-2">
+                                      <button
+                                        type="button"
+                                        className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-gray-100 rounded-sm text-blue-600"
+                                        onClick={() => handleTagAdd(tagInput)}
+                                      >
+                                        <Plus className="w-3 h-3" />
+                                        Add "{sanitizeTag(tagInput)}"
+                                      </button>
+                                    </div>
+                                  )}
+
+                                  {filteredTags.length === 0 &&
+                                    !tagInput.trim() && (
+                                      <div className="p-4 text-sm text-gray-500 text-center">
+                                        Start typing to search or create tags
+                                      </div>
+                                    )}
+
+                                  {filteredTags.length === 0 &&
+                                    tagInput.trim() &&
+                                    !sanitizeTag(tagInput) && (
+                                      <div className="p-4 text-sm text-gray-500 text-center">
+                                        Invalid tag format. Use letters,
+                                        numbers, spaces, and hyphens only.
+                                      </div>
+                                    )}
+                                </div>
+                              )}
+                            </div>
+
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                if (tagInput.trim()) {
+                                  handleTagAdd(tagInput);
+                                }
+                              }}
+                              disabled={
+                                !tagInput.trim() || !sanitizeTag(tagInput)
+                              }
+                              className="px-3"
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        Add relevant tags to help customers discover your
+                        product. Tags will be automatically formatted
+                        (lowercase, hyphen-separated).
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Tag Guidelines */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-start gap-2">
+                    <Info className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-blue-800">
+                      <p className="font-medium mb-1">Tag Guidelines</p>
+                      <ul className="text-xs space-y-1">
+                        <li>
+                          • Use descriptive keywords that customers might search
+                          for
+                        </li>
+                        <li>
+                          • Tags are automatically formatted (e.g., "Mobile
+                          Phone" → "mobile-phone")
+                        </li>
+                        <li>• Maximum 5 tags per product</li>
+                        <li>• Avoid duplicate or overly similar tags</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2">

@@ -250,45 +250,63 @@ export type Database = {
           },
         ]
       }
+      product_tags: {
+        Row: {
+          product_id: string
+          tag_id: string
+        }
+        Insert: {
+          product_id: string
+          tag_id: string
+        }
+        Update: {
+          product_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_tags_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_tier_pricing: {
         Row: {
-          breadth: number
           created_at: string | null
-          height: number
           id: string
           is_active: boolean | null
-          length: number
           price: number
           product_id: string
           quantity: number
           updated_at: string | null
-          weight: number
         }
         Insert: {
-          breadth: number
           created_at?: string | null
-          height: number
           id?: string
           is_active?: boolean | null
-          length: number
           price: number
           product_id: string
           quantity: number
           updated_at?: string | null
-          weight: number
         }
         Update: {
-          breadth?: number
           created_at?: string | null
-          height?: number
           id?: string
           is_active?: boolean | null
-          length?: number
           price?: number
           product_id?: string
           quantity?: number
           updated_at?: string | null
-          weight?: number
         }
         Relationships: [
           {
@@ -303,50 +321,62 @@ export type Database = {
       products: {
         Row: {
           brand: string | null
+          breadth: number | null
           category_id: string | null
           country_of_origin: string | null
           created_at: string | null
           description: string
+          height: number | null
           hsn_code: string | null
           id: string
           is_active: boolean | null
           is_sample_available: boolean | null
+          length: number | null
           name: string
           subcategory_id: string | null
           supplier_id: string | null
           updated_at: string | null
+          weight: number | null
           youtube_link: string | null
         }
         Insert: {
           brand?: string | null
+          breadth?: number | null
           category_id?: string | null
           country_of_origin?: string | null
           created_at?: string | null
           description: string
+          height?: number | null
           hsn_code?: string | null
           id?: string
           is_active?: boolean | null
           is_sample_available?: boolean | null
+          length?: number | null
           name: string
           subcategory_id?: string | null
           supplier_id?: string | null
           updated_at?: string | null
+          weight?: number | null
           youtube_link?: string | null
         }
         Update: {
           brand?: string | null
+          breadth?: number | null
           category_id?: string | null
           country_of_origin?: string | null
           created_at?: string | null
           description?: string
+          height?: number | null
           hsn_code?: string | null
           id?: string
           is_active?: boolean | null
           is_sample_available?: boolean | null
+          length?: number | null
           name?: string
           subcategory_id?: string | null
           supplier_id?: string | null
           updated_at?: string | null
+          weight?: number | null
           youtube_link?: string | null
         }
         Relationships: [
@@ -764,6 +794,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tags: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
