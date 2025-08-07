@@ -31,7 +31,7 @@ export const productFormSchema = z.object({
   description: z
     .string()
     .min(10, "Product description is required")
-    .max(500, "Product description must be less than 500 characters"),
+    .max(2000, "Product description must be less than 2000 characters"),
   brand: z.string().min(1, "Product brand is required"),
   categoryId: z.string().min(1, "Product category is required"),
   subCategoryId: z.string().min(1, "Product sub category is required"),
@@ -39,10 +39,7 @@ export const productFormSchema = z.object({
   sample_available: z.boolean().default(true).optional(),
   is_active: z.boolean().default(true).optional(),
   country_of_origin: z.string().optional(),
-  hsn_code: z
-    .string()
-    .regex(/^\d{4,8}$/, "Invalid HSN code")
-    .optional(),
+  hsn_code: z.string().optional(),
   youtube_link: z.string().optional(),
   supplier_id: z.string().optional(),
   specifications: z.array(specificationSchema).optional(),
@@ -55,10 +52,10 @@ export const productFormSchema = z.object({
     )
     .min(1, "At least one image is required")
     .max(5, "Maximum 5 images allowed"),
-  height: z.number().min(1, "Product height is required"),
-  weight: z.number().min(0.01, "Product weight is required"),
-  length: z.number().min(1, "Product length is required"),
-  breadth: z.number().min(1, "Product breadth is required"),
+  height: z.number().optional(),
+  weight: z.number().optional(),
+  length: z.number().optional(),
+  breadth: z.number().optional(),
   tags: z
     .array(z.string().min(1, "Tag cannot be empty"))
     .min(1, "At least one tag is required")

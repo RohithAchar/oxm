@@ -14,7 +14,7 @@ const AddProductPage = async () => {
   ]);
 
   return (
-    <main className="mt-4 space-y-6 pb-24 md:pb-12">
+    <main className="mt-4 space-y-6 pb-24 md:pb-12 mx-auto max-w-7xl">
       <div>
         <h1 className="text-3xl font-light">Add Product</h1>
         <p className="text-muted-foreground mt-1 font-light">

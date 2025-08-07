@@ -102,15 +102,15 @@ export const addProduct = async (
         description: product.description,
         is_sample_available: product.sample_available,
         is_active: product.is_active,
-        hsn_code: product.hsn_code,
+        hsn_code: product.hsn_code || null,
         brand: product.brand,
         country_of_origin: product.country_of_origin,
         subcategory_id: product.subCategoryId,
-        youtube_link: product.youtube_link,
-        length: product.length,
-        breadth: product.breadth,
-        height: product.height,
-        weight: product.weight,
+        youtube_link: product.youtube_link || null,
+        length: product.length || null,
+        breadth: product.breadth || null,
+        height: product.height || null,
+        weight: product.weight || null,
       })
       .select("id")
       .single();
