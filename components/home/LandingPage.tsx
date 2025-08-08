@@ -60,7 +60,7 @@ const LandingPage = async () => {
   }
 
   return (
-    <main className="space-y-12 lg:space-y-24">
+    <main className="space-y-12 lg:space-y-24 overflow-hidden">
       <section className="max-w-7xl mx-auto md:mt-12 p-4">
         <Carousel>
           <CarouselContent>
@@ -74,8 +74,8 @@ const LandingPage = async () => {
               />
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <CarouselPrevious className="hidden md:block" />
+          <CarouselNext className="hidden md:block" />
         </Carousel>
       </section>
 
