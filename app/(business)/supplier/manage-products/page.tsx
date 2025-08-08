@@ -126,7 +126,7 @@ const ManageProductsPage = () => {
       await axios.patch(`/api/products/${productId}`, {
         is_active: !product.is_active,
       });
-      console.log("Toggle status for product:", productId);
+
       toast.success("Product status updated successfully");
       window.location.reload();
     } catch (error) {

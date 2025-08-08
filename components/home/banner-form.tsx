@@ -42,26 +42,85 @@ import {
 import { createBanner } from "@/lib/controller/home/banner";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Database } from "@/utils/supabase/database.types";
 
-export const BannerForm = () => {
-  const [imagePreview, setImagePreview] = useState<string>("");
+// Utility functions for IST handling
+const toISTString = (date: Date) => {
+  // Convert to IST and format for datetime-local input
+  const istDate = new Date(date.getTime() + 5.5 * 60 * 60 * 1000);
+  return istDate.toISOString().slice(0, 16);
+};
+
+const fromISTToUTC = (istDateTimeString: string) => {
+  // Convert IST datetime-local string to UTC in YYYY-MM-DDTHH:MM format
+  if (!istDateTimeString) return "";
+  const istDate = new Date(istDateTimeString);
+  const utcDate = new Date(istDate.getTime() - 5.5 * 60 * 60 * 1000);
+
+  // Format to YYYY-MM-DDTHH:MM (matching the Zod schema)
+  const year = utcDate.getFullYear();
+  const month = String(utcDate.getMonth() + 1).padStart(2, "0");
+  const day = String(utcDate.getDate()).padStart(2, "0");
+  const hours = String(utcDate.getHours()).padStart(2, "0");
+  const minutes = String(utcDate.getMinutes()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+const formatISTDateTime = (dateTimeString: string) => {
+  // Format YYYY-MM-DDTHH:MM string to IST display
+  if (!dateTimeString) return "";
+
+  // Parse the YYYY-MM-DDTHH:MM format as UTC and convert to IST for display
+  const [datePart, timePart] = dateTimeString.split("T");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute] = timePart.split(":").map(Number);
+
+  // Create UTC date
+  const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
+
+  // Format in IST
+  return utcDate.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
+
+type Banner = Database["public"]["Tables"]["banners"]["Row"];
+
+export const BannerForm = ({ banner }: { banner?: Banner }) => {
+  const [imagePreview, setImagePreview] = useState<string>(
+    banner?.image_url || ""
+  );
   const router = useRouter();
 
   const form = useForm<z.infer<typeof BannerFormSchema>>({
     resolver: zodResolver(BannerFormSchema) as any,
     defaultValues: {
-      title: "",
-      alt_text: "",
-      is_active: true,
-      link_url: "",
-      start_at: "",
-      end_at: "",
-      image: undefined,
+      title: banner?.title || "",
+      alt_text: banner?.alt_text || "",
+      is_active: banner?.is_active || true,
+      link_url: banner?.link_url || "",
+      start_at: fromISTToUTC(banner?.start_at || ""),
+      end_at: fromISTToUTC(banner?.end_at || ""),
+      image: banner?.image_url || "",
     },
   });
 
   const onSubmit = async (values: z.infer<typeof BannerFormSchema>) => {
-    await createBanner(values);
+    // Convert IST datetime strings to UTC before submitting
+    const submissionValues = {
+      ...values,
+      start_at: values.start_at ? fromISTToUTC(values.start_at) : "",
+      end_at: values.end_at ? fromISTToUTC(values.end_at) : "",
+    };
+
+    await createBanner(submissionValues);
     form.reset();
     toast.success("Banner created successfully");
     router.push("/admin/banner");
@@ -286,7 +345,12 @@ export const BannerForm = () => {
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <h3 className="font-medium">Schedule</h3>
+                    <h3 className="font-medium">
+                      Schedule (Indian Standard Time)
+                    </h3>
+                    <Badge variant="outline" className="text-xs">
+                      IST (UTC+5:30)
+                    </Badge>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <FormField
@@ -302,7 +366,7 @@ export const BannerForm = () => {
                             <Input type="datetime-local" {...field} />
                           </FormControl>
                           <FormDescription>
-                            When the banner becomes active
+                            When the banner becomes active (IST)
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -321,12 +385,19 @@ export const BannerForm = () => {
                             <Input type="datetime-local" {...field} />
                           </FormControl>
                           <FormDescription>
-                            When the banner stops showing
+                            When the banner stops showing (IST)
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                  </div>
+                  <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      <Clock className="h-4 w-4 inline mr-1" />
+                      All times are in Indian Standard Time (IST). They will be
+                      automatically converted to UTC for storage.
+                    </p>
                   </div>
                 </div>
 
@@ -462,7 +533,8 @@ export const BannerForm = () => {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Starts:</span>
                   <span className="font-medium">
-                    {new Date(watchedValues.start_at).toLocaleString()}
+                    {formatISTDateTime(fromISTToUTC(watchedValues.start_at))}{" "}
+                    IST
                   </span>
                 </div>
               )}
@@ -470,7 +542,7 @@ export const BannerForm = () => {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Ends:</span>
                   <span className="font-medium">
-                    {new Date(watchedValues.end_at).toLocaleString()}
+                    {formatISTDateTime(fromISTToUTC(watchedValues.end_at))} IST
                   </span>
                 </div>
               )}

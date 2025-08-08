@@ -75,3 +75,18 @@ export const toggleBanner = async (id: string, currentStatus: boolean) => {
   revalidatePath("/admin/banner");
   return data;
 };
+
+export const getBannerById = async (id: string) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("banners")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+};

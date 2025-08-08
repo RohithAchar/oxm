@@ -192,8 +192,6 @@ const AdminBusinessVerification = () => {
         }
       );
 
-      console.log("Update response:", response.data);
-
       // Update the local state
       setBusinesses((prev) =>
         prev.map((business) =>

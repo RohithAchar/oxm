@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { toggleBanner } from "@/lib/controller/home/banner";
+import { useRouter } from "next/navigation";
 
 type BannerType = Database["public"]["Tables"]["banners"]["Row"];
 
@@ -57,6 +58,7 @@ export const columns: ColumnDef<BannerType>[] = [
     id: "actions",
     cell: ({ row }) => {
       const banner = row.original;
+      const router = useRouter();
 
       return (
         <DropdownMenu>
@@ -77,9 +79,16 @@ export const columns: ColumnDef<BannerType>[] = [
                 toggleBanner(banner.id, banner.is_active || false);
               }}
             >
-              Toggle
+              Toggle Banner
             </DropdownMenuItem>
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                router.push(`/admin/banner/${banner.id}/edit`);
+              }}
+            >
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );

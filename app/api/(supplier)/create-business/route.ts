@@ -11,8 +11,6 @@ export async function POST(req: NextRequest) {
     // Parse request body
     const body: z.infer<typeof formSchema> = await req.json();
 
-    console.log("BODY: ", body);
-
     const {
       business_name,
       gst_number,

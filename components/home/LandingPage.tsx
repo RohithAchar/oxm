@@ -30,12 +30,18 @@ const LandingPage = async () => {
   const banners = await getBanners();
   const currentDateAndTime = getCurrentDateAndTime();
 
+  // Ensure we're working with a proper Date object in UTC
+  const now = new Date(); // Use system time for consistency with UTC banner times
+
   let activeBanners = banners.filter((banner) => {
-    const now = new Date();
     const isActive = banner.is_active;
+
+    // Convert banner dates to Date objects for comparison
+    const startDate = banner.start_at ? new Date(banner.start_at) : null;
+    const endDate = banner.end_at ? new Date(banner.end_at) : null;
+
     const isInDateRange =
-      (!banner.start_at || new Date(banner.start_at) <= now) &&
-      (!banner.end_at || new Date(banner.end_at) >= now);
+      (!startDate || startDate <= now) && (!endDate || endDate >= now);
 
     return isActive && isInDateRange && banner.image_url;
   });
