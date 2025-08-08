@@ -1,5 +1,3 @@
-// app/(business)/supplier/layout.tsx
-
 import { Sidebar } from "@/components/admin/sidebar";
 import { createClient } from "@/utils/supabase/server";
 
@@ -18,18 +16,25 @@ export default async function SupplierLayout({
 
   const { data: user } = await supabase.auth.getUser();
 
+  const name = "Admin";
+  const username = user.user?.user_metadata.full_name || "Joe Bloggs";
+  const email = user.user?.user_metadata.email || "joe@example.com";
+  const profileUrl =
+    user.user?.user_metadata.picture || "/placeholder-profile.png";
+
   return (
-    <div className="flex">
+    <div className="md:flex">
+      {/* Sidebar on desktop, top tabs on mobile */}
       <Sidebar
-        profileUrl={"/placeholder-profile.png"}
-        name={"Admin"}
-        username={user.user?.user_metadata.full_name || "Joe Bloggs"}
-        email={user.user?.user_metadata.email || "joe@example.com"}
-        userProfileUrl={
-          user.user?.user_metadata.picture || "/placeholder-profile.png"
-        }
+        profileUrl={profileUrl}
+        name={name}
+        username={username}
+        email={email}
+        userProfileUrl={profileUrl}
       />
-      <main className="flex-1 px-4">{children}</main>
+
+      {/* Main content */}
+      <main className="flex-1 p-4 lg:p-8 mx-auto max-w-7xl">{children}</main>
     </div>
   );
 }

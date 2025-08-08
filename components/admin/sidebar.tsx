@@ -1,5 +1,3 @@
-// components/sidebar.tsx
-
 "use client";
 
 import Link from "next/link";
@@ -30,27 +28,48 @@ export function Sidebar({
 }) {
   const pathname = usePathname();
 
-  console.log("userProfileUrl:", userProfileUrl);
-
   return (
-    <div className="rounded-lg h-screen w-64 bg-gray-50/80 backdrop-blur-xl border-r border-gray-200/50 flex flex-col">
-      {/* Header */}
-      <div className="px-6 py-6 border-b border-gray-200/50">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+    <>
+      {/* Mobile Top Tabs */}
+      <div className="flex md:hidden border-b bg-background">
+        {sidebarItems.map(({ name, href, icon: Icon }) => {
+          const isActive = pathname === href;
+          return (
+            <Link
+              key={name}
+              href={href}
+              className={cn(
+                "flex-1 text-center py-3 text-sm font-medium border-b-2",
+                isActive
+                  ? "text-primary border-primary"
+                  : "text-muted-foreground border-transparent hover:text-foreground"
+              )}
+            >
+              <div className="flex flex-col items-center gap-1">
+                <Icon className="w-5 h-5" />
+                {name}
+              </div>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:flex h-screen w-64 flex-col bg-muted/40 backdrop-blur-xl border-r border rounded-lg md:ml-8 md:mt-8">
+        {/* Header */}
+        <div className="px-6 py-6 border-b">
+          <div className="flex items-center space-x-3">
             <div className="w-8 h-8 rounded-lg overflow-hidden">
               {profileUrl ? (
-                <div className="w-8 h-8 rounded-lg overflow-hidden">
-                  <img
-                    src={profileUrl}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+                <img
+                  src={profileUrl}
+                  alt="Profile"
+                  className="w-full h-full object-cover rounded-lg"
+                />
               ) : (
-                <div className="w-8 h-8 rounded-lg bg-gray-300 flex items-center justify-center">
+                <div className="w-8 h-8 bg-muted flex items-center justify-center rounded-lg">
                   <svg
-                    className="w-5 h-5 text-white"
+                    className="w-5 h-5 text-muted-foreground"
                     viewBox="0 0 24 24"
                     fill="currentColor"
                   >
@@ -59,61 +78,61 @@ export function Sidebar({
                 </div>
               )}
             </div>
+            <h1 className="text-xl font-semibold text-foreground">{name}</h1>
           </div>
-          <h1 className="text-xl font-semibold text-gray-900">{name}</h1>
         </div>
-      </div>
 
-      {/* Navigation */}
-      <ScrollArea className="flex-1 px-3 py-4">
-        <nav className="space-y-1">
-          {sidebarItems.map(({ name, href, icon: Icon }) => {
-            const isActive = pathname === href;
-            return (
-              <Link
-                key={name}
-                href={href}
-                className={cn(
-                  "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 hover:bg-gray-100/60",
-                  isActive
-                    ? "bg-blue-50 text-blue-700 shadow-sm"
-                    : "text-gray-700 hover:text-gray-900"
-                )}
-              >
-                <Icon
+        {/* Scrollable middle section */}
+        <ScrollArea className="flex-1 px-3 py-4">
+          <nav className="space-y-1">
+            {sidebarItems.map(({ name, href, icon: Icon }) => {
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={name}
+                  href={href}
                   className={cn(
-                    "h-4 w-4 transition-colors",
+                    "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "text-blue-600"
-                      : "text-gray-500 group-hover:text-gray-700"
+                      ? "bg-primary/10 text-primary shadow-sm"
+                      : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                   )}
-                />
-                <span className="truncate">{name}</span>
-                {isActive && (
-                  <div className="ml-auto w-1.5 h-1.5 bg-blue-600 rounded-full" />
-                )}
-              </Link>
-            );
-          })}
-        </nav>
-      </ScrollArea>
+                >
+                  <Icon
+                    className={cn(
+                      "h-4 w-4 transition-colors",
+                      isActive
+                        ? "text-primary"
+                        : "text-muted-foreground group-hover:text-foreground"
+                    )}
+                  />
+                  <span className="truncate">{name}</span>
+                  {isActive && (
+                    <div className="ml-auto w-1.5 h-1.5 bg-primary rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </ScrollArea>
 
-      {/* Footer */}
-      <div className="px-3 py-4 border-t border-gray-200/50">
-        <div className="flex items-center gap-3 px-3 py-2">
-          <Avatar>
-            <AvatarImage src={userProfileUrl} alt="Profile" />
-            <AvatarFallback>JD</AvatarFallback>
-          </Avatar>
+        {/* Footer pinned to bottom */}
+        <div className="px-3 py-4 border-t">
+          <div className="flex items-center gap-3 px-3 py-2">
+            <Avatar>
+              <AvatarImage src={userProfileUrl} alt="Profile" />
+              <AvatarFallback>JD</AvatarFallback>
+            </Avatar>
 
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">
-              {username}
-            </p>
-            <p className="text-xs text-gray-500 truncate">{email}</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {username}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">{email}</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -17,43 +17,46 @@ export type Database = {
       banners: {
         Row: {
           alt_text: string | null
+          click_count: number | null
+          computed_ctr: number | null
           created_at: string | null
-          description: string | null
-          dimensions: string | null
-          display_order: number | null
-          file_name: string
-          file_size: number
+          end_at: string | null
           id: string
           image_url: string
+          impression_count: number | null
           is_active: boolean | null
+          link_url: string | null
+          start_at: string | null
           title: string
           updated_at: string | null
         }
         Insert: {
           alt_text?: string | null
+          click_count?: number | null
+          computed_ctr?: number | null
           created_at?: string | null
-          description?: string | null
-          dimensions?: string | null
-          display_order?: number | null
-          file_name: string
-          file_size: number
+          end_at?: string | null
           id?: string
           image_url: string
+          impression_count?: number | null
           is_active?: boolean | null
+          link_url?: string | null
+          start_at?: string | null
           title: string
           updated_at?: string | null
         }
         Update: {
           alt_text?: string | null
+          click_count?: number | null
+          computed_ctr?: number | null
           created_at?: string | null
-          description?: string | null
-          dimensions?: string | null
-          display_order?: number | null
-          file_name?: string
-          file_size?: number
+          end_at?: string | null
           id?: string
           image_url?: string
+          impression_count?: number | null
           is_active?: boolean | null
+          link_url?: string | null
+          start_at?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -829,6 +832,14 @@ export type Database = {
           spec_unit: string
           display_order: number
         }[]
+      }
+      increment_banner_clicks: {
+        Args: { banner_id: string }
+        Returns: undefined
+      }
+      increment_banner_impressions: {
+        Args: { banner_id: string }
+        Returns: undefined
       }
     }
     Enums: {

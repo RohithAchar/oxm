@@ -42,11 +42,7 @@ export default function RecentlyViewedList({
   }
 
   return (
-    <section
-      className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 bg-background transition-all duration-1000 delay-500 ${
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      }`}
-    >
+    <section className="px-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <div>

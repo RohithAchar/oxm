@@ -1,174 +1,201 @@
-import { Suspense } from "react";
-import { ArrowRight, Package, Users, GraduationCap, Truck } from "lucide-react";
-
-// Import your existing components
-import RecentlyViewedList from "./recently-viewed-list";
 import NewLaunchedItems from "./new-launched-list";
-import { Button } from "../ui/button";
-import Link from "next/link";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
+import { CustomCarousal } from "./custom-carousal";
 import Footer from "../footer";
-import { BannerCarousel } from "./banner-view";
-import { BannerViewSkeleton, ProductCardSkeleton } from "./skeletons";
+import Link from "next/link";
+import {
+  Card,
+  CardAction,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import {
+  ClipboardCheck,
+  GraduationCap,
+  Package,
+  Truck,
+  Users,
+} from "lucide-react";
+import RecentlyViewedList from "./recently-viewed-list";
+import { getBanners } from "@/lib/controller/home/banner";
+import { getCurrentDateAndTime } from "@/utils/static";
 
-const LandingPage = ({ isLoggedIn = false }) => {
-  const navigationItems = [
-    {
-      title: "Explore",
-      description: "Discover our complete product range",
-      icon: Package,
-      href: "/products",
-      gradient: "from-blue-500 to-cyan-400",
-      hoverGradient: "from-blue-600 to-cyan-500",
-    },
-    {
-      title: "My Box",
-      description: "Connect with trusted suppliers",
-      icon: Users,
-      href: "/supplier",
-      gradient: "from-purple-500 to-pink-400",
-      hoverGradient: "from-purple-600 to-pink-500",
-    },
-    {
-      title: "Learn X",
-      description: "Master new skills and insights",
-      icon: GraduationCap,
-      href: "/learn",
-      gradient: "from-green-500 to-emerald-400",
-      hoverGradient: "from-green-600 to-emerald-500",
-    },
-    {
-      title: "Dropship",
-      description: "Start your dropshipping journey",
-      icon: Truck,
-      href: "/dropship",
-      gradient: "from-orange-500 to-red-400",
-      hoverGradient: "from-orange-600 to-red-500",
-    },
-  ];
+const LandingPage = async () => {
+  const banners = await getBanners();
+  const currentDateAndTime = getCurrentDateAndTime();
+
+  let activeBanners = banners.filter((banner) => {
+    const now = new Date();
+    const isActive = banner.is_active;
+    const isInDateRange =
+      (!banner.start_at || new Date(banner.start_at) <= now) &&
+      (!banner.end_at || new Date(banner.end_at) >= now);
+
+    return isActive && isInDateRange && banner.image_url;
+  });
+
+  if (activeBanners.length === 0) {
+    activeBanners = [];
+    activeBanners.push({
+      alt_text: "Banner Image",
+      click_count: 0,
+      computed_ctr: 0,
+      created_at: currentDateAndTime,
+      end_at: currentDateAndTime,
+      id: "1",
+      image_url: "/image.jpeg",
+      impression_count: 0,
+      is_active: true,
+      link_url: "/",
+      start_at: currentDateAndTime,
+      title: "Welcome to OpenXmart",
+      updated_at: currentDateAndTime,
+    });
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Carousel Section */}
-      <section
-        className={`max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-12 transition-all duration-1000 delay-200`}
-      >
-        <Suspense fallback={<BannerViewSkeleton />}>
-          <BannerCarousel />
-        </Suspense>
+    <main className="space-y-12 lg:space-y-24">
+      <section className="max-w-7xl mx-auto md:mt-12 p-4">
+        <Carousel>
+          <CarouselContent>
+            {activeBanners.map((banner) => (
+              <CustomCarousal
+                key={banner.id}
+                id={banner.id}
+                link_url={banner.link_url || "/"}
+                image_url={banner.image_url}
+                title={banner.title}
+              />
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </section>
-      {/* SEO Hero Section */}
-      <section
-        className={`sr-only px-4 sm:px-6 md:px-12 py-8 md:py-12 opacity-0`}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent leading-tight">
-            BUY SAMPLES & BULK PRODUCTS FROM VERIFIED SUPPLIERS | OPENXMART B2B
-            INDIA
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 font-light max-w-3xl mx-auto leading-relaxed">
-            Avoid scams, OpenXmart helps you buy product samples and bulk
-            directly from verified Indian suppliers. Trusted by ecom sellers,
-            dropshippers, retailers and d2c brands.
-          </p>
-        </div>
+
+      <section className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+        <Link href={"/products"}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Explore</CardTitle>
+              <CardDescription className="hidden md:block">
+                Discover our complete product range.
+              </CardDescription>
+              <CardAction>
+                <Package className="w-5 h-5" />
+              </CardAction>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link href={"/supplier"}>
+          <Card>
+            <CardHeader>
+              <CardTitle>My Box</CardTitle>
+              <CardDescription className="hidden md:block">
+                Manage your full business account here.
+              </CardDescription>
+              <CardAction>
+                <Users className="w-5 h-5" />
+              </CardAction>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link href={"/learn"}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Learn X</CardTitle>
+              <CardDescription className="hidden md:block">
+                Learn fresh skills and valuable insights.
+              </CardDescription>
+              <CardAction>
+                <GraduationCap className="w-5 h-5" />
+              </CardAction>
+            </CardHeader>
+          </Card>
+        </Link>
+        <Link href={"/dropship"}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Dropship</CardTitle>
+              <CardDescription className="hidden md:block">
+                Begin your exciting dropshipping venture.
+              </CardDescription>
+              <CardAction>
+                <Truck className="w-5 h-5" />
+              </CardAction>
+            </CardHeader>
+          </Card>
+        </Link>
       </section>
-      {/* Navigation Cards Section */}
-      <section
-        className={`max-w-7xl mx-auto px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-400`}
-      >
-        <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-4">
-          {navigationItems.map((item) => {
-            return (
-              <Button
-                className="px-3 pt-4 lg:py-4 sm:px-4 lg:px-6 h-auto bg-card border text-foreground"
-                asChild
-                variant={"link"}
-                key={item.title}
-              >
-                <Link
-                  className="flex flex-col items-center sm:items-start text-center sm:text-left"
-                  href={item.href}
-                >
-                  <div className="">
-                    <item.icon size={24} className="sm:w-8 sm:h-8" />
-                  </div>
-                  <span className="text-sm sm:text-base font-medium mb-1">
-                    {item.title}
-                  </span>
-                  <div>
-                    <p className="hidden lg:block text-muted-foreground text-sm text-wrap">
-                      {item.description}
-                    </p>
-                  </div>
-                </Link>
-              </Button>
-            );
-          })}
-        </div>
-      </section>
-      {/* How it Works Section */}
-      <section
-        className={`px-4 sm:px-6 md:px-12 py-8 md:py-16 transition-all duration-1000 delay-600`}
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-12 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-center mb-6 md:mb-8 text-foreground">
-              How openxmart works for you
+
+      <section className="max-w-7xl mx-auto px-4">
+        <div className="flex items-center justify-between mb-8 md:mb-12">
+          <div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-foreground mb-2">
+              How OpenXmart works for you
             </h2>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-accent-foreground font-bold text-lg">
-                    1
-                  </span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-light mb-2">
-                  Browse Products
-                </h3>
-                <p className="text-muted-foreground font-light text-sm sm:text-base">
-                  Explore product from verified Indian supplier
-                </p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-accent-foreground font-bold text-lg">
-                    2
-                  </span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-light mb-2">
-                  Order Samples
-                </h3>
-                <p className="text-muted-foreground font-light text-sm sm:text-base">
-                  Test product quality before bulk buying
-                </p>
-              </div>
-              <div className="text-center sm:col-span-2 md:col-span-1">
-                <div className="w-12 h-12 bg-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-accent-foreground font-bold text-lg">
-                    3
-                  </span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-light mb-2">
-                  Contact Suppliers
-                </h3>
-                <p className="text-muted-foreground font-light text-sm sm:text-base">
-                  Buy directly and build long-term partnership
-                </p>
-              </div>
+            <p className="text-sm sm:text-base text-muted-foreground font-light">
+              A simple, transparent process designed to connect you with
+              verified suppliers and quality products.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
+          {/* Step 1 */}
+          <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
+            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-md">
+              1
             </div>
+            <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
+              <Package className="w-5 h-5 text-primary" />
+              Browse Products
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Explore products from verified Indian suppliers.
+            </p>
+          </div>
+
+          {/* Step 2 */}
+          <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
+            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-md">
+              2
+            </div>
+            <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
+              <ClipboardCheck className="w-5 h-5 text-primary" />
+              Order Samples
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Test product quality before bulk buying.
+            </p>
+          </div>
+
+          {/* Step 3 */}
+          <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
+            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-md">
+              3
+            </div>
+            <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
+              <Users className="w-5 h-5 text-primary" />
+              Contact Suppliers
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Buy directly and build long-term partnerships.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* New Launches Section */}
-      <Suspense fallback={<ProductCardSkeleton />}>
-        <NewLaunchedItems />
-      </Suspense>
-      {/* Recently Viewed Section */}
+      <NewLaunchedItems />
       <RecentlyViewedList />
-      {/* Footer CTA */}
       <Footer />
-    </div>
+    </main>
   );
 };
 
