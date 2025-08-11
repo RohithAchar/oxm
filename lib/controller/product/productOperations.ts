@@ -101,7 +101,7 @@ export const addProduct = async (
       throw validation.error;
     }
 
-    // STEP 1: Insert the basic product (same as before)
+    // STEP 1: Insert the basic product with dropship fields
     const { data: productData, error } = await supabase
       .from("products")
       .insert({
@@ -124,6 +124,14 @@ export const addProduct = async (
         price_per_unit: toPaise(product.price_per_unit!),
         total_price: toPaise(product.total_price!),
         is_bulk_pricing: product.is_bulk_pricing || null,
+
+        // NEW FIELDS
+        dropship_available: product.dropship_available ?? false,
+        dropship_price: product.dropship_price
+          ? toPaise(product.dropship_price)
+          : null,
+        white_label_shipping: product.white_label_shipping ?? false,
+        dispatch_time: product.dispatch_time || null,
       })
       .select("id")
       .single();
@@ -132,9 +140,8 @@ export const addProduct = async (
       throw error;
     }
 
-    // STEP 2: Handle Tags (OPTIMIZED - bulk operations instead of individual queries)
+    // STEP 2: Handle Tags
     if (product.tags && product.tags.length > 0) {
-      // Get all existing tags in ONE query instead of multiple
       const { data: existingTags } = await supabase
         .from("tags")
         .select("id, name")
@@ -144,12 +151,10 @@ export const addProduct = async (
         existingTags?.map((tag) => [tag.name, tag.id]) || []
       );
 
-      // Find which tags need to be created
       const newTags = product.tags.filter(
         (tagName) => !existingTagMap.has(tagName)
       );
 
-      // Create all new tags in ONE query instead of multiple
       if (newTags.length > 0) {
         const { data: createdTags, error: tagError } = await supabase
           .from("tags")
@@ -158,11 +163,9 @@ export const addProduct = async (
 
         if (tagError) throw tagError;
 
-        // Add new tags to our map
         createdTags?.forEach((tag) => existingTagMap.set(tag.name, tag.id));
       }
 
-      // Link ALL tags to product in ONE query instead of multiple
       const productTags = product.tags
         .map((tagName) => {
           const tagId = existingTagMap.get(tagName);
@@ -186,17 +189,17 @@ export const addProduct = async (
       }
     }
 
-    // STEP 3: Handle Images (same as before, but in parallel)
+    // STEP 3: Handle Images
     const handleImages = async () => {
       if (!product.images || product.images.length === 0) return;
 
-      const imagePromises = product.images.map(async (file, idx) => {
+      const imagePromises = product.images.map(async (file) => {
         if (file.image !== undefined) {
           const timestamp = Date.now();
           const randomString = Math.random().toString(36).substring(2, 15);
           const fileName = `product-image-${timestamp}-${randomString}`;
 
-          const { data, error } = await supabase.storage
+          const { error } = await supabase.storage
             .from("product-images")
             .upload(fileName, file.image);
 
@@ -228,13 +231,12 @@ export const addProduct = async (
         } => result !== null
       );
 
-      // Insert ALL images in ONE query instead of multiple
       if (imageResults.length > 0) {
         await supabase.from("product_images").insert(imageResults);
       }
     };
 
-    // STEP 4: Handle Tier Pricing (OPTIMIZED - bulk insert)
+    // STEP 4: Handle Tier Pricing
     const handleTiers = async () => {
       if (!product.tiers || product.tiers.length === 0) return;
 
@@ -249,7 +251,7 @@ export const addProduct = async (
         .map((tier) => ({
           product_id: productData.id,
           quantity: tier.qty,
-          price: toPaise(tier.price), // always a number now
+          price: toPaise(tier.price),
         }));
 
       if (tierData.length > 0) {
@@ -257,7 +259,7 @@ export const addProduct = async (
       }
     };
 
-    // STEP 5: Handle Specifications (OPTIMIZED - bulk insert)
+    // STEP 5: Handle Specifications
     const handleSpecs = async () => {
       if (!product.specifications || product.specifications.length === 0)
         return;
@@ -284,7 +286,7 @@ export const addProduct = async (
       }
     };
 
-    // STEP 6: Run images, tiers, and specs in parallel (MAJOR OPTIMIZATION)
+    // STEP 6: Parallel execution
     await Promise.all([handleImages(), handleTiers(), handleSpecs()]);
 
     revalidatePath("/supplier/profile");

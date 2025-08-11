@@ -329,6 +329,9 @@ export type Database = {
           country_of_origin: string | null
           created_at: string | null
           description: string
+          dispatch_time: number | null
+          dropship_available: boolean | null
+          dropship_price: number | null
           height: number | null
           hsn_code: string | null
           id: string
@@ -344,6 +347,7 @@ export type Database = {
           total_price: number | null
           updated_at: string | null
           weight: number | null
+          white_label_shipping: boolean | null
           youtube_link: string | null
         }
         Insert: {
@@ -353,6 +357,9 @@ export type Database = {
           country_of_origin?: string | null
           created_at?: string | null
           description: string
+          dispatch_time?: number | null
+          dropship_available?: boolean | null
+          dropship_price?: number | null
           height?: number | null
           hsn_code?: string | null
           id?: string
@@ -368,6 +375,7 @@ export type Database = {
           total_price?: number | null
           updated_at?: string | null
           weight?: number | null
+          white_label_shipping?: boolean | null
           youtube_link?: string | null
         }
         Update: {
@@ -377,6 +385,9 @@ export type Database = {
           country_of_origin?: string | null
           created_at?: string | null
           description?: string
+          dispatch_time?: number | null
+          dropship_available?: boolean | null
+          dropship_price?: number | null
           height?: number | null
           hsn_code?: string | null
           id?: string
@@ -392,6 +403,7 @@ export type Database = {
           total_price?: number | null
           updated_at?: string | null
           weight?: number | null
+          white_label_shipping?: boolean | null
           youtube_link?: string | null
         }
         Relationships: [

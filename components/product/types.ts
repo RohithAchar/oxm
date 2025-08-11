@@ -35,7 +35,9 @@ export const productFormSchema = z.object({
   brand: z.string().min(1, "Product brand is required"),
   categoryId: z.string().min(1, "Product category is required"),
   subCategoryId: z.string().min(1, "Product sub category is required"),
+
   tiers: z.array(tierPriceSchema).min(1, "At least one tier is required"),
+
   sample_available: z.boolean().default(true).optional(),
   is_active: z.boolean().default(true).optional(),
   country_of_origin: z.string().optional(),
@@ -43,6 +45,7 @@ export const productFormSchema = z.object({
   youtube_link: z.string().optional(),
   supplier_id: z.string().optional(),
   specifications: z.array(specificationSchema).optional(),
+
   images: z
     .array(
       z.object({
@@ -52,16 +55,25 @@ export const productFormSchema = z.object({
     )
     .min(1, "At least one image is required")
     .max(5, "Maximum 5 images allowed"),
+
   height: z.number().optional(),
   weight: z.number().optional(),
   length: z.number().optional(),
   breadth: z.number().optional(),
+
   tags: z
     .array(z.string().min(1, "Tag cannot be empty"))
     .min(1, "At least one tag is required")
     .max(5, "You can add up to 5 tags only"),
+
   quantity: z.number().optional(),
   price_per_unit: z.number().optional(),
   total_price: z.number().optional(),
   is_bulk_pricing: z.boolean().optional(),
+
+  // New fields
+  dropship_available: z.boolean().default(false).optional(),
+  dropship_price: z.number().optional(), // store in paise if consistent
+  white_label_shipping: z.boolean().default(false).optional(),
+  dispatch_time: z.number().optional(), // days
 });

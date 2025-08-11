@@ -147,6 +147,7 @@ export const ProductForm = ({
   const isSampleAvailable = form.watch("sample_available");
   const sampleQuantity = form.watch("quantity");
   const samplePricePerUnit = form.watch("price_per_unit");
+  const isDropshipAvailable = form.watch("dropship_available");
 
   const sanitizeTag = (tag: string): string => {
     return tag
@@ -1051,7 +1052,7 @@ export const ProductForm = ({
                       control={form.control}
                       name="weight"
                       render={({ field }) => (
-                        <FormItem className="max-w-sm">
+                        <FormItem className="">
                           <FormLabel className="text-sm font-medium">
                             Weight
                           </FormLabel>
@@ -1085,6 +1086,124 @@ export const ProductForm = ({
                 </div>
               </div>
             )}
+
+            <div className="space-y-4 lg:space-y-6">
+              <div>
+                <h2 className="text-lg lg:text-xl font-semibold">
+                  Shipping & Dropshipping
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  Set options for dropshipping, white label shipping, and
+                  dispatch time.
+                </p>
+              </div>
+
+              <div className="space-y-6 lg:space-y-8 bg-muted/50 border rounded-lg p-3 lg:p-4">
+                {/* Dropship Available */}
+                <FormField
+                  control={form.control}
+                  name="dropship_available"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                      <div className="space-y-0.5">
+                        <FormLabel>Dropship Available</FormLabel>
+                        <FormDescription>
+                          Enable if this product can be dropshipped.
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                {isDropshipAvailable && (
+                  <>
+                    {/* Dropship Price */}
+                    <FormField
+                      control={form.control}
+                      name="dropship_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Dropship Price (₹)</FormLabel>
+                          <FormControl>
+                            <Input
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value === "" ? undefined : Number(value)
+                                );
+                              }}
+                              value={field.value}
+                              type="number"
+                              placeholder="Enter dropship price in rupees"
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Price charged for dropshipping this product.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* White Label Shipping */}
+                    <FormField
+                      control={form.control}
+                      name="white_label_shipping"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between rounded-lg border p-3 shadow-sm">
+                          <div className="space-y-0.5">
+                            <FormLabel>White Label Shipping</FormLabel>
+                            <FormDescription>
+                              Hide supplier branding during shipping.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Dispatch Time */}
+                    <FormField
+                      control={form.control}
+                      name="dispatch_time"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Dispatch Time (days)</FormLabel>
+                          <FormControl>
+                            <Input
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value === "" ? undefined : Number(value)
+                                );
+                              }}
+                              value={field.value}
+                              type="number"
+                              placeholder="e.g., 3"
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Estimated time to dispatch after order is placed.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                )}
+              </div>
+            </div>
 
             {/* New Section */}
             <div className="space-y-4 lg:space-y-6">
