@@ -945,162 +945,146 @@ export const ProductForm = ({
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={form.control}
+                      name="length"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            Length
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="number"
+                                placeholder="e.g., 10"
+                                className="pr-12"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  field.onChange(
+                                    value === "" ? undefined : Number(value)
+                                  );
+                                }}
+                                value={field.value}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                cm
+                              </span>
+                            </div>
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Length of the product in cm.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="breadth"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            Breadth
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="number"
+                                placeholder="e.g., 10"
+                                className="pr-12"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  field.onChange(
+                                    value === "" ? undefined : Number(value)
+                                  );
+                                }}
+                                value={field.value}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                cm
+                              </span>
+                            </div>
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Breadth of the product in cm.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="height"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            Height
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="number"
+                                placeholder="e.g., 10"
+                                className="pr-12"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  field.onChange(
+                                    value === "" ? undefined : Number(value)
+                                  );
+                                }}
+                                value={field.value}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                cm
+                              </span>
+                            </div>
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Height of the product in cm.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="weight"
+                      render={({ field }) => (
+                        <FormItem className="max-w-sm">
+                          <FormLabel className="text-sm font-medium">
+                            Weight
+                          </FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                type="number"
+                                placeholder="e.g., 10"
+                                className="pr-12"
+                                onChange={(e) => {
+                                  const value = e.target.value;
+                                  field.onChange(
+                                    value === "" ? undefined : Number(value)
+                                  );
+                                }}
+                                value={field.value}
+                              />
+                              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+                                kg
+                              </span>
+                            </div>
+                          </FormControl>
+                          <FormDescription className="text-xs">
+                            Weight of the product in kg.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Dimensions Section */}
-            <div className="space-y-4 lg:space-y-6">
-              <div>
-                <h2 className="text-lg lg:text-xl font-semibold">Dimensions</h2>
-                <p className="text-sm text-muted-foreground">
-                  Specify the dimensions of your product.
-                </p>
-              </div>
-
-              {/* Fields here */}
-              <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg space-y-4 lg:space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="length"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium">
-                          Length
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              type="number"
-                              placeholder="e.g., 10"
-                              className="pr-12"
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                field.onChange(
-                                  value === "" ? undefined : Number(value)
-                                );
-                              }}
-                              value={field.value}
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                              cm
-                            </span>
-                          </div>
-                        </FormControl>
-                        <FormDescription className="text-xs">
-                          Length of the product in cm.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="breadth"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-medium">
-                          Breadth
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              type="number"
-                              placeholder="e.g., 10"
-                              className="pr-12"
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                field.onChange(
-                                  value === "" ? undefined : Number(value)
-                                );
-                              }}
-                              value={field.value}
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                              cm
-                            </span>
-                          </div>
-                        </FormControl>
-                        <FormDescription className="text-xs">
-                          Breadth of the product in cm.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="height"
-                    render={({ field }) => (
-                      <FormItem className="sm:col-span-2 lg:col-span-1">
-                        <FormLabel className="text-sm font-medium">
-                          Height
-                        </FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              type="number"
-                              placeholder="e.g., 10"
-                              className="pr-12"
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                field.onChange(
-                                  value === "" ? undefined : Number(value)
-                                );
-                              }}
-                              value={field.value}
-                            />
-                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                              cm
-                            </span>
-                          </div>
-                        </FormControl>
-                        <FormDescription className="text-xs">
-                          Height of the product in cm.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="weight"
-                  render={({ field }) => (
-                    <FormItem className="max-w-sm">
-                      <FormLabel className="text-sm font-medium">
-                        Weight
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            type="number"
-                            placeholder="e.g., 10"
-                            className="pr-12"
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              field.onChange(
-                                value === "" ? undefined : Number(value)
-                              );
-                            }}
-                            value={field.value}
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
-                            kg
-                          </span>
-                        </div>
-                      </FormControl>
-                      <FormDescription className="text-xs">
-                        Weight of the product in kg.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
 
             {/* New Section */}
             <div className="space-y-4 lg:space-y-6">
