@@ -5,6 +5,9 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 
+const toPaise = (price: number) => Math.round(price * 100);
+const toRupee = (price: number) => Math.round(price / 100).toFixed(2);
+
 export const getLatestProducts = async () => {
   const supabase = await createClient();
 
@@ -43,8 +46,14 @@ export const getLatestProducts = async () => {
   return data.map((product, idx) => {
     return {
       ...product,
+      price_per_unit: toRupee(product.price_per_unit || 0),
+      total_price: toRupee(product.total_price || 0),
       imageUrl: imageUrls[idx] || null,
-      priceAndQuantity: priceAndQuantityData[idx] || [],
+      priceAndQuantity:
+        priceAndQuantityData[idx]?.map((tier) => ({
+          ...tier,
+          price: toRupee(tier.price),
+        })) || [],
     };
   });
 };
@@ -111,6 +120,10 @@ export const addProduct = async (
         breadth: product.breadth || null,
         height: product.height || null,
         weight: product.weight || null,
+        quantity: product.quantity || null,
+        price_per_unit: toPaise(product.price_per_unit!),
+        total_price: toPaise(product.total_price!),
+        is_bulk_pricing: product.is_bulk_pricing || null,
       })
       .select("id")
       .single();
@@ -236,7 +249,7 @@ export const addProduct = async (
         .map((tier) => ({
           product_id: productData.id,
           quantity: tier.qty,
-          price: tier.price,
+          price: toPaise(tier.price), // always a number now
         }));
 
       if (tierData.length > 0) {

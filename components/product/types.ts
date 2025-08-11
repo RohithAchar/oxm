@@ -60,4 +60,8 @@ export const productFormSchema = z.object({
     .array(z.string().min(1, "Tag cannot be empty"))
     .min(1, "At least one tag is required")
     .max(5, "You can add up to 5 tags only"),
+  quantity: z.number().optional(),
+  price_per_unit: z.number().optional(),
+  total_price: z.number().optional(),
+  is_bulk_pricing: z.boolean().optional(),
 });

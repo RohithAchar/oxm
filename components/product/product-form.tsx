@@ -66,6 +66,10 @@ export const ProductForm = ({
   const form = useForm<z.infer<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
+      quantity: undefined,
+      price_per_unit: undefined,
+      total_price: undefined,
+      is_bulk_pricing: false,
       tags: [],
       images: [
         {
@@ -140,6 +144,9 @@ export const ProductForm = ({
   }
 
   const selectedCategoryId = form.watch("categoryId");
+  const isSampleAvailable = form.watch("sample_available");
+  const sampleQuantity = form.watch("quantity");
+  const samplePricePerUnit = form.watch("price_per_unit");
 
   const sanitizeTag = (tag: string): string => {
     return tag
@@ -763,6 +770,187 @@ export const ProductForm = ({
               </div>
             </div>
 
+            {/* Inventory Section */}
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-lg lg:text-xl font-semibold">Inventory</h2>
+                <p className="text-sm text-muted-foreground">
+                  Specify the inventory details for your product.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg">
+                  <FormField
+                    control={form.control}
+                    name="sample_available"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="space-y-1">
+                            <FormLabel>Sample Availability</FormLabel>
+                            <FormDescription>
+                              Specify whether the product is available for
+                              sample purchases.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg">
+                  <FormField
+                    control={form.control}
+                    name="is_active"
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div className="space-y-1">
+                            <FormLabel>Product Active</FormLabel>
+                            <FormDescription>
+                              Specify whether the product is active or inactive.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {isSampleAvailable && (
+              <div className="space-y-4 lg:space-y-6">
+                <div>
+                  <h2 className="text-lg lg:text-xl font-semibold">
+                    Sample Order Details
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Specify the sample order details for your product.
+                  </p>
+                </div>
+
+                {/* Fields here */}
+                <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg space-y-4 lg:space-y-6">
+                  <div className="grid grid-cols-2 gap-2 md:gap-4">
+                    <FormField
+                      control={form.control}
+                      name="quantity"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>MOQ for Sample</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="e.g., 10"
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value === "" ? undefined : Number(value)
+                                );
+                              }}
+                              value={field.value}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Specify the quantity of your product.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="price_per_unit"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Sample Price / unit</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="e.g., 10"
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                field.onChange(
+                                  value === "" ? undefined : Number(value)
+                                );
+                              }}
+                              value={field.value}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Specify the price per unit of your product.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={"total_price"}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Total Price</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="e.g., 10"
+                              value={
+                                (sampleQuantity ?? 0) *
+                                (samplePricePerUnit ?? 0)
+                              }
+                              disabled
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            Total price of your product.
+                          </FormDescription>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="is_bulk_pricing"
+                      render={({ field }) => (
+                        <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">
+                              Adjust Cost in Bulk?
+                            </FormLabel>
+                            <FormDescription>
+                              Do you want to adjust the cost in bulk?
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Dimensions Section */}
             <div className="space-y-4 lg:space-y-6">
               <div>
                 <h2 className="text-lg lg:text-xl font-semibold">Dimensions</h2>
@@ -911,70 +1099,6 @@ export const ProductForm = ({
                     </FormItem>
                   )}
                 />
-              </div>
-            </div>
-
-            {/* New Section */}
-            <div className="space-y-4">
-              <div>
-                <h2 className="text-lg lg:text-xl font-semibold">Inventory</h2>
-                <p className="text-sm text-muted-foreground">
-                  Specify the inventory details for your product.
-                </p>
-              </div>
-
-              <div className="space-y-4">
-                <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg">
-                  <FormField
-                    control={form.control}
-                    name="sample_available"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div className="space-y-1">
-                            <FormLabel>Sample Availability</FormLabel>
-                            <FormDescription>
-                              Specify whether the product is available for
-                              sample purchases.
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg">
-                  <FormField
-                    control={form.control}
-                    name="is_active"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                          <div className="space-y-1">
-                            <FormLabel>Product Active</FormLabel>
-                            <FormDescription>
-                              Specify whether the product is active or inactive.
-                            </FormDescription>
-                          </div>
-                          <FormControl>
-                            <Switch
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                        </div>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
               </div>
             </div>
 

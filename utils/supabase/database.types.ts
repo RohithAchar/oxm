@@ -333,11 +333,15 @@ export type Database = {
           hsn_code: string | null
           id: string
           is_active: boolean | null
+          is_bulk_pricing: boolean | null
           is_sample_available: boolean | null
           length: number | null
           name: string
+          price_per_unit: number | null
+          quantity: number | null
           subcategory_id: string | null
           supplier_id: string | null
+          total_price: number | null
           updated_at: string | null
           weight: number | null
           youtube_link: string | null
@@ -353,11 +357,15 @@ export type Database = {
           hsn_code?: string | null
           id?: string
           is_active?: boolean | null
+          is_bulk_pricing?: boolean | null
           is_sample_available?: boolean | null
           length?: number | null
           name: string
+          price_per_unit?: number | null
+          quantity?: number | null
           subcategory_id?: string | null
           supplier_id?: string | null
+          total_price?: number | null
           updated_at?: string | null
           weight?: number | null
           youtube_link?: string | null
@@ -373,11 +381,15 @@ export type Database = {
           hsn_code?: string | null
           id?: string
           is_active?: boolean | null
+          is_bulk_pricing?: boolean | null
           is_sample_available?: boolean | null
           length?: number | null
           name?: string
+          price_per_unit?: number | null
+          quantity?: number | null
           subcategory_id?: string | null
           supplier_id?: string | null
+          total_price?: number | null
           updated_at?: string | null
           weight?: number | null
           youtube_link?: string | null
