@@ -402,7 +402,12 @@ export const BannerForm = ({ banner }: { banner?: Banner }) => {
                 </div>
 
                 <div className="pt-4">
-                  <Button type="submit" size="lg" className="w-full">
+                  <Button
+                    variant={"default"}
+                    type="submit"
+                    size="lg"
+                    className="w-full"
+                  >
                     Create Banner
                   </Button>
                 </div>

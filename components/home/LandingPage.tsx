@@ -94,7 +94,7 @@ const LandingPage = async () => {
                 Discover our complete product range.
               </CardDescription>
               <CardAction>
-                <Package className="w-5 h-5" />
+                <Package className="w-5 h-5 text-primary" />
               </CardAction>
             </CardHeader>
           </Card>
@@ -107,7 +107,7 @@ const LandingPage = async () => {
                 Manage your full business account here.
               </CardDescription>
               <CardAction>
-                <Users className="w-5 h-5" />
+                <Users className="w-5 h-5 text-primary" />
               </CardAction>
             </CardHeader>
           </Card>
@@ -120,12 +120,12 @@ const LandingPage = async () => {
                 Learn fresh skills and valuable insights.
               </CardDescription>
               <CardAction>
-                <GraduationCap className="w-5 h-5" />
+                <GraduationCap className="w-5 h-5 text-primary" />
               </CardAction>
             </CardHeader>
           </Card>
         </Link>
-        <Link href={"/dropship"}>
+        <Link href={"/products?dropship_available=true"}>
           <Card>
             <CardHeader>
               <CardTitle>Dropship</CardTitle>
@@ -133,7 +133,7 @@ const LandingPage = async () => {
                 Begin your exciting dropshipping venture.
               </CardDescription>
               <CardAction>
-                <Truck className="w-5 h-5" />
+                <Truck className="w-5 h-5 text-primary" />
               </CardAction>
             </CardHeader>
           </Card>

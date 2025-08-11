@@ -271,11 +271,7 @@ export const ProfileForm = ({ business }: { business: BusinessSchema }) => {
               </FormItem>
             )}
           />
-          <Button
-            className="w-full bg-foreground"
-            type="submit"
-            disabled={loading}
-          >
+          <Button className="w-full" type="submit" disabled={loading}>
             Update
           </Button>
         </form>

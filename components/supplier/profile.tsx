@@ -61,7 +61,7 @@ export const Profile = async () => {
           <p>Business Type</p>
           <p className="text-muted-foreground text-sm">{business.type}</p>
         </div>
-        <Button className="bg-foreground" asChild>
+        <Button asChild>
           <Link href={`/supplier/profile/${business.id}/edit`}>Edit</Link>
         </Button>
       </div>

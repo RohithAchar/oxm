@@ -312,3 +312,44 @@ export const getTags = async () => {
     throw new Error("Failed to get tags");
   }
 };
+
+interface ProductParams {
+  page: number;
+  page_size: number;
+  dropship_available?: boolean;
+}
+
+export const getProducts = async (params: ProductParams) => {
+  try {
+    const supabase = await createClient();
+
+    // Convert page & page_size into start/end indexes
+    const from = (params.page - 1) * params.page_size;
+    const to = from + params.page_size - 1;
+
+    let query = supabase
+      .from("products")
+      .select("*", { count: "exact" }) // count helps for total pages
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
+    if (params.dropship_available) {
+      query = query.eq("dropship_available", true);
+    }
+
+    const { data, count, error } = await query;
+
+    if (error) throw error;
+
+    return {
+      products: data,
+      total: count ?? 0,
+      page: params.page,
+      page_size: params.page_size,
+      total_pages: count ? Math.ceil(count / params.page_size) : 0,
+    };
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to get products");
+  }
+};
