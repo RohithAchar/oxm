@@ -72,7 +72,7 @@ export default async function RootLayout({
           <Navbar />
           <MobileMenu />
           <Suspense>
-            <div>{children}</div>
+            <main className="pt-14">{children}</main>
           </Suspense>
         </Providers>
       </body>

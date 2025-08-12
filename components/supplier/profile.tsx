@@ -14,7 +14,7 @@ export const Profile = async () => {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-2xl mt-4 pb-12 md:pb-0">
+    <div className="flex flex-col gap-6 max-w-2xl mt-4 pb-24 md:pb-0">
       <div>
         <h1 className="text-3xl font-light">Business Profile</h1>
         <p className="text-muted-foreground mt-1 font-light">

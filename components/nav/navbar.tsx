@@ -16,7 +16,7 @@ export const Navbar = () => {
   const pathname = usePathname();
 
   return (
-    <header className="flex items-center bg-background justify-between py-2 px-4 border-b">
+    <header className="fixed top-0 left-0 right-0 z-50 flex items-center bg-background justify-between py-2 px-4 border-b">
       <Link
         href="/"
         className={`${poppins.variable} text-primary text-lg tracking-wide font-bold`}

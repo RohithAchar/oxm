@@ -341,8 +341,23 @@ export const getProducts = async (params: ProductParams) => {
 
     if (error) throw error;
 
+    let [images, pricesAndQuantities] = await Promise.all([
+      Promise.all(data.map((product) => getProductMainImageUrl(product.id))),
+      Promise.all(data.map((product) => getPricesAndQuantities(product.id))),
+    ]);
+
     return {
-      products: data,
+      products: data.map((product, idx) => ({
+        ...product,
+        imageUrl: images[idx],
+        price_per_unit: toRupee(product.price_per_unit || 0),
+        total_price: toRupee(product.total_price || 0),
+        priceAndQuantity:
+          pricesAndQuantities[idx]?.map((tier) => ({
+            ...tier,
+            price: toRupee(tier.price),
+          })) || [],
+      })),
       total: count ?? 0,
       page: params.page,
       page_size: params.page_size,
