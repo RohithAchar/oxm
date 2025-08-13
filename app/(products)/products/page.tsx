@@ -1,8 +1,6 @@
-import { Badge } from "@/components/ui/badge";
+import { ProductCard } from "@/components/product/product-card";
 import { Button } from "@/components/ui/button";
 import { getProducts } from "@/lib/controller/product/productOperations";
-import { BadgeCheckIcon, Eye, Locate, MapPin } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 export default async function ProductsPage({
@@ -35,6 +33,7 @@ export default async function ProductsPage({
             brand={p.brand || ""}
             is_verified={p.is_verified || false}
             city={p.city || ""}
+            is_sample_available={p.is_sample_available || false}
             tierPricing={
               p.priceAndQuantity?.map((tier) => ({
                 id: tier.id,
@@ -70,88 +69,3 @@ export default async function ProductsPage({
     </div>
   );
 }
-
-interface ProductCardProps {
-  id: string;
-  imageUrl: string;
-  name: string;
-  brand: string;
-  tierPricing?: TierPricingProps[];
-  is_verified: boolean;
-  city: string;
-}
-
-interface TierPricingProps {
-  id: string;
-  quantity: number;
-  price: string;
-}
-
-const ProductCard = ({
-  id,
-  imageUrl,
-  name,
-  brand,
-  tierPricing,
-  is_verified,
-  city,
-}: ProductCardProps) => {
-  return (
-    <Link href={`/products/${id}`}>
-      <div className="relative p-2 bg-card border rounded-xl space-y-4">
-        {is_verified && (
-          <Badge
-            variant="secondary"
-            className="bg-blue-500 text-white dark:bg-blue-600 absolute right-3 top-3 z-20"
-          >
-            <BadgeCheckIcon />
-            Verified
-          </Badge>
-        )}
-        <div className="relative aspect-square w-full overflow-hidden rounded-lg">
-          <Image
-            fill
-            src={imageUrl || "/product-placeholder.png"}
-            alt="Product Image"
-            className="object-cover object-center rounded-lg"
-          />
-        </div>
-        <div>
-          <h1 className="truncate font-semibold text-lg text-foreground">
-            {name}
-          </h1>
-          <p className="truncate text-muted-foreground text-sm mt-1">{brand}</p>
-          {city && (
-            <p className="flex items-center gap-1 truncate text-muted-foreground text-sm mt-1">
-              <MapPin className="w-4 h-4" />
-              {city}
-            </p>
-          )}
-        </div>
-        <div>
-          {tierPricing && tierPricing?.length > 0 && (
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              {tierPricing?.length > 0 && (
-                <>
-                  <span className="truncate">
-                    Min: {tierPricing[0].quantity} pcs
-                  </span>
-                  <span className="truncate">₹{tierPricing[0].price} / pc</span>
-                  {tierPricing.length > 1 && (
-                    <span className="text-xs">...</span>
-                  )}
-                </>
-              )}
-            </div>
-          )}
-        </div>
-        <Button variant={"secondary"} className="w-full" asChild>
-          <Link href={`/products/${id}`}>
-            <Eye className="h-4 w-4 text-primary" />
-            View Product
-          </Link>
-        </Button>
-      </div>
-    </Link>
-  );
-};
