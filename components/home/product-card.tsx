@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
+import { Eye } from "lucide-react";
 
 interface ProductCardProps {
   id: string;
@@ -20,7 +21,7 @@ export const ProductCard = ({
   return (
     <div
       key={id}
-      className="shadow-sm p-2 pb-4 border rounded-xl bg-card space-y-4 h-fit"
+      className="shadow-sm p-2 border rounded-xl bg-card space-y-4 h-fit"
     >
       <div className="relative aspect-square w-full overflow-hidden rounded-lg">
         <Image
@@ -55,8 +56,11 @@ export const ProductCard = ({
           </div>
         )}
       </div>
-      <Button className="w-full bg-foreground text-background" asChild>
-        <Link href={`/products/${id}`}>View Product</Link>
+      <Button variant={"secondary"} className="w-full" asChild>
+        <Link href={`/products/${id}`}>
+          <Eye className="h-4 w-4 text-primary" />
+          View Product
+        </Link>
       </Button>
     </div>
   );
