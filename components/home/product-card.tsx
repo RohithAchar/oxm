@@ -32,18 +32,25 @@ export const ProductCard = ({
       </div>
       <div className="space-y-2">
         <div>
-          <h2 className="truncate font-semibold text-sm">{name}</h2>
+          <h1 className="truncate font-semibold text-lg text-foreground">
+            {name}
+          </h1>
           <p className="text-xs text-muted-foreground">{brand}</p>
         </div>
-        {priceAndQuantity?.length > 0 && (
-          <div>
-            {priceAndQuantity.map(
-              (priceNqty: { id: string; quantity: number; price: number }) => (
-                <div key={priceNqty.id} className="flex gap-2 text-sm truncate">
-                  <p className="truncate">{priceNqty.quantity} pcs</p>
-                  <p className="truncate">Price: ₹{priceNqty.price}/pcs</p>
-                </div>
-              )
+        {priceAndQuantity && priceAndQuantity?.length > 0 && (
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            {priceAndQuantity?.length > 0 && (
+              <>
+                <span className="truncate">
+                  Min: {priceAndQuantity[0].quantity} pcs
+                </span>
+                <span className="truncate">
+                  ₹{priceAndQuantity[0].price} / pc
+                </span>
+                {priceAndQuantity.length > 1 && (
+                  <span className="text-xs">...</span>
+                )}
+              </>
             )}
           </div>
         )}

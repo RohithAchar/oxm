@@ -25,7 +25,7 @@ export default async function ProductsPage({
   return (
     <div className="px-4">
       {/* Products Grid */}
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+      <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {data.products.map((p) => (
           <ProductCard
             key={p.id}
@@ -133,8 +133,10 @@ const ProductCard = ({
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               {tierPricing?.length > 0 && (
                 <>
-                  <span>Min: {tierPricing[0].quantity} pcs</span>
-                  <span>₹{tierPricing[0].price} / pc</span>
+                  <span className="truncate">
+                    Min: {tierPricing[0].quantity} pcs
+                  </span>
+                  <span className="truncate">₹{tierPricing[0].price} / pc</span>
                   {tierPricing.length > 1 && (
                     <span className="text-xs">...</span>
                   )}
