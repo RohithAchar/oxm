@@ -1,9 +1,11 @@
 "use server";
 
+import z from "zod";
+import { revalidatePath } from "next/cache";
+
 import { productFormSchema } from "@/components/product/types";
 import { createClient } from "@/utils/supabase/server";
-import { revalidatePath } from "next/cache";
-import z from "zod";
+import { getBusiness } from "../business/businessOperations";
 
 const toPaise = (price: number) => Math.round(price * 100);
 const toRupee = (price: number) => Math.round(price / 100).toFixed(2);
@@ -341,13 +343,15 @@ export const getProducts = async (params: ProductParams) => {
 
     if (error) throw error;
 
-    let [images, pricesAndQuantities] = await Promise.all([
+    let [images, pricesAndQuantities, business] = await Promise.all([
       Promise.all(data.map((product) => getProductMainImageUrl(product.id))),
       Promise.all(data.map((product) => getPricesAndQuantities(product.id))),
+      Promise.all(data.map((product) => getBusiness(product.supplier_id!))),
     ]);
 
     return {
       products: data.map((product, idx) => ({
+        ...business[idx],
         ...product,
         imageUrl: images[idx],
         price_per_unit: toRupee(product.price_per_unit || 0),

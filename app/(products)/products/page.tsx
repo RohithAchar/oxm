@@ -1,8 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getProducts } from "@/lib/controller/product/productOperations";
-import { Eye } from "lucide-react";
+import { BadgeCheckIcon, Eye, Locate, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -14,7 +13,7 @@ export default async function ProductsPage({
   const params = await searchParams;
 
   const page = parseInt(params.page || "1", 10);
-  const page_size = parseInt(params.page_size || "2", 10);
+  const page_size = parseInt(params.page_size || "8", 10);
   const dropshipAvailable = params.dropship_available === "true";
 
   const data = await getProducts({
@@ -34,6 +33,8 @@ export default async function ProductsPage({
             imageUrl={p.imageUrl}
             name={p.name}
             brand={p.brand || ""}
+            is_verified={p.is_verified || false}
+            city={p.city || ""}
             tierPricing={
               p.priceAndQuantity?.map((tier) => ({
                 id: tier.id,
@@ -76,6 +77,8 @@ interface ProductCardProps {
   name: string;
   brand: string;
   tierPricing?: TierPricingProps[];
+  is_verified: boolean;
+  city: string;
 }
 
 interface TierPricingProps {
@@ -90,10 +93,21 @@ const ProductCard = ({
   name,
   brand,
   tierPricing,
+  is_verified,
+  city,
 }: ProductCardProps) => {
   return (
     <Link href={`/products/${id}`}>
-      <div className="p-4 bg-card rounded-xl space-y-4">
+      <div className="relative p-2 bg-card border rounded-xl space-y-4">
+        {is_verified && (
+          <Badge
+            variant="secondary"
+            className="bg-blue-500 text-white dark:bg-blue-600 absolute right-3 top-3 z-20"
+          >
+            <BadgeCheckIcon />
+            Verified
+          </Badge>
+        )}
         <div className="relative aspect-square w-full overflow-hidden rounded-lg">
           <Image
             fill
@@ -103,35 +117,35 @@ const ProductCard = ({
           />
         </div>
         <div>
-          <h1 className="truncate font-semibold text-foreground">{name}</h1>
-          <p className="truncate text-primary-foreground text-sm mt-1">
-            {brand}
-          </p>
+          <h1 className="truncate font-semibold text-lg text-foreground">
+            {name}
+          </h1>
+          <p className="truncate text-muted-foreground text-sm mt-1">{brand}</p>
+          {city && (
+            <p className="flex items-center gap-1 truncate text-muted-foreground text-sm mt-1">
+              <MapPin className="w-4 h-4" />
+              {city}
+            </p>
+          )}
         </div>
         <div>
           {tierPricing && tierPricing?.length > 0 && (
-            <div>
-              {tierPricing?.map(
-                (priceNqty: {
-                  id: string;
-                  quantity: number;
-                  price: string;
-                }) => (
-                  <div
-                    key={priceNqty.id}
-                    className="flex gap-2 text-sm truncate text-muted-foreground"
-                  >
-                    <p className="truncate">{priceNqty.quantity} pcs</p>
-                    <p className="truncate">Price: ₹{priceNqty.price}/pcs</p>
-                  </div>
-                )
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              {tierPricing?.length > 0 && (
+                <>
+                  <span>Min: {tierPricing[0].quantity} pcs</span>
+                  <span>₹{tierPricing[0].price} / pc</span>
+                  {tierPricing.length > 1 && (
+                    <span className="text-xs">...</span>
+                  )}
+                </>
               )}
             </div>
           )}
         </div>
-        <Button className="w-full" asChild variant={"default"}>
+        <Button variant={"secondary"} className="w-full" asChild>
           <Link href={`/products/${id}`}>
-            <Eye className="h-4 w-4" />
+            <Eye className="h-4 w-4 text-primary" />
             View Product
           </Link>
         </Button>
