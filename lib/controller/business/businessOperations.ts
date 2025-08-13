@@ -230,3 +230,47 @@ export const createBusiness = async (
     throw error;
   }
 };
+
+export const isBusinessVerified = async (
+  supplierId: string
+): Promise<boolean> => {
+  const supabase = await createClient();
+
+  const { data: user, error: businessError } = await supabase
+    .from("supplier_businesses")
+    .select("id")
+    .eq("profile_id", supplierId)
+    .single();
+
+  if (businessError?.code === "404") {
+    return false;
+  }
+
+  if (businessError?.code === "PGRST116") {
+    return false;
+  }
+
+  if (businessError) {
+    throw businessError;
+  }
+
+  const { data, error } = await supabase
+    .from("supplier_businesses")
+    .select("*")
+    .eq("id", user.id)
+    .single();
+
+  if (error?.code === "404") {
+    return false;
+  }
+
+  if (error?.code === "PGRST116") {
+    return false;
+  }
+
+  if (error) {
+    throw error;
+  }
+
+  return data !== null;
+};

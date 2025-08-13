@@ -5,7 +5,10 @@ import { revalidatePath } from "next/cache";
 
 import { productFormSchema } from "@/components/product/types";
 import { createClient } from "@/utils/supabase/server";
-import { getBusiness } from "../business/businessOperations";
+import {
+  getBusiness,
+  isBusinessVerified,
+} from "../business/businessOperations";
 
 const toPaise = (price: number) => Math.round(price * 100);
 const toRupee = (price: number) => Math.round(price / 100).toFixed(2);
@@ -45,9 +48,19 @@ export const getLatestProducts = async () => {
     throw new Error("Failed to fetch product prices and quantities");
   }
 
+  // Is the supplier verified?
+  const isVerifiedPromises = data.map((product) =>
+    isBusinessVerified(product.supplier_id!).catch(() => null)
+  );
+  const isVerifiedData = await Promise.all(isVerifiedPromises);
+  if (isVerifiedData.some((data) => !data)) {
+    throw new Error("Failed to fetch supplier verification status");
+  }
+
   return data.map((product, idx) => {
     return {
       ...product,
+      is_verified: isVerifiedData[idx],
       price_per_unit: toRupee(product.price_per_unit || 0),
       total_price: toRupee(product.total_price || 0),
       imageUrl: imageUrls[idx] || null,

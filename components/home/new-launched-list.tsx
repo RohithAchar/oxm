@@ -37,6 +37,7 @@ const NewLaunchedItems = async () => {
               brand={products.brand || ""}
               imageUrl={products.imageUrl || "/product-placeholder.png"}
               priceAndQuantity={products.priceAndQuantity}
+              is_verified={products.is_verified || false}
             />
           ))}
         </div>

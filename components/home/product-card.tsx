@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
-import { Eye } from "lucide-react";
+import { BadgeCheckIcon, Eye } from "lucide-react";
+import { Badge } from "../ui/badge";
 
 interface ProductCardProps {
   id: string;
@@ -9,6 +10,7 @@ interface ProductCardProps {
   brand: string;
   imageUrl: string;
   priceAndQuantity: any[];
+  is_verified: boolean;
 }
 
 export const ProductCard = ({
@@ -17,12 +19,22 @@ export const ProductCard = ({
   brand,
   imageUrl,
   priceAndQuantity,
+  is_verified,
 }: ProductCardProps) => {
   return (
     <div
       key={id}
-      className="shadow-sm p-2 border rounded-xl bg-card space-y-4 h-fit"
+      className="relative p-2 border rounded-xl bg-card space-y-4 h-fit"
     >
+      {is_verified && (
+        <Badge
+          variant="secondary"
+          className="bg-blue-500 text-white dark:bg-blue-600 absolute right-3 top-3 z-20"
+        >
+          <BadgeCheckIcon />
+          Verified
+        </Badge>
+      )}
       <div className="relative aspect-square w-full overflow-hidden rounded-lg">
         <Image
           fill
