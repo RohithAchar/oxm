@@ -1,26 +1,12 @@
 import type { Metadata } from "next";
-import { Inter, Roboto, Open_Sans } from "next/font/google";
+
 import "./globals.css";
 import Providers from "@/lib/Providers";
 
 import { Navbar } from "@/components/nav/navbar";
 import MobileMenu from "@/components/nav/mobile-menu";
 import { Suspense } from "react";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
-const roboto = Roboto({
-  variable: "--font-roboto",
-  subsets: ["latin"],
-});
-
-const openSans = Open_Sans({
-  variable: "--font-open-sans",
-  subsets: ["latin"],
-});
+import { Open_Sans, Playfair_Display } from "next/font/google";
 
 export const metadata = {
   title:
@@ -60,6 +46,18 @@ export const metadata = {
   metadataBase: new URL("https://openxmart.com"),
 };
 
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  display: "swap", // Optional: improves loading performance
+  variable: "--font-open-sans", // Optional: creates a CSS variable
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  display: "swap", // Optional: improves loading performance
+  variable: "--font-playfair-display", // Optional: creates a CSS variable
+});
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -67,12 +65,12 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${roboto.variable} antialiased`}>
+      <body className={`${openSans.className} antialiased`}>
         <Providers>
           <Navbar />
           <MobileMenu />
           <Suspense>
-            <main className="pt-14">{children}</main>
+            <main className="pt-14 font-playfair">{children}</main>
           </Suspense>
         </Providers>
       </body>

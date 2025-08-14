@@ -134,7 +134,10 @@ export const ProductForm = ({
 
   async function onSubmit(values: z.infer<typeof productFormSchema>) {
     try {
-      await addProduct(business.profile_id!, values);
+      await addProduct(business.profile_id!, {
+        ...values,
+        total_price: (values.quantity ?? 0) * (values.price_per_unit ?? 0),
+      });
       toast.success("Product added successfully");
       form.reset();
     } catch (error) {

@@ -9,6 +9,7 @@ import {
   getBusiness,
   isBusinessVerified,
 } from "../business/businessOperations";
+import { cache } from "react";
 
 const toPaise = (price: number) => Math.round(price * 100);
 const toRupee = (price: number) => Math.round(price / 100).toFixed(2);
@@ -385,3 +386,74 @@ export const getProducts = async (params: ProductParams) => {
     throw new Error("Failed to get products");
   }
 };
+
+const getProductById = async (productId: string) => {
+  try {
+    const supabase = await createClient();
+
+    const { data: product, error: productError } = await supabase
+      .from("products")
+      .select(
+        `
+    id,
+    name,
+    description,
+    is_sample_available,
+    quantity,
+    total_price,
+    price_per_unit,
+    supplier_id,
+    length,
+    breadth,
+    height,
+    weight,
+    product_images (
+      id,
+      image_url,
+      display_order
+    ),
+    product_tier_pricing (
+        id,
+        quantity,
+        price
+    ),
+    product_specifications (
+        id,
+        spec_name,
+        spec_unit,
+        spec_value
+    )
+  `
+      )
+      .eq("id", productId)
+      .order("display_order", {
+        foreignTable: "product_images",
+        ascending: true,
+      })
+      .eq("product_tier_pricing.is_active", true)
+      .order("quantity", {
+        foreignTable: "product_tier_pricing",
+        ascending: true,
+      })
+      .single();
+
+    if (productError) {
+      throw productError;
+    }
+
+    return {
+      ...product,
+      total_price: toRupee(product.total_price || 0),
+      product_tier_pricing: product.product_tier_pricing.map((tier) => ({
+        ...tier,
+        price: toRupee(tier.price),
+      })),
+    };
+  } catch (error) {
+    console.log(error);
+    throw new Error("Failed to get product");
+  }
+};
+
+// Cached version
+export const getProductByIdCached = cache(getProductById);

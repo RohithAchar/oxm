@@ -45,9 +45,7 @@ export const ProductCard = ({
       </div>
       <div className="space-y-2">
         <div>
-          <h1 className="truncate font-semibold text-lg text-foreground">
-            {name}
-          </h1>
+          <h1 className="truncate font-semibold text-foreground">{name}</h1>
           <p className="text-xs text-muted-foreground">{brand}</p>
         </div>
         {priceAndQuantity && priceAndQuantity?.length > 0 && (
