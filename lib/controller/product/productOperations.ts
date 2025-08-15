@@ -2,6 +2,7 @@
 
 import z from "zod";
 import { revalidatePath } from "next/cache";
+import { cache } from "react";
 
 import { productFormSchema } from "@/components/product/types";
 import { createClient } from "@/utils/supabase/server";
@@ -9,116 +10,164 @@ import {
   getBusiness,
   isBusinessVerified,
 } from "../business/businessOperations";
-import { cache } from "react";
 
-const toPaise = (price: number) => Math.round(price * 100);
-const toRupee = (price: number) => Math.round(price / 100).toFixed(2);
+// Constants
+const PRICE_MULTIPLIER = 100;
+const DEFAULT_PRODUCT_LIMIT = 6;
 
-export const getLatestProducts = async () => {
-  const supabase = await createClient();
+// Utility functions
+const toPaise = (price: number) => Math.round(price * PRICE_MULTIPLIER);
+const toRupee = (price: number) => (price / PRICE_MULTIPLIER).toFixed(2);
 
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(6);
+// Type definitions for better type safety
+interface ProductWithMetadata {
+  id: string;
+  supplier_id: string | null;
+  price_per_unit?: number | null;
+  total_price?: number | null;
+  created_at: string | null;
+  [key: string]: any;
+}
 
-  if (error) {
-    throw error;
-  }
+interface EnrichedProduct
+  extends Omit<ProductWithMetadata, "price_per_unit" | "total_price"> {
+  is_verified: boolean;
+  price_per_unit: string;
+  total_price: string;
+  imageUrl: string | null;
+  priceAndQuantity: Array<{
+    id: string;
+    quantity: number;
+    price: string;
+    [key: string]: any;
+  }>;
+}
 
-  if (!data || data.length === 0) {
-    return [];
-  }
+// Optimized function to fetch multiple products with all metadata in parallel
+const fetchProductsWithMetadata = async (products: ProductWithMetadata[]) => {
+  const [imageUrls, priceAndQuantityData, isVerifiedData] = await Promise.all([
+    // Fetch all images in parallel
+    Promise.all(
+      products.map((product) =>
+        getProductMainImageUrl(product.id).catch(() => null)
+      )
+    ),
+    // Fetch all pricing data in parallel
+    Promise.all(
+      products.map((product) =>
+        getPricesAndQuantities(product.id).catch(() => null)
+      )
+    ),
+    // Fetch all verification statuses in parallel
+    Promise.all(
+      products.map((product) =>
+        isBusinessVerified(product.supplier_id!).catch(() => null)
+      )
+    ),
+  ]);
 
-  // Fetch image URLs for each product in parallel
-  const imageUrlPromises = data.map((product) =>
-    getProductMainImageUrl(product.id).catch(() => null)
-  );
-  const imageUrls = await Promise.all(imageUrlPromises);
-  if (imageUrls.some((url) => !url)) {
+  // Validate that all data was fetched successfully
+  if (imageUrls.some((url) => url === null)) {
     throw new Error("Failed to fetch product images");
   }
-
-  // Price and quantity data
-  const priceAndQuantityPromises = data.map((product) =>
-    getPricesAndQuantities(product.id).catch(() => null)
-  );
-  const priceAndQuantityData = await Promise.all(priceAndQuantityPromises);
-  if (priceAndQuantityData.some((data) => !data)) {
+  if (priceAndQuantityData.some((data) => data === null)) {
     throw new Error("Failed to fetch product prices and quantities");
   }
-
-  // Is the supplier verified?
-  const isVerifiedPromises = data.map((product) =>
-    isBusinessVerified(product.supplier_id!).catch(() => null)
-  );
-  const isVerifiedData = await Promise.all(isVerifiedPromises);
-  if (isVerifiedData.some((data) => !data)) {
+  if (isVerifiedData.some((data) => data === null)) {
     throw new Error("Failed to fetch supplier verification status");
   }
 
-  return data.map((product, idx) => {
-    return {
-      ...product,
-      is_verified: isVerifiedData[idx],
-      price_per_unit: toRupee(product.price_per_unit || 0),
-      total_price: toRupee(product.total_price || 0),
-      imageUrl: imageUrls[idx] || null,
-      priceAndQuantity:
-        priceAndQuantityData[idx]?.map((tier) => ({
-          ...tier,
-          price: toRupee(tier.price),
-        })) || [],
-    };
-  });
+  return { imageUrls, priceAndQuantityData, isVerifiedData };
 };
 
-export const getProductMainImageUrl = async (id: string) => {
-  const supabase = await createClient();
+export const getLatestProducts = async (): Promise<EnrichedProduct[]> => {
+  try {
+    const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("product_images")
-    .select("*")
-    .eq("product_id", id)
-    .order("display_order", { ascending: true })
-    .limit(1);
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(DEFAULT_PRODUCT_LIMIT);
 
-  if (error) {
-    throw error;
+    if (error) throw error;
+    if (!data || data.length === 0) return [];
+
+    const { imageUrls, priceAndQuantityData, isVerifiedData } =
+      await fetchProductsWithMetadata(data);
+
+    return data.map((product, idx) => ({
+      ...product,
+      is_verified: isVerifiedData[idx]!,
+      price_per_unit: toRupee(product.price_per_unit || 0),
+      total_price: toRupee(product.total_price || 0),
+      imageUrl: imageUrls[idx]!,
+      priceAndQuantity: priceAndQuantityData[idx]!.map((tier) => ({
+        ...tier,
+        price: toRupee(tier.price),
+      })),
+    })) as EnrichedProduct[];
+  } catch (error) {
+    console.error("Error fetching latest products:", error);
+    throw new Error("Failed to fetch latest products");
   }
-  return data[0].image_url;
+};
+
+export const getProductMainImageUrl = async (id: string): Promise<string> => {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+      .from("product_images")
+      .select("image_url")
+      .eq("product_id", id)
+      .order("display_order", { ascending: true })
+      .limit(1)
+      .single();
+
+    if (error) throw error;
+    return data.image_url;
+  } catch (error) {
+    console.error("Error fetching product image:", error);
+    throw new Error("Failed to fetch product image");
+  }
 };
 
 export const getPricesAndQuantities = async (id: string) => {
-  const supabase = await createClient();
+  try {
+    const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("product_tier_pricing")
-    .select("*")
-    .eq("product_id", id)
-    .order("quantity", { ascending: true });
+    const { data, error } = await supabase
+      .from("product_tier_pricing")
+      .select("*")
+      .eq("product_id", id)
+      .eq("is_active", true)
+      .order("quantity", { ascending: true });
 
-  if (error) {
-    throw error;
+    if (error) throw error;
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching prices and quantities:", error);
+    throw new Error("Failed to fetch prices and quantities");
   }
-
-  return data;
 };
 
+// Optimized product creation with better error handling and transaction-like behavior
 export const addProduct = async (
   supplierId: string,
   product: z.infer<typeof productFormSchema>
-) => {
+): Promise<{ id: string }> => {
   try {
     const supabase = await createClient();
+
+    // Validate input
     const validation = productFormSchema.safeParse(product);
     if (!validation.success) {
-      throw validation.error;
+      throw new Error(`Validation failed: ${validation.error.message}`);
     }
 
-    // STEP 1: Insert the basic product with dropship fields
-    const { data: productData, error } = await supabase
+    // STEP 1: Insert the basic product
+    const { data: productData, error: productError } = await supabase
       .from("products")
       .insert({
         supplier_id: supplierId,
@@ -140,8 +189,6 @@ export const addProduct = async (
         price_per_unit: toPaise(product.price_per_unit!),
         total_price: toPaise(product.total_price!),
         is_bulk_pricing: product.is_bulk_pricing || null,
-
-        // NEW FIELDS
         dropship_available: product.dropship_available ?? false,
         dropship_price: product.dropship_price
           ? toPaise(product.dropship_price)
@@ -152,180 +199,180 @@ export const addProduct = async (
       .select("id")
       .single();
 
-    if (error) {
-      throw error;
-    }
+    if (productError) throw productError;
 
-    // STEP 2: Handle Tags
-    if (product.tags && product.tags.length > 0) {
-      const { data: existingTags } = await supabase
-        .from("tags")
-        .select("id, name")
-        .in("name", product.tags);
-
-      const existingTagMap = new Map(
-        existingTags?.map((tag) => [tag.name, tag.id]) || []
-      );
-
-      const newTags = product.tags.filter(
-        (tagName) => !existingTagMap.has(tagName)
-      );
-
-      if (newTags.length > 0) {
-        const { data: createdTags, error: tagError } = await supabase
-          .from("tags")
-          .insert(newTags.map((name) => ({ name })))
-          .select("id, name");
-
-        if (tagError) throw tagError;
-
-        createdTags?.forEach((tag) => existingTagMap.set(tag.name, tag.id));
-      }
-
-      const productTags = product.tags
-        .map((tagName) => {
-          const tagId = existingTagMap.get(tagName);
-          return tagId
-            ? {
-                product_id: productData.id,
-                tag_id: tagId,
-              }
-            : null;
-        })
-        .filter(
-          (pt): pt is { product_id: string; tag_id: string } => pt !== null
-        );
-
-      if (productTags.length > 0) {
-        const { error: linkError } = await supabase
-          .from("product_tags")
-          .insert(productTags);
-
-        if (linkError) throw linkError;
-      }
-    }
-
-    // STEP 3: Handle Images
-    const handleImages = async () => {
-      if (!product.images || product.images.length === 0) return;
-
-      const imagePromises = product.images.map(async (file) => {
-        if (file.image !== undefined) {
-          const timestamp = Date.now();
-          const randomString = Math.random().toString(36).substring(2, 15);
-          const fileName = `product-image-${timestamp}-${randomString}`;
-
-          const { error } = await supabase.storage
-            .from("product-images")
-            .upload(fileName, file.image);
-
-          if (error) {
-            console.error("Upload error:", error);
-            return null;
-          }
-
-          const { data: publicUrl } = supabase.storage
-            .from("product-images")
-            .getPublicUrl(fileName);
-
-          return {
-            product_id: productData.id,
-            image_url: publicUrl.publicUrl,
-            display_order: file.display_order,
-          };
-        }
-        return null;
-      });
-
-      const imageResults = (await Promise.all(imagePromises)).filter(
-        (
-          result
-        ): result is {
-          product_id: string;
-          image_url: string;
-          display_order: number;
-        } => result !== null
-      );
-
-      if (imageResults.length > 0) {
-        await supabase.from("product_images").insert(imageResults);
-      }
-    };
-
-    // STEP 4: Handle Tier Pricing
-    const handleTiers = async () => {
-      if (!product.tiers || product.tiers.length === 0) return;
-
-      const tierData = product.tiers
-        .filter(
-          (tier): tier is typeof tier & { qty: number; price: number } =>
-            tier.qty != null &&
-            tier.price != null &&
-            tier.qty > 0 &&
-            tier.price > 0
-        )
-        .map((tier) => ({
-          product_id: productData.id,
-          quantity: tier.qty,
-          price: toPaise(tier.price),
-        }));
-
-      if (tierData.length > 0) {
-        await supabase.from("product_tier_pricing").insert(tierData);
-      }
-    };
-
-    // STEP 5: Handle Specifications
-    const handleSpecs = async () => {
-      if (!product.specifications || product.specifications.length === 0)
-        return;
-
-      const specData = product.specifications
-        .filter(
-          (
-            spec
-          ): spec is typeof spec & { spec_name: string; spec_value: string } =>
-            spec.spec_name != null &&
-            spec.spec_value != null &&
-            spec.spec_name.trim() !== "" &&
-            spec.spec_value.trim() !== ""
-        )
-        .map((spec) => ({
-          product_id: productData.id,
-          spec_name: spec.spec_name,
-          spec_value: spec.spec_value,
-          spec_unit: spec.spec_unit,
-        }));
-
-      if (specData.length > 0) {
-        await supabase.from("product_specifications").insert(specData);
-      }
-    };
-
-    // STEP 6: Parallel execution
-    await Promise.all([handleImages(), handleTiers(), handleSpecs()]);
+    // STEP 2-6: Handle all related data in parallel for better performance
+    await Promise.all([
+      handleTags(supabase, productData.id, product.tags),
+      handleImages(supabase, productData.id, product.images),
+      handleTiers(supabase, productData.id, product.tiers),
+      handleSpecs(supabase, productData.id, product.specifications),
+    ]);
 
     revalidatePath("/supplier/profile");
     return productData;
   } catch (error) {
-    console.log(error);
-    throw new Error("Failed to add product");
+    console.error("Error adding product:", error);
+    throw new Error(
+      `Failed to add product: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+};
+
+// Helper functions for better organization and reusability
+const handleTags = async (
+  supabase: any,
+  productId: string,
+  tags?: string[]
+) => {
+  if (!tags?.length) return;
+
+  try {
+    // Get existing tags
+    const { data: existingTags } = await supabase
+      .from("tags")
+      .select("id, name")
+      .in("name", tags);
+
+    const existingTagMap = new Map(
+      existingTags?.map((tag: any) => [tag.name, tag.id]) || []
+    );
+
+    // Create new tags
+    const newTags = tags.filter((tagName) => !existingTagMap.has(tagName));
+    if (newTags.length > 0) {
+      const { data: createdTags, error: tagError } = await supabase
+        .from("tags")
+        .insert(newTags.map((name) => ({ name })))
+        .select("id, name");
+
+      if (tagError) throw tagError;
+      createdTags?.forEach((tag: any) => existingTagMap.set(tag.name, tag.id));
+    }
+
+    // Link tags to product
+    const productTags = tags
+      .map((tagName) => {
+        const tagId = existingTagMap.get(tagName);
+        return tagId ? { product_id: productId, tag_id: tagId } : null;
+      })
+      .filter(Boolean);
+
+    if (productTags.length > 0) {
+      const { error: linkError } = await supabase
+        .from("product_tags")
+        .insert(productTags);
+      if (linkError) throw linkError;
+    }
+  } catch (error) {
+    console.error("Error handling tags:", error);
+    throw error;
+  }
+};
+
+const handleImages = async (
+  supabase: any,
+  productId: string,
+  images?: any[]
+) => {
+  if (!images?.length) return;
+
+  try {
+    const imagePromises = images.map(async (file) => {
+      if (!file.image) return null;
+
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileName = `product-image-${timestamp}-${randomString}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("product-images")
+        .upload(fileName, file.image);
+
+      if (uploadError) throw uploadError;
+
+      const { data: publicUrl } = supabase.storage
+        .from("product-images")
+        .getPublicUrl(fileName);
+
+      return {
+        product_id: productId,
+        image_url: publicUrl.publicUrl,
+        display_order: file.display_order,
+      };
+    });
+
+    const imageResults = (await Promise.all(imagePromises)).filter(Boolean);
+    if (imageResults.length > 0) {
+      await supabase.from("product_images").insert(imageResults);
+    }
+  } catch (error) {
+    console.error("Error handling images:", error);
+    throw error;
+  }
+};
+
+const handleTiers = async (supabase: any, productId: string, tiers?: any[]) => {
+  if (!tiers?.length) return;
+
+  try {
+    const tierData = tiers
+      .filter(
+        (tier) => tier.qty && tier.price && tier.qty > 0 && tier.price > 0
+      )
+      .map((tier) => ({
+        product_id: productId,
+        quantity: tier.qty,
+        price: toPaise(tier.price),
+      }));
+
+    if (tierData.length > 0) {
+      await supabase.from("product_tier_pricing").insert(tierData);
+    }
+  } catch (error) {
+    console.error("Error handling tiers:", error);
+    throw error;
+  }
+};
+
+const handleSpecs = async (
+  supabase: any,
+  productId: string,
+  specifications?: any[]
+) => {
+  if (!specifications?.length) return;
+
+  try {
+    const specData = specifications
+      .filter((spec) => spec.spec_name?.trim() && spec.spec_value?.trim())
+      .map((spec) => ({
+        product_id: productId,
+        spec_name: spec.spec_name.trim(),
+        spec_value: spec.spec_value.trim(),
+        spec_unit: spec.spec_unit,
+      }));
+
+    if (specData.length > 0) {
+      await supabase.from("product_specifications").insert(specData);
+    }
+  } catch (error) {
+    console.error("Error handling specifications:", error);
+    throw error;
   }
 };
 
 export const getTags = async () => {
   try {
     const supabase = await createClient();
-
     const { data, error } = await supabase.from("tags").select("*");
 
-    if (error) {
-      throw error;
-    }
-    return data;
+    if (error) throw error;
+    return data || [];
   } catch (error) {
-    console.log(error);
-    throw new Error("Failed to get tags");
+    console.error("Error fetching tags:", error);
+    throw new Error("Failed to fetch tags");
   }
 };
 
@@ -335,29 +382,39 @@ interface ProductParams {
   dropship_available?: boolean;
 }
 
-export const getProducts = async (params: ProductParams) => {
+interface ProductsResponse {
+  products: any[];
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export const getProducts = async (
+  params: ProductParams
+): Promise<ProductsResponse> => {
   try {
     const supabase = await createClient();
+    const { page, page_size, dropship_available } = params;
 
-    // Convert page & page_size into start/end indexes
-    const from = (params.page - 1) * params.page_size;
-    const to = from + params.page_size - 1;
+    const from = (page - 1) * page_size;
+    const to = from + page_size - 1;
 
     let query = supabase
       .from("products")
-      .select("*", { count: "exact" }) // count helps for total pages
+      .select("*", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(from, to);
 
-    if (params.dropship_available) {
+    if (dropship_available) {
       query = query.eq("dropship_available", true);
     }
 
     const { data, count, error } = await query;
-
     if (error) throw error;
 
-    let [images, pricesAndQuantities, business] = await Promise.all([
+    // Fetch all related data in parallel
+    const [images, pricesAndQuantities, business] = await Promise.all([
       Promise.all(data.map((product) => getProductMainImageUrl(product.id))),
       Promise.all(data.map((product) => getPricesAndQuantities(product.id))),
       Promise.all(data.map((product) => getBusiness(product.supplier_id!))),
@@ -377,13 +434,13 @@ export const getProducts = async (params: ProductParams) => {
           })) || [],
       })),
       total: count ?? 0,
-      page: params.page,
-      page_size: params.page_size,
-      total_pages: count ? Math.ceil(count / params.page_size) : 0,
+      page,
+      page_size,
+      total_pages: count ? Math.ceil(count / page_size) : 0,
     };
   } catch (error) {
-    console.log(error);
-    throw new Error("Failed to get products");
+    console.error("Error fetching products:", error);
+    throw new Error("Failed to fetch products");
   }
 };
 
@@ -395,35 +452,35 @@ const getProductById = async (productId: string) => {
       .from("products")
       .select(
         `
-    id,
-    name,
-    description,
-    is_sample_available,
-    quantity,
-    total_price,
-    price_per_unit,
-    supplier_id,
-    length,
-    breadth,
-    height,
-    weight,
-    product_images (
-      id,
-      image_url,
-      display_order
-    ),
-    product_tier_pricing (
         id,
+        name,
+        description,
+        is_sample_available,
         quantity,
-        price
-    ),
-    product_specifications (
-        id,
-        spec_name,
-        spec_unit,
-        spec_value
-    )
-  `
+        total_price,
+        price_per_unit,
+        supplier_id,
+        length,
+        breadth,
+        height,
+        weight,
+        product_images (
+          id,
+          image_url,
+          display_order
+        ),
+        product_tier_pricing (
+          id,
+          quantity,
+          price
+        ),
+        product_specifications (
+          id,
+          spec_name,
+          spec_unit,
+          spec_value
+        )
+      `
       )
       .eq("id", productId)
       .order("display_order", {
@@ -437,23 +494,22 @@ const getProductById = async (productId: string) => {
       })
       .single();
 
-    if (productError) {
-      throw productError;
-    }
+    if (productError) throw productError;
 
     return {
       ...product,
       total_price: toRupee(product.total_price || 0),
-      product_tier_pricing: product.product_tier_pricing.map((tier) => ({
-        ...tier,
-        price: toRupee(tier.price),
-      })),
+      product_tier_pricing:
+        product.product_tier_pricing?.map((tier) => ({
+          ...tier,
+          price: toRupee(tier.price),
+        })) || [],
     };
   } catch (error) {
-    console.log(error);
-    throw new Error("Failed to get product");
+    console.error("Error fetching product by ID:", error);
+    throw new Error("Failed to fetch product");
   }
 };
 
-// Cached version
+// Cached version for better performance
 export const getProductByIdCached = cache(getProductById);
