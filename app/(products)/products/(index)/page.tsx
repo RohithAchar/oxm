@@ -19,7 +19,6 @@ export default async function ProductsPage({
     page,
     page_size,
     dropship_available: dropshipAvailable,
-    sort_by: sortBy, // Pass sorting to the API
   });
 
   // Apply client-side sorting if needed (for fields not supported by API)
