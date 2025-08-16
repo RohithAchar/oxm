@@ -66,7 +66,7 @@ const LandingPage = async () => {
   }
 
   return (
-    <main className="space-y-12 lg:space-y-24 overflow-hidden">
+    <main className="space-y-12 lg:space-y-24 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
       <section className="max-w-7xl mx-auto md:mt-12 p-4">
         <Carousel>
           <CarouselContent>
