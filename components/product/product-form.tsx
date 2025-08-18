@@ -44,6 +44,7 @@ import { Switch } from "../ui/switch";
 import { addProduct } from "@/lib/controller/product/productOperations";
 import { toast } from "sonner";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Badge } from "../ui/badge";
 
 type BusinessSchema =
@@ -55,17 +56,94 @@ export const ProductForm = ({
   business,
   categories,
   tags,
+  product,
+  mode = "add",
 }: {
   business: BusinessSchema;
   categories: CategorySchema[];
   tags: TagSchema[];
+  product?: any; // Product data for editing
+  mode?: "add" | "edit";
 }) => {
   const [tagInput, setTagInput] = useState("");
   const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false);
+  const router = useRouter();
 
-  const form = useForm<z.infer<typeof productFormSchema>>({
-    resolver: zodResolver(productFormSchema),
-    defaultValues: {
+  // Prepare default values for edit mode
+  const getDefaultValues = () => {
+    if (mode === "edit" && product) {
+      return {
+        quantity: product.quantity || undefined,
+        price_per_unit: product.price_per_unit
+          ? parseFloat(product.price_per_unit)
+          : undefined,
+        total_price: product.total_price
+          ? parseFloat(product.total_price)
+          : undefined,
+        is_bulk_pricing: product.is_bulk_pricing || false,
+        tags: product.tags || [],
+        images:
+          product.product_images?.length > 0
+            ? product.product_images.map((img: any, index: number) => ({
+                image: undefined, // We'll handle existing images separately
+                display_order: img.display_order || index + 1,
+                existingUrl: img.image_url, // Store existing image URL
+              }))
+            : [
+                {
+                  image: undefined,
+                  display_order: 1,
+                  existingUrl: undefined,
+                },
+              ],
+        name: product.name || "",
+        description: product.description || "",
+        brand: product.brand || business.business_name,
+        categoryId: product.category_id || "",
+        subCategoryId: product.subcategory_id || "",
+        length: product.length || undefined,
+        breadth: product.breadth || undefined,
+        height: product.height || undefined,
+        weight: product.weight || undefined,
+        tiers:
+          product.product_tier_pricing?.length > 0
+            ? product.product_tier_pricing.map((tier: any) => ({
+                qty: tier.quantity || undefined,
+                price: tier.price ? parseFloat(tier.price) : undefined,
+                isActive: tier.is_active !== false,
+              }))
+            : [
+                {
+                  qty: undefined,
+                  price: undefined,
+                  isActive: true,
+                },
+              ],
+        sample_available: product.is_sample_available !== false,
+        is_active: product.is_active !== false,
+        country_of_origin: product.country_of_origin || "",
+        hsn_code: product.hsn_code || "",
+        youtube_link: product.youtube_link || "",
+        supplier_id: product.supplier_id || "",
+        specifications:
+          product.product_specifications?.length > 0
+            ? product.product_specifications.map((spec: any) => ({
+                spec_name: spec.spec_name || "",
+                spec_value: spec.spec_value || "",
+                spec_unit: spec.spec_unit || "",
+              }))
+            : [],
+        dropship_available: product.dropship_available || false,
+        dropship_price: product.dropship_price
+          ? parseFloat(product.dropship_price)
+          : undefined,
+        white_label_shipping: product.white_label_shipping || false,
+        dispatch_time: product.dispatch_time || undefined,
+      };
+    }
+
+    // Default values for add mode
+    return {
       quantity: undefined,
       price_per_unit: undefined,
       total_price: undefined,
@@ -75,6 +153,7 @@ export const ProductForm = ({
         {
           image: undefined,
           display_order: 1,
+          existingUrl: undefined,
         },
       ],
       name: "",
@@ -98,15 +177,18 @@ export const ProductForm = ({
       country_of_origin: "",
       hsn_code: "",
       youtube_link: "",
-      supplier_id: business.profile_id || "",
-      specifications: [
-        {
-          spec_name: "",
-          spec_value: "",
-          spec_unit: "",
-        },
-      ],
-    },
+      supplier_id: "",
+      specifications: [],
+      dropship_available: false,
+      dropship_price: undefined,
+      white_label_shipping: false,
+      dispatch_time: undefined,
+    };
+  };
+
+  const form = useForm<z.infer<typeof productFormSchema>>({
+    resolver: zodResolver(productFormSchema),
+    defaultValues: getDefaultValues(),
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -134,14 +216,31 @@ export const ProductForm = ({
 
   async function onSubmit(values: z.infer<typeof productFormSchema>) {
     try {
-      await addProduct(business.profile_id!, {
-        ...values,
-        total_price: (values.quantity ?? 0) * (values.price_per_unit ?? 0),
-      });
-      toast.success("Product added successfully");
-      form.reset();
+      if (mode === "edit" && product) {
+        // Import updateProduct function
+        const { updateProduct } = await import(
+          "@/lib/controller/product/productOperations"
+        );
+        await updateProduct(product.id, business.profile_id!, {
+          ...values,
+          total_price: (values.quantity ?? 0) * (values.price_per_unit ?? 0),
+        });
+        toast.success("Product updated successfully");
+        // Redirect to manage products page after successful update
+        router.push("/supplier/manage-products");
+      } else {
+        await addProduct(business.profile_id!, {
+          ...values,
+          total_price: (values.quantity ?? 0) * (values.price_per_unit ?? 0),
+        });
+        toast.success("Product added successfully");
+        form.reset();
+      }
     } catch (error) {
-      toast.error("Failed to add product. Please try again or contact support");
+      const action = mode === "edit" ? "update" : "add";
+      toast.error(
+        `Failed to ${action} product. Please try again or contact support`
+      );
     } finally {
     }
   }
@@ -212,8 +311,9 @@ export const ProductForm = ({
                   Product Images
                 </h2>
                 <p className="text-sm text-muted-foreground">
-                  Upload up to 5 product images. First image will be the main
-                  display image.
+                  {mode === "edit"
+                    ? "Upload new images or keep existing ones. First image will be the main display image."
+                    : "Upload up to 5 product images. First image will be the main display image."}
                 </p>
               </div>
 
@@ -305,7 +405,11 @@ export const ProductForm = ({
                       name={`images.${index}.image`}
                       render={({ field: { value, onChange, ...field } }) => (
                         <FormItem>
-                          <FormLabel>Upload Image*</FormLabel>
+                          <FormLabel>
+                            {mode === "edit"
+                              ? "Upload New Image (Optional)"
+                              : "Upload Image*"}
+                          </FormLabel>
                           <FormControl>
                             <div className="space-y-4">
                               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
@@ -328,9 +432,22 @@ export const ProductForm = ({
                                         <X className="w-3 h-3" />
                                       </button>
                                     </div>
+                                  ) : images[index]?.existingUrl ? (
+                                    <div className="relative w-full h-full">
+                                      <img
+                                        src={images[index].existingUrl}
+                                        alt={`Existing Image ${index + 1}`}
+                                        className="w-full h-full object-cover rounded-lg"
+                                      />
+                                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                        <p className="text-white text-xs font-medium">
+                                          Click to replace
+                                        </p>
+                                      </div>
+                                    </div>
                                   ) : (
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                      <Upload className="w-6 sm:w-8 h-6 sm:h-8 mb-2 text-gray-400" />
+                                      <Upload className="w-6 sm:w-8 h-6 sm:h-8 mb-2 text-gray-500" />
                                       <p className="text-xs text-gray-500 text-center px-2">
                                         Click to upload
                                       </p>
@@ -367,7 +484,9 @@ export const ProductForm = ({
                             </div>
                           </FormControl>
                           <FormDescription>
-                            Upload JPEG, PNG, or WEBP image under 500KB
+                            {mode === "edit"
+                              ? "Upload new image (JPEG, PNG, or WEBP under 1MB) or leave empty to keep existing image"
+                              : "Upload JPEG, PNG, or WEBP image under 1MB"}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -414,6 +533,7 @@ export const ProductForm = ({
                       appendImage({
                         image: undefined,
                         display_order: images.length + 1,
+                        existingUrl: undefined,
                       })
                     }
                     className="flex items-center gap-2 w-full"
@@ -1618,7 +1738,13 @@ export const ProductForm = ({
                 disabled={form.formState.isSubmitting}
                 className="order-1 sm:order-2"
               >
-                {form.formState.isSubmitting ? "Submitting..." : "Submit"}
+                {form.formState.isSubmitting
+                  ? mode === "edit"
+                    ? "Updating..."
+                    : "Submitting..."
+                  : mode === "edit"
+                  ? "Update Product"
+                  : "Add Product"}
               </Button>
             </div>
           </form>

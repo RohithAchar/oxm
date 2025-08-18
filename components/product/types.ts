@@ -2,17 +2,47 @@ import { z } from "zod";
 
 const imageSchema = z.custom<File | undefined>(
   (file) => {
-    if (!(file instanceof File)) return false;
+    // Allow undefined (for existing images in edit mode)
+    if (file === undefined) return true;
 
-    const maxSizeInBytes = 0.5 * 1024 * 1024; // 500KB
-    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    // If it's a File, validate it
+    if (file instanceof File) {
+      const maxSizeInBytes = 1 * 1024 * 1024; // 1MB
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
-    return file.size <= maxSizeInBytes && allowedTypes.includes(file.type);
+      return file.size <= maxSizeInBytes && allowedTypes.includes(file.type);
+    }
+
+    return false;
   },
   {
-    message: "Profile picture must be JPEG, PNG, or WEBP and under 1MB",
+    message:
+      "Product image must be JPEG, PNG, or WEBP and under 1MB, or leave empty to keep existing image",
   }
 );
+
+const imageFieldSchema = z.object({
+  image: imageSchema,
+  display_order: z.number().min(1, "Display order is required"),
+  existingUrl: z.string().optional(), // For editing existing images
+});
+
+// Custom validation for product images that allows existing images
+const productImagesSchema = z
+  .array(imageFieldSchema)
+  .min(1, "At least one image is required")
+  .max(5, "Maximum 5 images allowed")
+  .refine(
+    (images) => {
+      // For edit mode: allow if at least one image has a file OR existingUrl
+      // For add mode: require at least one file
+      return images.some((img) => img.image || img.existingUrl);
+    },
+    {
+      message:
+        "At least one product image is required. You can upload new images or keep existing ones.",
+    }
+  );
 
 const tierPriceSchema = z.object({
   qty: z.number().min(1, "Quantity is required").or(z.undefined()),
@@ -46,15 +76,7 @@ export const productFormSchema = z.object({
   supplier_id: z.string().optional(),
   specifications: z.array(specificationSchema).optional(),
 
-  images: z
-    .array(
-      z.object({
-        image: imageSchema,
-        display_order: z.number().min(1, "Display order is required"),
-      })
-    )
-    .min(1, "At least one image is required")
-    .max(5, "Maximum 5 images allowed"),
+  images: productImagesSchema,
 
   height: z.number().optional(),
   weight: z.number().optional(),

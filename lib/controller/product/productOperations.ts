@@ -281,27 +281,40 @@ const handleImages = async (
 
   try {
     const imagePromises = images.map(async (file) => {
-      if (!file.image) return null;
+      // If there's a new image file, upload it
+      if (file.image) {
+        const timestamp = Date.now();
+        const randomString = Math.random().toString(36).substring(2, 15);
+        const fileName = `product-image-${timestamp}-${randomString}`;
 
-      const timestamp = Date.now();
-      const randomString = Math.random().toString(36).substring(2, 15);
-      const fileName = `product-image-${timestamp}-${randomString}`;
+        const { error: uploadError } = await supabase.storage
+          .from("product-images")
+          .upload(fileName, file.image);
 
-      const { error: uploadError } = await supabase.storage
-        .from("product-images")
-        .upload(fileName, file.image);
+        if (uploadError) throw uploadError;
 
-      if (uploadError) throw uploadError;
+        const { data: publicUrl } = supabase.storage
+          .from("product-images")
+          .getPublicUrl(fileName);
 
-      const { data: publicUrl } = supabase.storage
-        .from("product-images")
-        .getPublicUrl(fileName);
+        return {
+          product_id: productId,
+          image_url: publicUrl.publicUrl,
+          display_order: file.display_order,
+        };
+      }
+      
+      // If there's an existing image URL, keep it
+      if (file.existingUrl) {
+        return {
+          product_id: productId,
+          image_url: file.existingUrl,
+          display_order: file.display_order,
+        };
+      }
 
-      return {
-        product_id: productId,
-        image_url: publicUrl.publicUrl,
-        display_order: file.display_order,
-      };
+      // Skip if neither new image nor existing URL
+      return null;
     });
 
     const imageResults = (await Promise.all(imagePromises)).filter(Boolean);
@@ -380,6 +393,7 @@ interface ProductParams {
   page: number;
   page_size: number;
   dropship_available?: boolean;
+  sort_by?: string;
 }
 
 interface ProductsResponse {
@@ -513,3 +527,187 @@ const getProductById = async (productId: string) => {
 
 // Cached version for better performance
 export const getProductByIdCached = cache(getProductById);
+
+// Get product data for editing (includes all related data)
+export const getProductForEdit = async (productId: string) => {
+  try {
+    const supabase = await createClient();
+
+    const { data: product, error: productError } = await supabase
+      .from("products")
+      .select(
+        `
+        id,
+        name,
+        description,
+        is_sample_available,
+        quantity,
+        total_price,
+        price_per_unit,
+        supplier_id,
+        length,
+        breadth,
+        height,
+        weight,
+        category_id,
+        subcategory_id,
+        brand,
+        country_of_origin,
+        hsn_code,
+        youtube_link,
+        is_active,
+        dropship_available,
+        dropship_price,
+        white_label_shipping,
+        dispatch_time,
+        is_bulk_pricing,
+        product_images (
+          id,
+          image_url,
+          display_order
+        ),
+        product_tier_pricing (
+          id,
+          quantity,
+          price,
+          is_active
+        ),
+        product_specifications (
+          id,
+          spec_name,
+          spec_unit,
+          spec_value
+        )
+      `
+      )
+      .eq("id", productId)
+      .order("display_order", {
+        foreignTable: "product_images",
+        ascending: true,
+      })
+      .order("quantity", {
+        foreignTable: "product_tier_pricing",
+        ascending: true,
+      })
+      .single();
+
+    if (productError) throw productError;
+
+    // Get product tags
+    const { data: productTags } = await supabase
+      .from("product_tags")
+      .select("tag_id")
+      .eq("product_id", productId);
+
+    const tagIds = productTags?.map((pt) => pt.tag_id) || [];
+
+    const { data: tags } = await supabase
+      .from("tags")
+      .select("id, name")
+      .in("id", tagIds);
+
+    return {
+      ...product,
+      total_price: toRupee(product.total_price || 0),
+      price_per_unit: toRupee(product.price_per_unit || 0),
+      dropship_price: product.dropship_price
+        ? toRupee(product.dropship_price)
+        : undefined,
+      product_tier_pricing:
+        product.product_tier_pricing?.map((tier) => ({
+          ...tier,
+          price: toRupee(tier.price),
+        })) || [],
+      tags: tags?.map((tag) => tag.name) || [],
+    };
+  } catch (error) {
+    console.error("Error fetching product for edit:", error);
+    throw new Error("Failed to fetch product for editing");
+  }
+};
+
+// Update existing product
+export const updateProduct = async (
+  productId: string,
+  supplierId: string,
+  product: z.infer<typeof productFormSchema>
+): Promise<{ id: string }> => {
+  try {
+    const supabase = await createClient();
+
+    // Validate input
+    const validation = productFormSchema.safeParse(product);
+    if (!validation.success) {
+      throw new Error(`Validation failed: ${validation.error.message}`);
+    }
+
+    // STEP 1: Update the basic product
+    const { data: productData, error: productError } = await supabase
+      .from("products")
+      .update({
+        category_id: product.categoryId,
+        name: product.name,
+        description: product.description,
+        is_sample_available: product.sample_available,
+        is_active: product.is_active,
+        hsn_code: product.hsn_code || null,
+        brand: product.brand,
+        country_of_origin: product.country_of_origin,
+        subcategory_id: product.subCategoryId,
+        youtube_link: product.youtube_link || null,
+        length: product.length || null,
+        breadth: product.breadth || null,
+        height: product.height || null,
+        weight: product.weight || null,
+        quantity: product.quantity || null,
+        price_per_unit: toPaise(product.price_per_unit!),
+        total_price: toPaise(product.total_price!),
+        is_bulk_pricing: product.is_bulk_pricing || null,
+        dropship_available: product.dropship_available ?? false,
+        dropship_price: product.dropship_price
+          ? toPaise(product.dropship_price)
+          : null,
+        white_label_shipping: product.white_label_shipping ?? false,
+        dispatch_time: product.dispatch_time || null,
+      })
+      .eq("id", productId)
+      .eq("supplier_id", supplierId)
+      .select("id")
+      .single();
+
+    if (productError) throw productError;
+
+    // STEP 2: Delete existing related data
+    await Promise.all([
+      supabase.from("product_tags").delete().eq("product_id", productId),
+      supabase.from("product_images").delete().eq("product_id", productId),
+      supabase
+        .from("product_tier_pricing")
+        .delete()
+        .eq("product_id", productId),
+      supabase
+        .from("product_specifications")
+        .delete()
+        .eq("product_id", productId),
+    ]);
+
+    // STEP 3: Handle all related data in parallel for better performance
+    await Promise.all([
+      handleTags(supabase, productId, product.tags),
+      handleImages(supabase, productId, product.images),
+      handleTiers(supabase, productId, product.tiers),
+      handleSpecs(supabase, productId, product.specifications),
+    ]);
+
+    revalidatePath("/supplier/manage-products");
+    revalidatePath("/supplier/profile");
+    return productData;
+  } catch (error) {
+    console.error("Error updating product:", error);
+    throw new Error(
+      `Failed to update product: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
+};
