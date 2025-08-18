@@ -32,27 +32,30 @@ export default async function ProductsPage({
     <div className="px-4">
       {/* Products Grid */}
       <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {sortedProducts.map((p) => (
-          <ProductCard
-            key={p.id}
-            id={p.id}
-            imageUrl={p.imageUrl}
-            name={p.name}
-            brand={p.brand || ""}
-            is_verified={p.is_verified || false}
-            city={p.city || ""}
-            is_sample_available={p.is_sample_available || false}
-            tierPricing={
-              p.priceAndQuantity?.map(
-                (tier: { id: string; quantity: number; price: string }) => ({
-                  id: tier.id,
-                  quantity: tier.quantity,
-                  price: tier.price,
-                })
-              ) || []
-            }
-          />
-        ))}
+        {sortedProducts.map((p) => {
+          if (!p) return null;
+          return (
+            <ProductCard
+              key={p.id}
+              id={p.id}
+              imageUrl={p.imageUrl}
+              name={p.name}
+              brand={p.brand || ""}
+              is_verified={p.is_verified || false}
+              city={p.city || ""}
+              is_sample_available={p.is_sample_available || false}
+              tierPricing={
+                p.priceAndQuantity?.map(
+                  (tier: { id: string; quantity: number; price: string }) => ({
+                    id: tier.id,
+                    quantity: tier.quantity,
+                    price: tier.price,
+                  })
+                ) || []
+              }
+            />
+          );
+        })}
       </div>
 
       {/* Pagination */}

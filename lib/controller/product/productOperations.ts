@@ -436,20 +436,20 @@ export const getProducts = async (
 
     return {
       products: data.map((product, idx) => {
-        if (business[idx].status === "APPROVED") {
-          return {
-            ...business[idx],
-            ...product,
-            imageUrl: images[idx],
-            price_per_unit: toRupee(product.price_per_unit || 0),
-            total_price: toRupee(product.total_price || 0),
-            priceAndQuantity:
-              pricesAndQuantities[idx]?.map((tier) => ({
-                ...tier,
-                price: toRupee(tier.price),
-              })) || [],
-          };
-        }
+        if (business[idx].status !== "APPROVED") return;
+
+        return {
+          ...business[idx],
+          ...product,
+          imageUrl: images[idx],
+          price_per_unit: toRupee(product.price_per_unit || 0),
+          total_price: toRupee(product.total_price || 0),
+          priceAndQuantity:
+            pricesAndQuantities[idx]?.map((tier) => ({
+              ...tier,
+              price: toRupee(tier.price),
+            })) || [],
+        };
       }),
       total: count ?? 0,
       page,
