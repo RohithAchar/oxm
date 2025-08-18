@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -93,6 +93,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          receiver: string | null
+          sender: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          receiver?: string | null
+          sender?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          receiver?: string | null
+          sender?: string | null
+        }
+        Relationships: []
       }
       payment_gateway_config: {
         Row: {
@@ -848,13 +872,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_distinct_receivers: {
+        Args: { sender_id: string }
+        Returns: {
+          receiver: string
+        }[]
+      }
       get_product_specifications: {
         Args: { p_product_id: string }
         Returns: {
-          spec_name: string
-          spec_value: string
-          spec_unit: string
           display_order: number
+          spec_name: string
+          spec_unit: string
+          spec_value: string
         }[]
       }
       increment_banner_clicks: {

@@ -45,7 +45,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/create-business") ||
     request.nextUrl.pathname.startsWith("/verify-business") ||
     request.nextUrl.pathname.startsWith("/supplier") ||
-    request.nextUrl.pathname.startsWith("/account")
+    request.nextUrl.pathname.startsWith("/account") ||
+    request.nextUrl.pathname.startsWith("/messages")
   ) {
     if (!user) {
       const url = request.nextUrl.clone();
@@ -68,32 +69,32 @@ export async function middleware(request: NextRequest) {
 
   // Phone number verification check for authenticated users
   // Skip phone check for API routes and auth-related pages
-  if (
-    user &&
-    !request.nextUrl.pathname.startsWith("/api") &&
-    !request.nextUrl.pathname.startsWith("/verify-phone") &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/signup")
-  ) {
-    try {
-      // Check if user has phone number in profiles table
-      const { data: profile, error } = await supabase
-        .from("profiles")
-        .select("phone_number")
-        .eq("id", user.id)
-        .single();
+  // if (
+  //   user &&
+  //   !request.nextUrl.pathname.startsWith("/api") &&
+  //   !request.nextUrl.pathname.startsWith("/verify-phone") &&
+  //   !request.nextUrl.pathname.startsWith("/login") &&
+  //   !request.nextUrl.pathname.startsWith("/signup")
+  // ) {
+  //   try {
+  //     // Check if user has phone number in profiles table
+  //     const { data: profile, error } = await supabase
+  //       .from("profiles")
+  //       .select("phone_number")
+  //       .eq("id", user.id)
+  //       .single();
 
-      // If profile doesn't exist or phone number is missing/empty, redirect to verify-phone
-      if (error || !profile || !profile.phone_number) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/verify-phone";
-        return NextResponse.redirect(url);
-      }
-    } catch (error) {
-      // Log error but don't block the request
-      console.error("Error checking phone number in middleware:", error);
-    }
-  }
+  //     // If profile doesn't exist or phone number is missing/empty, redirect to verify-phone
+  //     if (error || !profile || !profile.phone_number) {
+  //       const url = request.nextUrl.clone();
+  //       url.pathname = "/verify-phone";
+  //       return NextResponse.redirect(url);
+  //     }
+  //   } catch (error) {
+  //     // Log error but don't block the request
+  //     console.error("Error checking phone number in middleware:", error);
+  //   }
+  // }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
