@@ -2,12 +2,15 @@
 
 import { createBusinessformSchema } from "@/app/(business)/create-business/types";
 import { UpdateProfileFormData } from "@/app/(business)/supplier/profile/[id]/edit/types";
+import { Database } from "@/utils/supabase/database.types";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import z from "zod";
 
-export const getBusiness = async (userId: string) => {
+type Business = Database["public"]["Tables"]["supplier_businesses"]["Row"];
+
+export const getBusiness = async (userId: string): Promise<Business> => {
   try {
     const supabase = await createClient();
 
@@ -31,7 +34,8 @@ export const getBusiness = async (userId: string) => {
 
     return data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    throw new Error("Failed to fetch business"); // Ensure function always throws or returns a Business
   }
 };
 

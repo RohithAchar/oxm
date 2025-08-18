@@ -303,7 +303,7 @@ const handleImages = async (
           display_order: file.display_order,
         };
       }
-      
+
       // If there's an existing image URL, keep it
       if (file.existingUrl) {
         return {
@@ -435,18 +435,22 @@ export const getProducts = async (
     ]);
 
     return {
-      products: data.map((product, idx) => ({
-        ...business[idx],
-        ...product,
-        imageUrl: images[idx],
-        price_per_unit: toRupee(product.price_per_unit || 0),
-        total_price: toRupee(product.total_price || 0),
-        priceAndQuantity:
-          pricesAndQuantities[idx]?.map((tier) => ({
-            ...tier,
-            price: toRupee(tier.price),
-          })) || [],
-      })),
+      products: data.map((product, idx) => {
+        if (business[idx].status === "APPROVED") {
+          return {
+            ...business[idx],
+            ...product,
+            imageUrl: images[idx],
+            price_per_unit: toRupee(product.price_per_unit || 0),
+            total_price: toRupee(product.total_price || 0),
+            priceAndQuantity:
+              pricesAndQuantities[idx]?.map((tier) => ({
+                ...tier,
+                price: toRupee(tier.price),
+              })) || [],
+          };
+        }
+      }),
       total: count ?? 0,
       page,
       page_size,
