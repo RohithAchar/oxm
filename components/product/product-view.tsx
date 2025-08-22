@@ -1,5 +1,11 @@
 import { MapPin, Package, Ruler, Weight, CheckCircle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { ImageCarousel } from "@/components/product/image-carousel";
 import Description from "@/components/product/product-description";
@@ -8,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getBusiness } from "@/lib/controller/business/businessOperations";
 import { getProductByIdCached } from "@/lib/controller/product/productOperations";
+import Link from "next/link";
 
 export const ProductView = async ({ id }: { id: string }) => {
   const data = await getProductByIdCached(id);
@@ -164,6 +171,13 @@ export const ProductView = async ({ id }: { id: string }) => {
                 </div>
               </div>
             </CardContent>
+            <CardFooter>
+              <Button className="w-full" variant={"default"}>
+                <Link href={`/messages/${business.profile_id}/chat`}>
+                  Chat with Supplier
+                </Link>
+              </Button>
+            </CardFooter>
           </Card>
 
           {/* Product Specifications */}
