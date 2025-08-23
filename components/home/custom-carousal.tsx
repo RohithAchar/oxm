@@ -1,8 +1,8 @@
 "use client";
-
 import Link from "next/link";
 import { CarouselItem } from "../ui/carousel";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 interface CustomCarousalProps {
   id: string;
@@ -17,15 +17,25 @@ export const CustomCarousal = ({
   image_url,
   title,
 }: CustomCarousalProps) => {
+  const { theme } = useTheme();
+
   const updateClickCount = async (id: string) => {
-    console.log("Updating click count for banner:", id);
+    // TODO: Update click count for banner
   };
+
   return (
     <CarouselItem className="pl-4" onClick={() => updateClickCount(id)}>
       <Link href={link_url || "/"}>
-        <div className="relative w-full aspect-square sm:aspect-[21/9] rounded-2xl overflow-hidden">
-          <Image alt="Banner Image" src={image_url} fill />
-          <p className="absolute z-10 text-2xl md:text-3xl lg:text-4xl bottom-6 left-6 md:bottom-8 md:left-10 lg:bottom-10 lg:left-10 font-light mix-blend-difference text-white">
+        <div className="relative w-full aspect-square sm:aspect-video rounded-2xl overflow-hidden">
+          <Image
+            alt="Banner Image"
+            src={image_url}
+            fill
+            className={`object-cover transition duration-300 hover:brightness-100 ${
+              theme === "dark" ? "brightness-75" : "brightness-100"
+            }`}
+          />
+          <p className="absolute z-10 text-2xl md:text-3xl lg:text-4xl bottom-6 left-6 md:bottom-8 md:left-10 lg:bottom-10 lg:left-10 font-semibold mix-blend-difference text-white">
             {title}
           </p>
         </div>

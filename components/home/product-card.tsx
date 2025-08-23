@@ -1,8 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { BadgeCheckIcon, Eye } from "lucide-react";
 import { Badge } from "../ui/badge";
+
+import { useTheme } from "next-themes";
 
 interface ProductCardProps {
   id: string;
@@ -21,6 +25,7 @@ export const ProductCard = ({
   priceAndQuantity,
   is_verified,
 }: ProductCardProps) => {
+  const { theme } = useTheme();
   return (
     <div
       key={id}
@@ -40,7 +45,12 @@ export const ProductCard = ({
           fill
           src={imageUrl || "/product-placeholder.png"}
           alt="Product Image"
-          className="object-cover rounded-lg"
+          className={`
+      object-cover rounded-lg
+      transition duration-300
+      hover:brightness-100
+      ${theme === "dark" ? "brightness-75" : "brightness-100"}
+      `}
         />
       </div>
       <div className="space-y-2">

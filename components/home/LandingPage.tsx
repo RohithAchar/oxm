@@ -66,7 +66,7 @@ const LandingPage = async () => {
   }
 
   return (
-    <main className="space-y-12 lg:space-y-24 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+    <main className="space-y-24 lg:space-y-48 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
       <section className="max-w-7xl mx-auto md:mt-12 p-4">
         <Carousel>
           <CarouselContent>
@@ -83,70 +83,69 @@ const LandingPage = async () => {
           <CarouselPrevious className="hidden md:block" />
           <CarouselNext className="hidden md:block" />
         </Carousel>
-      </section>
-
-      <section className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
-        <Link href={"/products"}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Explore</CardTitle>
-              <CardDescription className="hidden md:block">
-                Discover our complete product range.
-              </CardDescription>
-              <CardAction>
-                <Package className="w-5 h-5 text-primary" />
-              </CardAction>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link href={"/supplier"}>
-          <Card>
-            <CardHeader>
-              <CardTitle>My Box</CardTitle>
-              <CardDescription className="hidden md:block">
-                Manage your full business account here.
-              </CardDescription>
-              <CardAction>
-                <Users className="w-5 h-5 text-primary" />
-              </CardAction>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link href={"/learn"}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Learn X</CardTitle>
-              <CardDescription className="hidden md:block">
-                Learn fresh skills and valuable insights.
-              </CardDescription>
-              <CardAction>
-                <GraduationCap className="w-5 h-5 text-primary" />
-              </CardAction>
-            </CardHeader>
-          </Card>
-        </Link>
-        <Link href={"/products?dropship_available=true"}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Dropship</CardTitle>
-              <CardDescription className="hidden md:block">
-                Begin your exciting dropshipping venture.
-              </CardDescription>
-              <CardAction>
-                <Truck className="w-5 h-5 text-primary" />
-              </CardAction>
-            </CardHeader>
-          </Card>
-        </Link>
+        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+          <Link href={"/products"}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Explore</CardTitle>
+                <CardDescription className="hidden md:block">
+                  Discover our complete product range.
+                </CardDescription>
+                <CardAction>
+                  <Package className="w-5 h-5 text-primary" />
+                </CardAction>
+              </CardHeader>
+            </Card>
+          </Link>
+          <Link href={"/supplier"}>
+            <Card>
+              <CardHeader>
+                <CardTitle>My Box</CardTitle>
+                <CardDescription className="hidden md:block">
+                  Manage your full business account here.
+                </CardDescription>
+                <CardAction>
+                  <Users className="w-5 h-5 text-primary" />
+                </CardAction>
+              </CardHeader>
+            </Card>
+          </Link>
+          <Link href={"/learn"}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Learn X</CardTitle>
+                <CardDescription className="hidden md:block">
+                  Learn fresh skills and valuable insights.
+                </CardDescription>
+                <CardAction>
+                  <GraduationCap className="w-5 h-5 text-primary" />
+                </CardAction>
+              </CardHeader>
+            </Card>
+          </Link>
+          <Link href={"/products?dropship_available=true"}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Dropship</CardTitle>
+                <CardDescription className="hidden md:block">
+                  Begin your exciting dropshipping venture.
+                </CardDescription>
+                <CardAction>
+                  <Truck className="w-5 h-5 text-primary" />
+                </CardAction>
+              </CardHeader>
+            </Card>
+          </Link>
+        </div>
       </section>
 
       <section className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between mb-8 md:mb-12">
-          <div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-light text-foreground mb-2">
+          <div className="w-full">
+            <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
               How OpenXmart works for you
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground font-light">
+            <p className="text-sm sm:text-base text-muted-foreground text-center">
               A simple, transparent process designed to connect you with
               verified suppliers and quality products.
             </p>
