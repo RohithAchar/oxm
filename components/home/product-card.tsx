@@ -7,6 +7,7 @@ import { BadgeCheckIcon, Eye } from "lucide-react";
 import { Badge } from "../ui/badge";
 
 import { useTheme } from "next-themes";
+import { Skeleton } from "../ui/skeleton";
 
 interface ProductCardProps {
   id: string;
@@ -82,6 +83,19 @@ export const ProductCard = ({
           View Product
         </Link>
       </Button>
+    </div>
+  );
+};
+
+export const ProductCardSkeleton = () => {
+  return (
+    <div className="rounded-xl space-y-4 h-fit">
+      <Skeleton className="aspect-square w-full rounded-lg" />
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+      </div>
+      <Skeleton className="h-4 w-full" />
     </div>
   );
 };

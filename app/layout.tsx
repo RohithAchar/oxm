@@ -1,11 +1,8 @@
-import type { Metadata } from "next";
-
 import "./globals.css";
 import Providers from "@/lib/Providers";
 
 import { Navbar } from "@/components/nav/navbar";
 import MobileMenu from "@/components/nav/mobile-menu";
-import { Suspense } from "react";
 import { Open_Sans, Playfair_Display } from "next/font/google";
 
 export const metadata = {
@@ -69,9 +66,7 @@ export default async function RootLayout({
         <Providers>
           <Navbar />
           <MobileMenu />
-          <Suspense>
-            <main className="pt-14 font-playfair">{children}</main>
-          </Suspense>
+          <main className="pt-14 font-playfair">{children}</main>
         </Providers>
       </body>
     </html>

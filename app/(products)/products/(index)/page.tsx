@@ -6,14 +6,14 @@ import Link from "next/link";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string>>;
+  searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const params = await searchParams;
+  const params = await searchParams; // resolve the promise
 
-  const page = parseInt(params.page || "1", 10);
-  const page_size = parseInt(params.page_size || "8", 10);
+  const page = parseInt(params.page ?? "1", 10);
+  const page_size = parseInt(params.page_size ?? "8", 10);
   const dropshipAvailable = params.dropship_available === "true";
-  const sortBy = params.sort || ""; // New sorting parameter
+  const sortBy = params.sort ?? "";
 
   const data = await getProducts({
     page,

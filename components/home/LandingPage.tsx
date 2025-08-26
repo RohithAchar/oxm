@@ -1,11 +1,7 @@
-import NewLaunchedItems from "./new-launched-list";
 import {
-  Carousel,
-  CarouselContent,
-  CarouselNext,
-  CarouselPrevious,
-} from "../ui/carousel";
-import { CustomCarousal } from "./custom-carousal";
+  NewLaunchedItems,
+  NewLaunchedItemsSkeleton,
+} from "./new-launched-list";
 import Footer from "../footer";
 import Link from "next/link";
 import {
@@ -23,114 +19,77 @@ import {
   Users,
 } from "lucide-react";
 import RecentlyViewedList from "./recently-viewed-list";
-import { getBanners } from "@/lib/controller/home/banner";
-import { getCurrentDateAndTime } from "@/utils/static";
+import { Carousal } from "./carousal";
+import { Suspense } from "react";
+import { CustomCarousalSkeleton } from "./custom-carousal";
 
 const LandingPage = async () => {
-  const banners = await getBanners();
-  const currentDateAndTime = getCurrentDateAndTime();
-
-  // Ensure we're working with a proper Date object in UTC
-  const now = new Date(); // Use system time for consistency with UTC banner times
-
-  let activeBanners = banners.filter((banner) => {
-    const isActive = banner.is_active;
-
-    // Convert banner dates to Date objects for comparison
-    const startDate = banner.start_at ? new Date(banner.start_at) : null;
-    const endDate = banner.end_at ? new Date(banner.end_at) : null;
-
-    const isInDateRange =
-      (!startDate || startDate <= now) && (!endDate || endDate >= now);
-
-    return isActive && isInDateRange && banner.image_url;
-  });
-
-  if (activeBanners.length === 0) {
-    activeBanners = [];
-    activeBanners.push({
-      alt_text: "Banner Image",
-      click_count: 0,
-      computed_ctr: 0,
-      created_at: currentDateAndTime,
-      end_at: currentDateAndTime,
-      id: "1",
-      image_url: "/image.jpeg",
-      impression_count: 0,
-      is_active: true,
-      link_url: "/",
-      start_at: currentDateAndTime,
-      title: "Welcome to OpenXmart",
-      updated_at: currentDateAndTime,
-    });
-  }
-
   return (
     <main className="space-y-24 lg:space-y-48 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
       <section className="max-w-7xl mx-auto md:mt-12 p-4">
-        <Carousel>
-          <CarouselContent>
-            {activeBanners.map((banner) => (
-              <CustomCarousal
-                key={banner.id}
-                id={banner.id}
-                link_url={banner.link_url || "/"}
-                image_url={banner.image_url}
-                title={banner.title}
-              />
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="hidden md:block" />
-          <CarouselNext className="hidden md:block" />
-        </Carousel>
+        <Suspense fallback={<CustomCarousalSkeleton />}>
+          <Carousal />
+        </Suspense>
+
         <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
           <Link href={"/products"}>
             <Card>
-              <CardHeader>
-                <CardTitle>Explore</CardTitle>
-                <CardDescription className="hidden md:block">
-                  Discover our complete product range.
-                </CardDescription>
-                <CardAction>
+              <CardHeader className="flex items-center justify-between">
+                <div className="flex flex-col items-start gap-1">
+                  <CardTitle>Explore</CardTitle>
+                  <CardDescription className="hidden md:block">
+                    Discover our complete product range.
+                  </CardDescription>
+                </div>
+                <CardAction className="bg-primary/10 p-2 rounded-full">
                   <Package className="w-5 h-5 text-primary" />
                 </CardAction>
               </CardHeader>
             </Card>
           </Link>
+
           <Link href={"/supplier"}>
             <Card>
-              <CardHeader>
-                <CardTitle>My Box</CardTitle>
-                <CardDescription className="hidden md:block">
-                  Manage your full business account here.
-                </CardDescription>
-                <CardAction>
+              <CardHeader className="flex items-center justify-between">
+                <div className="flex flex-col items-start gap-1">
+                  <CardTitle>My Box</CardTitle>
+                  <CardDescription className="hidden md:block">
+                    Manage your full business account here.
+                  </CardDescription>
+                </div>
+                <CardAction className="bg-primary/10 p-2 rounded-full">
                   <Users className="w-5 h-5 text-primary" />
                 </CardAction>
               </CardHeader>
             </Card>
           </Link>
+
           <Link href={"/learn"}>
             <Card>
-              <CardHeader>
-                <CardTitle>Learn X</CardTitle>
-                <CardDescription className="hidden md:block">
-                  Learn fresh skills and valuable insights.
-                </CardDescription>
-                <CardAction>
+              <CardHeader className="flex items-center justify-between">
+                <div className="flex flex-col items-start gap-1">
+                  <CardTitle>Learn X</CardTitle>
+                  <CardDescription className="hidden md:block">
+                    Learn fresh skills and valuable insights.
+                  </CardDescription>
+                </div>
+                <CardAction className="bg-primary/10 p-2 rounded-full">
                   <GraduationCap className="w-5 h-5 text-primary" />
                 </CardAction>
               </CardHeader>
             </Card>
           </Link>
+
           <Link href={"/products?dropship_available=true"}>
             <Card>
-              <CardHeader>
-                <CardTitle>Dropship</CardTitle>
-                <CardDescription className="hidden md:block">
-                  Begin your exciting dropshipping venture.
-                </CardDescription>
-                <CardAction>
+              <CardHeader className="flex items-center justify-between">
+                <div className="flex flex-col items-start gap-1">
+                  <CardTitle>Dropship</CardTitle>
+                  <CardDescription className="hidden md:block">
+                    Begin your exciting dropshipping venture.
+                  </CardDescription>
+                </div>
+                <CardAction className="bg-primary/10 p-2 rounded-full">
                   <Truck className="w-5 h-5 text-primary" />
                 </CardAction>
               </CardHeader>
@@ -155,7 +114,7 @@ const LandingPage = async () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
           {/* Step 1 */}
           <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-md">
+            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-background text-foreground border flex items-center justify-center font-bold shadow-md">
               1
             </div>
             <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
@@ -169,7 +128,7 @@ const LandingPage = async () => {
 
           {/* Step 2 */}
           <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-md">
+            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-background text-foreground border flex items-center justify-center font-bold shadow-md">
               2
             </div>
             <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
@@ -183,7 +142,7 @@ const LandingPage = async () => {
 
           {/* Step 3 */}
           <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold shadow-md">
+            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-background text-foreground border flex items-center justify-center font-bold shadow-md">
               3
             </div>
             <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
@@ -197,7 +156,10 @@ const LandingPage = async () => {
         </div>
       </section>
 
-      <NewLaunchedItems />
+      <Suspense fallback={<NewLaunchedItemsSkeleton />}>
+        <NewLaunchedItems />
+      </Suspense>
+
       <RecentlyViewedList />
       <Footer />
     </main>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CarouselItem } from "../ui/carousel";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { Skeleton } from "../ui/skeleton";
 
 interface CustomCarousalProps {
   id: string;
@@ -26,7 +27,7 @@ export const CustomCarousal = ({
   return (
     <CarouselItem className="pl-4" onClick={() => updateClickCount(id)}>
       <Link href={link_url || "/"}>
-        <div className="relative w-full aspect-square sm:aspect-video rounded-2xl overflow-hidden">
+        <div className="relative w-full aspect-square sm:aspect-[7/3] rounded-2xl overflow-hidden">
           <Image
             alt="Banner Image"
             src={image_url}
@@ -41,5 +42,11 @@ export const CustomCarousal = ({
         </div>
       </Link>
     </CarouselItem>
+  );
+};
+
+export const CustomCarousalSkeleton = () => {
+  return (
+    <Skeleton className="h-full w-full aspect-square sm:aspect-[7/3] rounded-2xl overflow-hidden" />
   );
 };
