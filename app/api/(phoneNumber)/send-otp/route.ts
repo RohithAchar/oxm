@@ -1,36 +1,25 @@
-// app/api/send-otp/route.ts
+import { NextResponse } from "next/server";
 
-import { NextRequest, NextResponse } from "next/server";
-import twilio from "twilio";
+export async function POST(req: Request) {
+  const { phone } = await req.json();
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
-
-export async function POST(request: NextRequest) {
   try {
-    const { phoneNumber } = await request.json();
-
-    const verification = await client.verify.v2
-      .services(process.env.TWILIO_VERIFY_SERVICE_SID!)
-      .verifications.create({
-        to: phoneNumber,
-        channel: "sms",
-      });
-
-    return NextResponse.json({
-      success: true,
-      status: verification.status,
-    });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Failed to send OTP",
+    const res = await fetch("https://api.msg91.com/api/v5/otp", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authkey: process.env.MSG91_AUTH_KEY!, // 🔑 from env
       },
-      { status: 500 }
-    );
+      body: JSON.stringify({
+        template_id: process.env.MSG91_TEMPLATE_ID, // set in env
+        mobile: phone,
+      }),
+    });
+
+    const data = await res.json();
+    return NextResponse.json(data);
+  } catch (err) {
+    console.error("Send OTP error:", err);
+    return NextResponse.json({ error: "Failed to send OTP" }, { status: 500 });
   }
 }
