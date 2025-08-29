@@ -25,6 +25,8 @@ const sidebarItems = [
   { name: "Overview", href: "/supplier/overview", icon: BarChart3 },
   { name: "Add New Product", href: "/supplier/add-product", icon: CirclePlus },
   { name: "Products", href: "/supplier/manage-products", icon: Boxes },
+  { name: "Colors", href: "/supplier/colors", icon: CirclePlus },
+  { name: "Sizes", href: "/supplier/sizes", icon: CirclePlus },
   { name: "Orders", href: "/supplier/orders", icon: ClipboardList },
   { name: "Enquiry", href: "/supplier/enquiry", icon: MessageCircle },
   { name: "Trust Score", href: "/supplier/trust-score", icon: Shield },

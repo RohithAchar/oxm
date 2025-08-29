@@ -514,6 +514,33 @@ const getProductById = async (productId: string) => {
 
     if (productError) throw productError;
 
+    // Fetch colors and sizes associated with this product
+    const [{ data: pc }, { data: ps }] = await Promise.all([
+      supabase
+        .from("product_colors")
+        .select("color_id")
+        .eq("product_id", productId),
+      supabase
+        .from("product_sizes")
+        .select("size_id")
+        .eq("product_id", productId),
+    ]);
+
+    const colorIds = (pc || []).map((row: any) => row.color_id);
+    const sizeIds = (ps || []).map((row: any) => row.size_id);
+
+    const [{ data: colors }, { data: sizes }] = await Promise.all([
+      colorIds.length
+        ? supabase
+            .from("supplier_colors")
+            .select("id, name, hex_code")
+            .in("id", colorIds)
+        : Promise.resolve({ data: [] as any }),
+      sizeIds.length
+        ? supabase.from("supplier_sizes").select("id, name").in("id", sizeIds)
+        : Promise.resolve({ data: [] as any }),
+    ]);
+
     return {
       ...product,
       total_price: toRupee(product.total_price || 0),
@@ -522,6 +549,8 @@ const getProductById = async (productId: string) => {
           ...tier,
           price: toRupee(tier.price),
         })) || [],
+      product_colors: colors || [],
+      product_sizes: sizes || [],
     };
   } catch (error) {
     console.error("Error fetching product by ID:", error);

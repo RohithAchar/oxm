@@ -207,6 +207,39 @@ export type Database = {
           },
         ]
       }
+      product_colors: {
+        Row: {
+          color_id: string
+          created_at: string
+          product_id: string
+        }
+        Insert: {
+          color_id: string
+          created_at?: string
+          product_id: string
+        }
+        Update: {
+          color_id?: string
+          created_at?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_colors_color_id_fkey"
+            columns: ["color_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_colors"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_colors_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_images: {
         Row: {
           created_at: string | null
@@ -235,6 +268,39 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_sizes: {
+        Row: {
+          created_at: string
+          product_id: string
+          size_id: string
+        }
+        Insert: {
+          created_at?: string
+          product_id: string
+          size_id: string
+        }
+        Update: {
+          created_at?: string
+          product_id?: string
+          size_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_sizes_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_sizes_size_id_fkey"
+            columns: ["size_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_sizes"
             referencedColumns: ["id"]
           },
         ]
@@ -802,6 +868,30 @@ export type Database = {
           },
         ]
       }
+      supplier_colors: {
+        Row: {
+          created_at: string
+          hex_code: string
+          id: string
+          name: string
+          supplier_id: string
+        }
+        Insert: {
+          created_at?: string
+          hex_code: string
+          id?: string
+          name: string
+          supplier_id: string
+        }
+        Update: {
+          created_at?: string
+          hex_code?: string
+          id?: string
+          name?: string
+          supplier_id?: string
+        }
+        Relationships: []
+      }
       supplier_shipping_preferences: {
         Row: {
           base_cost: number | null
@@ -845,6 +935,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      supplier_sizes: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          supplier_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          supplier_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          supplier_id?: string
+        }
+        Relationships: []
       }
       tags: {
         Row: {
