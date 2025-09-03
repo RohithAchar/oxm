@@ -65,9 +65,15 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   }
+  
+  if(user){
+    const res = await supabase.from("profiles").select("phone_number").eq("id", user?.id).single();
+    if(res.data?.phone_number === null) {
+      // Show phone number pop up
+    }
+  }
 
-  // Phone verification removed
-
+  
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:

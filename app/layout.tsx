@@ -4,6 +4,7 @@ import Providers from "@/lib/Providers";
 import { Navbar } from "@/components/nav/navbar";
 import MobileMenu from "@/components/nav/mobile-menu";
 import { Open_Sans, Playfair_Display } from "next/font/google";
+import PhoneNumberPopover from "@/components/phone-number-popover";
 
 export const metadata = {
   title:
@@ -67,6 +68,7 @@ export default async function RootLayout({
           <Navbar />
           <MobileMenu />
           <main className="pt-14 font-playfair">{children}</main>
+          <PhoneNumberPopover />
         </Providers>
       </body>
     </html>
