@@ -43,7 +43,7 @@ const LandingPage = async () => {
           }),
         }}
       />
-      <section className="relative overflow-hidden max-w-7xl mx-auto px-4 text-center flex flex-col items-center justify-center min-h-[70vh] md:min-h-[75vh]">
+      <section className="animate-blurred-fade-in animate-duration-500 relative overflow-hidden max-w-7xl mx-auto px-4 text-center flex flex-col items-center justify-center min-h-[70vh] md:min-h-[75vh]">
         {/* Enhanced radial gradient - using shadcn colors */}
         <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 h-[680px] w-[680px] md:h-[880px] md:w-[880px] rounded-full bg-[radial-gradient(ellipse_at_center,_hsl(var(--primary))_0%,_hsl(var(--primary))/0.08_35%,_transparent_70%)] opacity-15" />
         {/* Enhanced outer ring for depth */}

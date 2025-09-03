@@ -5,6 +5,7 @@
       "name": "oxm-new",
       "dependencies": {
         "@hookform/resolvers": "^5.2.0",
+        "@midudev/tailwind-animations": "^0.2.0",
         "@radix-ui/react-accordion": "^1.2.11",
         "@radix-ui/react-alert-dialog": "^1.1.14",
         "@radix-ui/react-aspect-ratio": "^1.1.7",
@@ -140,6 +141,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.0", "", {}, "sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.25", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ=="],
+
+    "@midudev/tailwind-animations": ["@midudev/tailwind-animations@0.2.0", "", { "peerDependencies": { "tailwindcss": "^3.0.0 || ^4.0.0" } }, "sha512-4mktb060dA7SZz0LjMfhBT30HWPmQENwF4AJC7/etESWohe4pukST0ohC2yAePS5GNinhY3MXmZZ8//2ywafOQ=="],
 
     "@next/env": ["@next/env@15.3.2", "", {}, "sha512-xURk++7P7qR9JG1jJtLzPzf0qEvqCN0A/T3DXf8IPMKo9/6FfjxtEffRJIIew/bIL4T3C2jLLqBor8B/zVlx6g=="],
 
