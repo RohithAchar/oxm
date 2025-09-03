@@ -22,23 +22,61 @@ import RecentlyViewedList from "./recently-viewed-list";
 import { Carousal } from "./carousal";
 import { Suspense } from "react";
 import { CustomCarousalSkeleton } from "./custom-carousal";
+import { Button } from "../ui/button";
 
 const LandingPage = async () => {
   return (
-    <main className="space-y-24 lg:space-y-48 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
-      <section className="max-w-7xl mx-auto md:mt-12 p-4">
+    <main className="space-y-12 lg:space-y-20 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100/80">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "OpenXmart",
+            url: "https://openxmart.com",
+            potentialAction: {
+              "@type": "SearchAction",
+              target: "https://openxmart.com/products?q={search_term_string}",
+              "query-input": "required name=search_term_string",
+            },
+          }),
+        }}
+      />
+      <section className="relative overflow-hidden max-w-7xl mx-auto px-4 text-center flex flex-col items-center justify-center min-h-[70vh] md:min-h-[75vh]">
+        {/* Enhanced radial gradient - more visible */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 h-[680px] w-[680px] md:h-[880px] md:w-[880px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.15)_0%,_rgba(59,130,246,0.08)_35%,_transparent_70%)]" />
+        {/* Enhanced outer ring for depth */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 h-[1000px] w-[1000px] md:h-[1200px] md:w-[1200px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.05)_0%,_transparent_60%)]" />
+        <h1 className="text-4xl md:text-6xl font-bold mb-4">
+          India's Premier <span className="text-primary">B2B Marketplace</span>
+        </h1>
+        <p className="text-xl text-muted-foreground mb-6 max-w-3xl mx-auto">
+          Connect with verified suppliers and buyers. Whether you're sourcing products or expanding your reach, OpenXmart is your trusted partner.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href="/products">
+            <Button size="lg" className="px-8">Browse Products</Button>
+          </Link>
+          <Link href="/intro">
+            <Button variant="outline" size="lg" className="px-8">Become a Supplier</Button>
+          </Link>
+        </div>
+      </section>
+      <section className="max-w-7xl mx-auto md:mt-6 p-4">
         <Suspense fallback={<CustomCarousalSkeleton />}>
           <Carousal />
         </Suspense>
 
-        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+        <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
           <Link href={"/products"}>
             <Card>
               <CardHeader className="flex items-center justify-between">
                 <div className="flex flex-col items-start gap-1">
-                  <CardTitle>Explore</CardTitle>
+                  <CardTitle>Browse Products</CardTitle>
                   <CardDescription className="hidden md:block">
-                    Discover our complete product range.
+                    Find verified suppliers and quality products
                   </CardDescription>
                 </div>
                 <CardAction className="bg-primary/10 p-2 rounded-full">
@@ -52,9 +90,9 @@ const LandingPage = async () => {
             <Card>
               <CardHeader className="flex items-center justify-between">
                 <div className="flex flex-col items-start gap-1">
-                  <CardTitle>My Box</CardTitle>
+                  <CardTitle>Become a Supplier</CardTitle>
                   <CardDescription className="hidden md:block">
-                    Manage your full business account here.
+                    List your products and reach thousands of buyers
                   </CardDescription>
                 </div>
                 <CardAction className="bg-primary/10 p-2 rounded-full">
@@ -68,9 +106,9 @@ const LandingPage = async () => {
             <Card>
               <CardHeader className="flex items-center justify-between">
                 <div className="flex flex-col items-start gap-1">
-                  <CardTitle>Learn X</CardTitle>
+                  <CardTitle>Learn & Grow</CardTitle>
                   <CardDescription className="hidden md:block">
-                    Learn fresh skills and valuable insights.
+                    Business insights and skills for success
                   </CardDescription>
                 </div>
                 <CardAction className="bg-primary/10 p-2 rounded-full">
@@ -84,9 +122,9 @@ const LandingPage = async () => {
             <Card>
               <CardHeader className="flex items-center justify-between">
                 <div className="flex flex-col items-start gap-1">
-                  <CardTitle>Dropship</CardTitle>
+                  <CardTitle>Start Dropshipping</CardTitle>
                   <CardDescription className="hidden md:block">
-                    Begin your exciting dropshipping venture.
+                    Launch your dropshipping business today
                   </CardDescription>
                 </div>
                 <CardAction className="bg-primary/10 p-2 rounded-full">
@@ -98,60 +136,151 @@ const LandingPage = async () => {
         </div>
       </section>
 
+      <section className="max-w-7xl mx-auto px-4 py-10">
+        <h2 className="text-3xl font-semibold text-center mb-8">How can we help you today?</h2>
+
+        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <Card className="p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
+            <Link href="/products" className="block">
+              <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Package className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-2xl font-semibold mb-2">I'm a Buyer</h3>
+              <p className="text-muted-foreground mb-3">
+                Looking for quality products from verified suppliers
+              </p>
+              <Button variant="outline" className="w-full">Browse Products</Button>
+            </Link>
+          </Card>
+
+          <Card className="p-6 text-center hover:shadow-lg transition-shadow cursor-pointer">
+            <Link href="/intro" className="block">
+              <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                <Users className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-2xl font-semibold mb-2">I'm a Supplier</h3>
+              <p className="text-muted-foreground mb-3">
+                Want to list products and reach thousands of buyers
+              </p>
+              <Button className="w-full">Start Selling</Button>
+            </Link>
+          </Card>
+        </div>
+      </section>
+
       <section className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <div className="w-full">
-            <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
-              How OpenXmart works for you
-            </h2>
-            <p className="text-sm sm:text-base text-muted-foreground text-center">
-              A simple, transparent process designed to connect you with
-              verified suppliers and quality products.
-            </p>
+            <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">How OpenXmart Works</h2>
+            <p className="text-sm sm:text-base text-muted-foreground text-center">Simple, transparent process for both buyers and suppliers</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          {/* Step 1 */}
-          <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-background text-foreground border flex items-center justify-center font-bold shadow-md">
-              1
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Buyer Journey */}
+          <div className="space-y-6">
+            <h3 className="text-2xl font-semibold text-center text-primary">For Buyers</h3>
+            <div className="relative pl-6">
+              <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
+
+              <div className="relative mb-4 last:mb-0">
+                <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-primary shadow-sm" />
+                <div className="rounded-lg border bg-card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                      <Package className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Browse Products</h4>
+                      <p className="text-sm text-muted-foreground">Explore verified products from trusted suppliers</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative mb-4 last:mb-0">
+                <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-primary shadow-sm" />
+                <div className="rounded-lg border bg-card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                      <ClipboardCheck className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Order Samples</h4>
+                      <p className="text-sm text-muted-foreground">Test quality before bulk purchasing</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative mb-0">
+                <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-primary shadow-sm" />
+                <div className="rounded-lg border bg-card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Connect & Buy</h4>
+                      <p className="text-sm text-muted-foreground">Build partnerships with suppliers</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
-              <Package className="w-5 h-5 text-primary" />
-              Browse Products
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Explore products from verified Indian suppliers.
-            </p>
           </div>
 
-          {/* Step 2 */}
-          <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-background text-foreground border flex items-center justify-center font-bold shadow-md">
-              2
-            </div>
-            <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
-              <ClipboardCheck className="w-5 h-5 text-primary" />
-              Order Samples
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Test product quality before bulk buying.
-            </p>
-          </div>
+          {/* Supplier Journey */}
+          <div className="space-y-6">
+            <h3 className="text-2xl font-semibold text-center text-primary">For Suppliers</h3>
+            <div className="relative pl-6">
+              <div className="absolute left-2 top-0 bottom-0 w-px bg-border" />
 
-          {/* Step 3 */}
-          <div className="relative rounded-xl border p-6 bg-card shadow-sm hover:shadow-md transition-shadow">
-            <div className="absolute -top-4 left-6 w-10 h-10 rounded-full bg-background text-foreground border flex items-center justify-center font-bold shadow-md">
-              3
+              <div className="relative mb-4 last:mb-0">
+                <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-primary shadow-sm" />
+                <div className="rounded-lg border bg-card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                      <ClipboardCheck className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Register & Verify</h4>
+                      <p className="text-sm text-muted-foreground">Complete business verification process</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative mb-4 last:mb-0">
+                <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-primary shadow-sm" />
+                <div className="rounded-lg border bg-card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                      <Package className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">List Products</h4>
+                      <p className="text-sm text-muted-foreground">Upload your product catalog for free</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative mb-0">
+                <div className="absolute -left-2 top-1 w-4 h-4 rounded-full bg-primary shadow-sm" />
+                <div className="rounded-lg border bg-card p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                      <Users className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Get Buy Leads</h4>
+                      <p className="text-sm text-muted-foreground">Receive inquiries from serious buyers</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="mt-6 flex items-center gap-2 text-lg font-semibold text-foreground">
-              <Users className="w-5 h-5 text-primary" />
-              Contact Suppliers
-            </h3>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Buy directly and build long-term partnerships.
-            </p>
           </div>
         </div>
       </section>
