@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
 import { productFormSchema } from "@/components/product/types";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, createAnonClient } from "@/utils/supabase/server";
 import {
   getBusiness,
   isBusinessVerified,
@@ -82,7 +82,7 @@ const fetchProductsWithMetadata = async (products: ProductWithMetadata[]) => {
 
 export const getLatestProducts = async (): Promise<EnrichedProduct[]> => {
   try {
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
 
     const { data, error } = await supabase
       .from("products")
@@ -115,7 +115,7 @@ export const getLatestProducts = async (): Promise<EnrichedProduct[]> => {
 
 export const getProductMainImageUrl = async (id: string): Promise<string> => {
   try {
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
 
     const { data, error } = await supabase
       .from("product_images")
@@ -135,7 +135,7 @@ export const getProductMainImageUrl = async (id: string): Promise<string> => {
 
 export const getPricesAndQuantities = async (id: string) => {
   try {
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
 
     const { data, error } = await supabase
       .from("product_tier_pricing")

@@ -5,9 +5,9 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
 export const metadata = {
-  title: "Suppliers – OpenXmart",
+  title: "Supplier portal | OpenXmart",
   description:
-    "Connect with trusted B2B suppliers. Manage your business profile, products, and orders.",
+    "Manage your business profile, products, orders, and communications with buyers.",
   keywords: [
     "B2B suppliers",
     "supplier portal",

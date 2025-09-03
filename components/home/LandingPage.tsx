@@ -48,7 +48,7 @@ const LandingPage = async () => {
             </Card>
           </Link>
 
-          <Link href={"/supplier"}>
+          <Link href={"/intro"}>
             <Card>
               <CardHeader className="flex items-center justify-between">
                 <div className="flex flex-col items-start gap-1">

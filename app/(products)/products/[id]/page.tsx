@@ -12,18 +12,24 @@ export async function generateMetadata({
 
   if (!data) {
     return {
-      title: "Product not found",
-      description: "This product is not available.",
+      title: "Product not found | OpenXmart",
+      description: "This product is not available on OpenXmart.",
     };
   }
 
   return {
-    title: `${data.name} | My Marketplace`,
-    description: data.description?.slice(0, 160),
+    title: `${data.name} | OpenXmart`,
+    description: data.description?.slice(0, 160) || "Explore product details, specifications, and ordering options on OpenXmart.",
     openGraph: {
-      title: data.name,
-      description: data.description,
-      images: data.product_images?.map((img) => img.image_url) || [],
+      title: `${data.name} | OpenXmart`,
+      description: data.description || undefined,
+      images: (data.product_images?.map((img) => img.image_url).filter(Boolean) as string[]) || [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${data.name} | OpenXmart`,
+      description: data.description?.slice(0, 200) || "Explore product details on OpenXmart.",
+      // images: same as OG
     },
   };
 }

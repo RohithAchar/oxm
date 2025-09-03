@@ -8,9 +8,9 @@ import PhoneNumberPopover from "@/components/phone-number-popover";
 
 export const metadata = {
   title:
-    "BUY SAMPLES & BULK PRODUCTS FROM VERIFIED SUPPLIERS | OPENXMART B2BINDIA",
+    "Buy samples and bulk products from verified suppliers | OpenXmart B2B India",
   description:
-    "Avoid scams, OpenXmart helps you buy product samples and bulk directly from verified Indian suppliers. Trusted by ecom sellers,dropshippers, retailers and d2c brands.",
+    "OpenXmart helps you order product samples and bulk directly from verified Indian suppliers. Trusted by ecommerce sellers, dropshippers, retailers, and D2C brands.",
   keywords: [
     "B2B Marketplace",
     "Supplier Platform",
@@ -19,9 +19,9 @@ export const metadata = {
     "OpenXmart",
   ],
   openGraph: {
-    title: "OpenXmart",
+    title: "OpenXmart — India’s B2B marketplace for samples and bulk orders",
     description:
-      "Indian B2B Marketplace – Order product samples and connect with verified suppliers.",
+      "Order product samples and place bulk orders with verified Indian suppliers.",
     url: "https://openxmart.com",
     siteName: "OpenXmart",
     // images: [
@@ -34,13 +34,13 @@ export const metadata = {
     locale: "en_IN",
     type: "website",
   },
-  // twitter: {
-  //   card: "summary_large_image",
-  //   title: "OpenXmart",
-  //   description:
-  //     "Order samples, connect with suppliers – India's B2B Marketplace.",
-  //   images: ["/og-image.jpg"],
-  // },
+  twitter: {
+    card: "summary_large_image",
+    title: "OpenXmart — India’s B2B marketplace for samples and bulk orders",
+    description:
+      "Order product samples and place bulk orders with verified Indian suppliers.",
+    // images: ["/og-image.jpg"],
+  },
   metadataBase: new URL("https://openxmart.com"),
 };
 

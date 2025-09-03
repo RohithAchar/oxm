@@ -30,3 +30,21 @@ export const createClient = async () => {
     }
   );
 };
+
+// Anon client for public reads: does not attach auth cookies
+export const createAnonClient = async () => {
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return [];
+        },
+        setAll() {
+          // no-op for anon
+        },
+      },
+    }
+  );
+};

@@ -2,8 +2,8 @@ import { Sidebar } from "@/components/admin/sidebar";
 import { createClient } from "@/utils/supabase/server";
 
 export const metadata = {
-  title: "Suppliers – OpenXmart",
-  description: "Connect with trusted B2B suppliers. Manage your business",
+  title: "Admin | OpenXmart",
+  description: "Manage suppliers, products, and platform operations.",
   keywords: ["B2B admin", "admin portal", "manage business", "OpenXmart admin"],
 };
 
