@@ -26,7 +26,7 @@ import { Button } from "../ui/button";
 
 const LandingPage = async () => {
   return (
-    <main className="space-y-12 pb-24 lg:space-y-20 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100/80">
+    <main className="space-y-12 pb-24 lg:space-y-20 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -44,10 +44,10 @@ const LandingPage = async () => {
         }}
       />
       <section className="relative overflow-hidden max-w-7xl mx-auto px-4 text-center flex flex-col items-center justify-center min-h-[70vh] md:min-h-[75vh]">
-        {/* Enhanced radial gradient - more visible */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 h-[680px] w-[680px] md:h-[880px] md:w-[880px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.15)_0%,_rgba(59,130,246,0.08)_35%,_transparent_70%)]" />
+        {/* Enhanced radial gradient - using shadcn colors */}
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 h-[680px] w-[680px] md:h-[880px] md:w-[880px] rounded-full bg-[radial-gradient(ellipse_at_center,_hsl(var(--primary))_0%,_hsl(var(--primary))/0.08_35%,_transparent_70%)] opacity-15" />
         {/* Enhanced outer ring for depth */}
-        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 h-[1000px] w-[1000px] md:h-[1200px] md:w-[1200px] rounded-full bg-[radial-gradient(ellipse_at_center,_rgba(59,130,246,0.05)_0%,_transparent_60%)]" />
+        <div className="pointer-events-none absolute left-1/2 top-1/2 -z-10 -translate-x-1/2 -translate-y-1/2 h-[1000px] w-[1000px] md:h-[1200px] md:w-[1200px] rounded-full bg-[radial-gradient(ellipse_at_center,_hsl(var(--primary))/0.05_0%,_transparent_60%)]" />
         <h1 className="text-4xl md:text-6xl font-bold mb-4">
           India's Premier <span className="text-primary">B2B Marketplace</span>
         </h1>
