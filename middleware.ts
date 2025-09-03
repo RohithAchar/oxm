@@ -52,6 +52,21 @@ export async function middleware(request: NextRequest) {
       url.pathname = "/login";
       return NextResponse.redirect(url);
     }
+
+    // Additional gate for create-business: require verified phone
+    if (request.nextUrl.pathname.startsWith("/create-business")) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("is_phone_verified")
+        .eq("id", user.id)
+        .single();
+
+      if (!profile?.is_phone_verified) {
+        const url = request.nextUrl.clone();
+        url.pathname = "/verify-phone";
+        return NextResponse.redirect(url);
+      }
+    }
   }
 
   // Auth routes - redirect if already logged in
@@ -66,12 +81,7 @@ export async function middleware(request: NextRequest) {
     }
   }
   
-  if(user){
-    const res = await supabase.from("profiles").select("phone_number").eq("id", user?.id).single();
-    if(res.data?.phone_number === null) {
-      // Show phone number pop up
-    }
-  }
+  // Optionally, we could hint UI to show phone capture popover if needed.
 
   
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
