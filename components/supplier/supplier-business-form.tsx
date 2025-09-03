@@ -54,6 +54,10 @@ const businessType = [
 
 const SupplierBusinessForm = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(false);
+  const [altPhone, setAltPhone] = useState("");
+  const [altOtpSent, setAltOtpSent] = useState(false);
+  const [altOtp, setAltOtp] = useState("");
+  const [altVerified, setAltVerified] = useState(false);
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const router = useRouter();
 
@@ -88,6 +92,10 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
   function resetForm() {
     setProfilePic(null);
     form.reset();
+    setAltPhone("");
+    setAltOtp("");
+    setAltOtpSent(false);
+    setAltVerified(false);
   }
 
   return (
@@ -204,16 +212,93 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                 <FormItem>
                   <FormLabel>Alternative Phone Number</FormLabel>
                   <FormControl>
-                    <Input
-                      type="number"
-                      placeholder="9876543210"
-                      {...field}
-                      disabled={loading}
-                    />
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          placeholder="9876543210"
+                          value={altPhone}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setAltPhone(value);
+                            setAltVerified(false);
+                            setAltOtpSent(false);
+                            setAltOtp("");
+                            field.onChange(value);
+                          }}
+                          disabled={loading}
+                        />
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          disabled={loading || altPhone.length !== 10 || altVerified}
+                          onClick={async () => {
+                            try {
+                              setLoading(true);
+                              const res = await fetch("/api/otp/send", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ phone: altPhone, purpose: "alternate" }),
+                              });
+                              const data = await res.json();
+                              if (!res.ok || !data?.success) {
+                                throw new Error(data?.message || "Failed to send OTP");
+                              }
+                              setAltOtpSent(true);
+                              toast.success("OTP sent to alternate number");
+                            } catch (err: any) {
+                              toast.error(err?.message || "Failed to send OTP");
+                            } finally {
+                              setLoading(false);
+                            }
+                          }}
+                        >
+                          {altVerified ? "Verified" : altOtpSent ? "Resend OTP" : "Send OTP"}
+                        </Button>
+                      </div>
+                      {altOtpSent && !altVerified && (
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            placeholder="Enter 6-digit OTP"
+                            value={altOtp}
+                            onChange={(e) => setAltOtp(e.target.value)}
+                            disabled={loading}
+                          />
+                          <Button
+                            type="button"
+                            disabled={loading || altOtp.length !== 6}
+                            onClick={async () => {
+                              try {
+                                setLoading(true);
+                                const res = await fetch("/api/otp/verify", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ phone: altPhone, code: altOtp, purpose: "alternate" }),
+                                });
+                                const data = await res.json();
+                                if (!res.ok || !data?.success) {
+                                  throw new Error(data?.message || "Invalid or expired OTP");
+                                }
+                                setAltVerified(true);
+                                toast.success("Alternate phone verified");
+                              } catch (err: any) {
+                                toast.error(err?.message || "Failed to verify OTP");
+                              } finally {
+                                setLoading(false);
+                              }
+                            }}
+                          >
+                            Verify
+                          </Button>
+                        </div>
+                      )}
+                    </div>
                   </FormControl>
                   <FormDescription>
-                    Provide an alternative contact number for business
-                    inquiries.
+                    Provide an alternative contact number. It will be saved only after OTP verification.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -335,7 +420,14 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
               >
                 Reset
               </Button>
-              <Button type="submit" disabled={loading}>
+              <Button
+                type="submit"
+                disabled={
+                  loading ||
+                  // If alt phone provided, require verified before submit
+                  (altPhone.trim().length > 0 && !altVerified)
+                }
+              >
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create Business
               </Button>

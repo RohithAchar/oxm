@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const phone: string | undefined = body?.phone;
     const code: string | undefined = body?.code;
+    const purpose: string | undefined = body?.purpose; // e.g., "alternate" | undefined (primary)
 
     const indianPhoneRegex = /^[6-9]\d{9}$/;
     if (!phone || !indianPhoneRegex.test(phone) || !code || code.length !== 6) {
@@ -53,20 +54,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update profile as verified
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ is_phone_verified: true })
-      .eq("id", user.id as any);
+    if (purpose === "alternate") {
+      // For alternate flow, just confirm verification success.
+      // The frontend will allow submission, and the value will be saved during business creation.
+      return NextResponse.json({ success: true, verified: true });
+    } else {
+      // Primary flow: mark phone verified on the profile
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ is_phone_verified: true })
+        .eq("id", user.id as any);
 
-    if (updateError) {
-      return NextResponse.json(
-        { success: false, message: updateError.message },
-        { status: 500 }
-      );
+      if (updateError) {
+        return NextResponse.json(
+          { success: false, message: updateError.message },
+          { status: 500 }
+        );
+      }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, verified: true });
   } catch (error: any) {
     return NextResponse.json(
       { success: false, message: error?.message ?? "Unexpected error" },
