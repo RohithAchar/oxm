@@ -54,11 +54,17 @@ export const createBanner = async (
 
 export const getBanners = async () => {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("banners").select("*");
-  if (error) {
+  try {
+    const { data, error } = await supabase.from("banners").select("*");
+    if (error) {
+      throw error;
+    }
+    return data;
+  } catch (error) {
+    console.error("Error getting banners:", error);
     throw error;
   }
-  return data;
+
 };
 
 export const toggleBanner = async (id: string, currentStatus: boolean) => {

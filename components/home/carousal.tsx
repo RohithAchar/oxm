@@ -7,8 +7,8 @@ export const Carousal = async () => {
   const banners = await getBanners();
   const currentDateAndTime = getCurrentDateAndTime();
 
-  // Ensure we're working with a proper Date object in UTC
-  const now = new Date(); // Use system time for consistency with UTC banner times
+  // Use system time for consistency with UTC banner times
+  const now = new Date();
 
   let activeBanners = banners.filter((banner) => {
     const isActive = banner.is_active;
@@ -23,24 +23,27 @@ export const Carousal = async () => {
     return isActive && isInDateRange && banner.image_url;
   });
 
+  // Create fallback banner if no active banners exist
   if (activeBanners.length === 0) {
-    activeBanners = [];
-    activeBanners.push({
-      alt_text: "Banner Image",
-      click_count: 0,
-      computed_ctr: 0,
-      created_at: currentDateAndTime,
-      end_at: currentDateAndTime,
-      id: "1",
-      image_url: "/image.jpeg",
-      impression_count: 0,
-      is_active: true,
-      link_url: "/",
-      start_at: currentDateAndTime,
-      title: "Welcome to OpenXmart",
-      updated_at: currentDateAndTime,
-    });
+    activeBanners = [
+      {
+        alt_text: "Banner Image",
+        click_count: 0,
+        computed_ctr: 0,
+        created_at: currentDateAndTime,
+        end_at: currentDateAndTime,
+        id: "fallback-1",
+        image_url: "/image.jpeg",
+        impression_count: 0,
+        is_active: true,
+        link_url: "/",
+        start_at: currentDateAndTime,
+        title: "Welcome to OpenXmart",
+        updated_at: currentDateAndTime,
+      },
+    ];
   }
+
   return (
     <Carousel>
       <CarouselContent>

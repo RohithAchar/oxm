@@ -26,7 +26,7 @@ import { Button } from "../ui/button";
 
 const LandingPage = async () => {
   return (
-    <main className="space-y-12 lg:space-y-20 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100/80">
+    <main className="space-y-12 pb-24 lg:space-y-20 overflow-hidden bg-gradient-to-br from-slate-50 via-white to-slate-100/80">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

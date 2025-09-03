@@ -45,7 +45,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/verify-business") ||
     request.nextUrl.pathname.startsWith("/supplier") ||
     request.nextUrl.pathname.startsWith("/account") ||
-    request.nextUrl.pathname.startsWith("/messages")
+    request.nextUrl.pathname.startsWith("/messages") ||
+    request.nextUrl.pathname.startsWith("/intro")
   ) {
     if (!user) {
       const url = request.nextUrl.clone();
