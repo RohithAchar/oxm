@@ -5,6 +5,7 @@ import { Navbar } from "@/components/nav/navbar";
 import MobileMenu from "@/components/nav/mobile-menu";
 import { Open_Sans, Playfair_Display } from "next/font/google";
 import PhoneNumberPopover from "@/components/phone-number-popover";
+import RegisterSW from "@/components/RegisterSW";
 
 export const metadata = {
   title:
@@ -42,6 +43,7 @@ export const metadata = {
     // images: ["/og-image.jpg"],
   },
   metadataBase: new URL("https://openxmart.com"),
+  manifest: "/manifest.webmanifest",
 };
 
 const openSans = Open_Sans({
@@ -63,12 +65,39 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${openSans.className} antialiased`}>
+      <head>
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
+        />
+        <meta name="theme-color" content="#0a0a0a" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <link rel="apple-touch-icon" href="/android-chrome-192x192.png" />
+        <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" />
+      </head>
+      <body
+        className={`${openSans.className} antialiased overflow-x-hidden`}
+        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+      >
         <Providers>
           <Navbar />
           <MobileMenu />
-          <main className="pt-14 font-playfair">{children}</main>
+          <main
+            className="font-playfair pt-2 md:pt-14 pb-16 md:pb-0"
+            style={{
+              paddingLeft: "env(safe-area-inset-left)",
+              paddingRight: "env(safe-area-inset-right)",
+            }}
+          >
+            {children}
+          </main>
           <PhoneNumberPopover />
+          <RegisterSW />
         </Providers>
       </body>
     </html>

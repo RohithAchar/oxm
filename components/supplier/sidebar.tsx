@@ -88,10 +88,13 @@ export function Sidebar({
   return (
     <>
       {/* Mobile Top Navigation */}
-      <div className="lg:hidden bg-background border-b sticky top-0 z-50">
-        {/* Mobile Tab Navigation */}
-        <div className="overflow-x-auto">
-          <div className="flex space-x-1 px-4 pb-4 min-w-max">
+      <div className="lg:hidden sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        {/* Segmented, scrollable tab chips */}
+        <div
+          className="overflow-x-auto px-4 [scrollbar-width:none] [-ms-overflow-style:none] max-w-full"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          <div className="my-2 rounded-2xl border bg-muted/30 px-2 py-2 w-max inline-flex gap-2 snap-x snap-mandatory">
             {sidebarGroups
               .flatMap((group) => group.items)
               .map(({ name, href, icon: Icon }) => {
@@ -101,8 +104,10 @@ export function Sidebar({
                     key={name}
                     href={href}
                     className={cn(
-                      "flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition-all duration-200 whitespace-nowrap border",
-                      isActive && "bg-primary text-primary-foreground"
+                      "snap-start inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap",
+                      isActive
+                        ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                     )}
                   >
                     <Icon className="h-4 w-4" />

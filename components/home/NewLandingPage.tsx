@@ -62,7 +62,7 @@ const NewLandingPage = async () => {
       />
 
       {/* Hero */}
-      <section className="relative max-w-7xl mx-auto px-4 lg:pt-10">
+      <section className="relative max-w-7xl mx-auto px-4 pt-4 lg:pt-10">
         <div className="rounded-3xl border p-4 pt-8 md:p-12 shadow">
           {/* subtle accent removed for cleaner light mode */}
           <div className="relative mx-auto max-w-3xl text-center space-y-6">
@@ -166,7 +166,7 @@ const NewLandingPage = async () => {
         </div>
         {/* Mobile horizontal scroller */}
         <div
-          className="md:hidden -mx-4 px-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none]"
+          className="md:hidden -ml-4 px-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none]"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
           <div className="flex gap-3 snap-x snap-mandatory">

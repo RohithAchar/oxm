@@ -16,8 +16,10 @@ export const Profile = async () => {
   return (
     <div className="flex flex-col gap-6 max-w-2xl mt-4 pb-24 md:pb-0">
       <div>
-        <h1 className="text-3xl font-light">Business Profile</h1>
-        <p className="text-muted-foreground mt-1 font-light">
+        <h1 className="text-3xl font-semibold md:font-light">
+          Business Profile
+        </h1>
+        <p className="text-muted-foreground mt-1 font-medium md:font-light">
           Manage your business profile and settings.
         </p>
       </div>

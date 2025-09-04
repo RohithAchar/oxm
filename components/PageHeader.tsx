@@ -25,11 +25,13 @@ export function PageHeader({
       )}
     >
       <div>
-        <h1 className="text-3xl font-light tracking-tight text-foreground">
+        <h1 className="text-3xl font-semibold md:font-light tracking-tight text-foreground">
           {title}
         </h1>
         {description ? (
-          <p className="text-muted-foreground mt-1 font-light">{description}</p>
+          <p className="text-muted-foreground mt-1 font-medium md:font-light">
+            {description}
+          </p>
         ) : null}
       </div>
       {actions ? <div className="flex gap-2 flex-wrap">{actions}</div> : null}
