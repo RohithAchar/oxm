@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
-import LandingPage from "@/components/home/LandingPage";
+import NewLandingPage from "@/components/home/NewLandingPage";
 
 export const metadata: Metadata = {
   title: "Buy samples and bulk from verified suppliers | OpenXmart",
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 const Home = async () => {
-  return <LandingPage />;
+  return <NewLandingPage />;
 };
 
 export default Home;

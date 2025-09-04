@@ -19,7 +19,7 @@ const AccountPage = async () => {
             variant={"link"}
             className="bg-foreground text-background"
           >
-            <Link href={"/supplier/profile"}>Supplier Hub</Link>
+            <Link href={"/intro"}>Supplier Hub</Link>
           </Button>
           <Button
             asChild
