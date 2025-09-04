@@ -1,5 +1,13 @@
 import { ProductCard } from "@/components/product/product-card";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { PackageOpen } from "lucide-react";
 import { getProducts } from "@/lib/controller/product/productOperations";
 import Link from "next/link";
 
@@ -28,58 +36,95 @@ export default async function ProductsPage({
     sortedProducts = sortProducts(data.products, sortBy);
   }
 
+  const isEmpty = !sortedProducts || sortedProducts.length === 0;
+
   return (
     <div className="px-4">
-      {/* Products Grid */}
-      <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {sortedProducts.map((p) => {
-          if (!p) return null;
-          return (
-            <ProductCard
-              key={p.id}
-              id={p.id}
-              imageUrl={p.imageUrl}
-              name={p.name}
-              brand={p.brand || ""}
-              is_verified={p.is_verified || false}
-              city={p.city || ""}
-              is_sample_available={p.is_sample_available || false}
-              tierPricing={
-                p.priceAndQuantity?.map(
-                  (tier: { id: string; quantity: number; price: string }) => ({
-                    id: tier.id,
-                    quantity: tier.quantity,
-                    price: tier.price,
-                  })
-                ) || []
-              }
-            />
-          );
-        })}
-      </div>
+      {isEmpty ? (
+        <div className="flex items-center justify-center py-16 md:py-24">
+          <Card className="w-full max-w-xl border-muted-foreground/20">
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
+                <PackageOpen className="h-7 w-7 text-muted-foreground" />
+              </div>
+              <CardTitle className="text-2xl">No products found</CardTitle>
+              <CardDescription className="text-base">
+                Try adjusting your filters or explore the latest picks on the
+                home page.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+                <Button asChild size="sm">
+                  <Link href={`/products?page=1&page_size=${page_size}`}>
+                    Reset filters
+                  </Link>
+                </Button>
+                <Button asChild size="sm" variant="outline">
+                  <Link href="/">Go to home</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <>
+          {/* Products Grid */}
+          <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {sortedProducts.map((p) => {
+              if (!p) return null;
+              return (
+                <ProductCard
+                  key={p.id}
+                  id={p.id}
+                  imageUrl={p.imageUrl}
+                  name={p.name}
+                  brand={p.brand || ""}
+                  is_verified={p.is_verified || false}
+                  city={p.city || ""}
+                  is_sample_available={p.is_sample_available || false}
+                  tierPricing={
+                    p.priceAndQuantity?.map(
+                      (tier: {
+                        id: string;
+                        quantity: number;
+                        price: string;
+                      }) => ({
+                        id: tier.id,
+                        quantity: tier.quantity,
+                        price: tier.price,
+                      })
+                    ) || []
+                  }
+                />
+              );
+            })}
+          </div>
 
-      {/* Pagination */}
-      <div className="flex gap-2 mt-4 justify-center mb-6">
-        {data.total_pages > 1 &&
-          Array.from({ length: data.total_pages }, (_, i) => {
-            const pageNum = i + 1;
-            return (
-              <Button
-                asChild
-                variant={pageNum === page ? "default" : "outline"}
-                key={pageNum}
-              >
-                <Link
-                  href={`/products?page=${pageNum}&page_size=${page_size}${
-                    dropshipAvailable ? "&dropship_available=true" : ""
-                  }${sortBy ? `&sort=${sortBy}` : ""}`}
-                >
-                  {pageNum}
-                </Link>
-              </Button>
-            );
-          })}
-      </div>
+          {/* Pagination */}
+          <div className="flex gap-2 mt-4 justify-center mb-6">
+            {data.total_pages > 1 &&
+              Array.from({ length: data.total_pages }, (_, i) => {
+                const pageNum = i + 1;
+                return (
+                  <Button
+                    asChild
+                    variant={pageNum === page ? "default" : "outline"}
+                    key={pageNum}
+                  >
+                    <Link
+                      href={`/products?page=${pageNum}&page_size=${page_size}${
+                        dropshipAvailable ? "&dropship_available=true" : ""
+                      }${sortBy ? `&sort=${sortBy}` : ""}`}
+                    >
+                      {pageNum}
+                    </Link>
+                  </Button>
+                );
+              })}
+          </div>
+        </>
+      )}
     </div>
   );
 }
