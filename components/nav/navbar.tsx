@@ -7,7 +7,7 @@ import { ModeToggle } from "./theme-toggle-button";
 
 export const Navbar = () => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href="/" className="font-semibold text-xl">
           <span className="text-foreground">Open</span>

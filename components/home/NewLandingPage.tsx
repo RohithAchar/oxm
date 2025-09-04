@@ -26,7 +26,7 @@ import {
 
 const NewLandingPage = async () => {
   return (
-    <main className="space-y-10 lg:space-y-16 overflow-hidden">
+    <main className="space-y-10 lg:space-y-16 overflow-hidden pb-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -63,10 +63,10 @@ const NewLandingPage = async () => {
 
       {/* Hero */}
       <section className="relative max-w-7xl mx-auto px-4 pt-6 lg:pt-10">
-        <div className="rounded-3xl border p-6 md:p-12 shadow">
+        <div className="rounded-xl border p-4 md:p-12 shadow">
           {/* subtle accent removed for cleaner light mode */}
           <div className="relative mx-auto max-w-3xl text-center space-y-6">
-            <h1 className="text-3xl md:text-6xl font-semibold tracking-tight leading-tight text-foreground">
+            <h1 className="text-2xl md:text-6xl font-semibold tracking-tight leading-tight text-foreground">
               Find Winning Products & Verified Suppliers
             </h1>
             <p className="text-sm md:text-lg text-foreground/80">
@@ -79,33 +79,33 @@ const NewLandingPage = async () => {
                   <Search className="h-5 w-5" />
                 </div>
                 <input
-                  className="w-full h-14 md:h-16 bg-transparent outline-none text-sm md:text-lg placeholder:text-muted-foreground px-2"
+                  className="w-full h-12 md:h-16 bg-transparent outline-none text-sm md:text-lg placeholder:text-muted-foreground px-2"
                   placeholder="Search Winning Products & Verified Suppliers"
                   disabled
                 />
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="mr-1"
+                  className="mr-1 hidden sm:inline-flex"
                   aria-label="Image Search (coming soon)"
                 >
                   <Camera className="h-5 w-5" />
                 </Button>
                 <Button className="rounded-full mr-3">Search</Button>
               </div>
-              <p className="text-xs md:text-sm text-muted-foreground mt-2">
+              <p className="text-[11px] md:text-sm text-muted-foreground mt-2">
                 Recently searched: liphone, laubub water bottel, smart watches
               </p>
             </div>
           </div>
 
           {/* CTA buttons */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto">
             {/* Explore - neutral card with emerald badge */}
             <Link href="/products">
-              <div className="group rounded-2xl border p-6 text-center hover:shadow-md transition">
-                <div className="flex items-center justify-center gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center p-2 rounded-full bg-emerald-100 text-emerald-800">
+              <div className="group rounded-2xl border p-4 sm:p-6 hover:shadow-md transition">
+                <div className="flex items-center justify-start gap-3 text-foreground">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-800">
                     <Sparkles className="h-4 w-4" />
                   </span>
                   <span className="font-semibold">Explore Products</span>
@@ -114,9 +114,9 @@ const NewLandingPage = async () => {
             </Link>
             {/* Learn & Grow - indigo badge */}
             <Link href="/learn">
-              <div className="group rounded-2xl border p-6 text-center hover:shadow-md transition">
-                <div className="flex items-center justify-center gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center p-2 rounded-full bg-indigo-100 text-indigo-700">
+              <div className="group rounded-2xl border p-4 sm:p-6 hover:shadow-md transition">
+                <div className="flex items-center justify-start gap-3 text-foreground">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700">
                     <GraduationCap className="h-4 w-4" />
                   </span>
                   <span className="font-semibold">Learn & Grow</span>
@@ -129,9 +129,9 @@ const NewLandingPage = async () => {
               aria-disabled
               className="pointer-events-none opacity-70"
             >
-              <div className="rounded-2xl border p-6 text-center">
-                <div className="flex items-center justify-center gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center p-2 rounded-full bg-amber-100 text-amber-700">
+              <div className="rounded-2xl border p-4 sm:p-6">
+                <div className="flex items-center justify-start gap-3 text-foreground">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700">
                     <BadgeDot className="bg-amber-600" />
                   </span>
                   <span className="font-semibold">Markdown</span>
@@ -140,9 +140,9 @@ const NewLandingPage = async () => {
             </Link>
             {/* Dropship - orange badge */}
             <Link href="/products?dropship_available=true">
-              <div className="group rounded-2xl border p-6 text-center hover:shadow-md transition">
-                <div className="flex items-center justify-center gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center p-2 rounded-full bg-orange-100 text-orange-700">
+              <div className="group rounded-2xl border p-4 sm:p-6 hover:shadow-md transition">
+                <div className="flex items-center justify-start gap-3 text-foreground">
+                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 text-orange-700">
                     <Truck className="h-4 w-4" />
                   </span>
                   <span className="font-semibold">Dropship Ready</span>
@@ -156,7 +156,7 @@ const NewLandingPage = async () => {
       {/* How it works */}
       <section className="max-w-7xl mx-auto px-4">
         <div className="w-full text-center mb-8">
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
+          <h2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
             How OpenXmart works for you
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground">
@@ -164,7 +164,93 @@ const NewLandingPage = async () => {
             suppliers and quality products.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Mobile horizontal scroller */}
+        <div
+          className="md:hidden -mx-4 px-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none]"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          <div className="flex gap-3 snap-x snap-mandatory">
+            <div className="min-w-[80%] snap-start">
+              <Card className="hover:shadow-md transition">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                      <Package className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base md:text-lg">
+                        Browse Products
+                      </CardTitle>
+                      <CardDescription className="text-xs md:text-sm">
+                        Explore products from verified Indian suppliers.
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="min-w-[80%] snap-start">
+              <Card className="hover:shadow-md transition">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                      <Package className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base md:text-lg">
+                        Order Samples
+                      </CardTitle>
+                      <CardDescription className="text-xs md:text-sm">
+                        Test product quality before bulk buying.
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="min-w-[80%] snap-start">
+              <Card className="hover:shadow-md transition">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                      <Handshake className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base md:text-lg">
+                        Contact Suppliers
+                      </CardTitle>
+                      <CardDescription className="text-xs md:text-sm">
+                        Buy directly and build long-term partnerships.
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            </div>
+            <div className="min-w-[80%] snap-start">
+              <Card className="hover:shadow-md transition">
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                      <ShieldCheck className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base md:text-lg">
+                        Buyer Protection
+                      </CardTitle>
+                      <CardDescription className="text-xs md:text-sm">
+                        Your money is safe until delivery is verified.
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+              </Card>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop/grid */}
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
           <Card className="hover:shadow-md transition">
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -235,6 +321,18 @@ const NewLandingPage = async () => {
           </Card>
         </div>
       </section>
+
+      {/* Mobile FAB */}
+      <div className="md:hidden fixed right-4 bottom-[88px] z-50">
+        <Link href="/products">
+          <Button
+            className="h-12 w-12 rounded-full p-0 shadow-lg"
+            aria-label="Explore products"
+          >
+            <Sparkles className="h-5 w-5" />
+          </Button>
+        </Link>
+      </div>
 
       {/* Recently Viewed */}
       <RecentlyViewedList />

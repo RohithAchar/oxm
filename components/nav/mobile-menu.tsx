@@ -2,29 +2,28 @@
 
 import { Home, MessageCircle, Newspaper, User } from "lucide-react";
 import Link from "next/link";
-import { Button } from "../ui/button";
 import { usePathname } from "next/navigation";
 
 const menuItems = [
   {
     name: "Home",
     href: "/",
-    icon: <Home />,
+    icon: Home,
   },
   {
     name: "News",
     href: "/news",
-    icon: <Newspaper />,
+    icon: Newspaper,
   },
   {
     name: "Messages",
     href: "/messages",
-    icon: <MessageCircle />,
+    icon: MessageCircle,
   },
   {
-    name: "My Account",
+    name: "Account",
     href: "/account",
-    icon: <User />,
+    icon: User,
   },
 ];
 
@@ -32,19 +31,46 @@ const MobileMenu = () => {
   const pathname = usePathname();
 
   return (
-    <div className="bg-background border md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 p-4 rounded-2xl z-50">
-      <div className="flex justify-center items-center gap-4">
-        {menuItems.map((item) => (
-          <Button
-            size={"lg"}
-            variant={pathname === item.href ? "default" : "outline"}
-            asChild
-            key={item.name}
-          >
-            <Link href={item.href}>{item.icon}</Link>
-          </Button>
-        ))}
-      </div>
+    <div
+      className="md:hidden fixed left-0 right-0 bottom-0 z-50 border-t bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
+      <nav className="max-w-7xl mx-auto px-3 h-16 flex items-stretch">
+        <ul className="grid grid-cols-4 w-full">
+          {menuItems.map((item) => {
+            const isActive = pathname === item.href;
+            const Icon = item.icon;
+            return (
+              <li key={item.name} className="flex">
+                <Link
+                  href={item.href}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`group flex-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-colors mx-1
+                    ${
+                      isActive
+                        ? "text-primary"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                >
+                  <span
+                    className={`inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors
+                    ${
+                      isActive
+                        ? "bg-primary/10"
+                        : "bg-transparent group-hover:bg-muted/60"
+                    }`}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="text-[11px] font-medium leading-none">
+                    {item.name}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
     </div>
   );
 };
