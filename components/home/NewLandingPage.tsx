@@ -62,8 +62,8 @@ const NewLandingPage = async () => {
       />
 
       {/* Hero */}
-      <section className="relative max-w-7xl mx-auto px-4 pt-6 lg:pt-10">
-        <div className="rounded-xl border p-4 md:p-12 shadow">
+      <section className="relative max-w-7xl mx-auto px-4 lg:pt-10">
+        <div className="rounded-3xl border p-4 pt-8 md:p-12 shadow">
           {/* subtle accent removed for cleaner light mode */}
           <div className="relative mx-auto max-w-3xl text-center space-y-6">
             <h1 className="text-2xl md:text-6xl font-semibold tracking-tight leading-tight text-foreground">
@@ -103,7 +103,7 @@ const NewLandingPage = async () => {
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto">
             {/* Explore - neutral card with emerald badge */}
             <Link href="/products">
-              <div className="group rounded-2xl border p-4 sm:p-6 hover:shadow-md transition">
+              <div className="group rounded-2xl border border-primary/40 bg-primary/5 ring-1 ring-primary/10 p-4 sm:p-6 hover:shadow-md transition">
                 <div className="flex items-center justify-start gap-3 text-foreground">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-800">
                     <Sparkles className="h-4 w-4" />
@@ -321,18 +321,6 @@ const NewLandingPage = async () => {
           </Card>
         </div>
       </section>
-
-      {/* Mobile FAB */}
-      <div className="md:hidden fixed right-4 bottom-[88px] z-50">
-        <Link href="/products">
-          <Button
-            className="h-12 w-12 rounded-full p-0 shadow-lg"
-            aria-label="Explore products"
-          >
-            <Sparkles className="h-5 w-5" />
-          </Button>
-        </Link>
-      </div>
 
       {/* Recently Viewed */}
       <RecentlyViewedList />
