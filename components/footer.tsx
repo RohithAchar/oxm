@@ -31,23 +31,24 @@ const Footer = () => {
       title: "Products & Services",
       links: [
         { name: "Explore Products", href: "/products", icon: Package },
-        // { name: "Product Categories", href: "/category", icon: Package },
         { name: "New Launches", href: "/products?filter=new", icon: Package },
-        // { name: "Dropshipping", href: "/dropship", icon: Truck },
-        // { name: "Bulk Orders", href: "/products?type=bulk", icon: Package },
       ],
     },
     {
       title: "For Suppliers",
       links: [
-        { name: "Supplier Dashboard", href: "/supplier", icon: Building2 },
+        {
+          name: "Supplier Overview",
+          href: "/supplier/overview",
+          icon: Building2,
+        },
         { name: "Add Products", href: "/supplier/add-product", icon: Package },
         {
           name: "Manage Products",
           href: "/supplier/manage-products",
           icon: Package,
         },
-        { name: "View Profile", href: "/supplier/view-profile", icon: Users },
+        { name: "View Profile", href: "/supplier/profile", icon: Users },
         { name: "Trust Score", href: "/supplier/trust-score", icon: Shield },
         { name: "Supplier Tips", href: "/supplier/tips", icon: GraduationCap },
       ],
@@ -56,12 +57,6 @@ const Footer = () => {
       title: "Business Solutions",
       links: [
         { name: "Create Business", href: "/create-business", icon: Building2 },
-        // {
-        //   name: "Verify Business",
-        //   href: "/admin/verify-business",
-        //   icon: Shield,
-        // },
-        { name: "My Box", href: "/supplier", icon: Users },
         { name: "Orders Management", href: "/supplier/orders", icon: Package },
         { name: "Business Enquiries", href: "/supplier/enquiry", icon: Mail },
       ],
@@ -70,19 +65,24 @@ const Footer = () => {
       title: "Learning & Support",
       links: [
         { name: "Learn X", href: "/learn", icon: GraduationCap },
-        { name: "Help Center", href: "/help", icon: HelpCircle },
-        { name: "Contact Support", href: "/contact", icon: Mail },
+        {
+          name: "Contact Support",
+          href: "mailto:support@openxmart.com",
+          icon: Mail,
+        },
         { name: "Business Tips", href: "/supplier/tips", icon: GraduationCap },
-        { name: "Documentation", href: "/docs", icon: FileText },
       ],
     },
     {
       title: "Account & Legal",
       links: [
         { name: "Login", href: "/login", icon: Users },
-        // { name: "Dashboard", href: "/dashboard", icon: Users },
-        { name: "Privacy Policy", href: "/privacy", icon: Shield },
-        { name: "Terms of Service", href: "/terms", icon: FileText },
+        { name: "Privacy Policy", href: "/privacy-policy", icon: Shield },
+        {
+          name: "Terms & Conditions",
+          href: "/terms-and-conditions",
+          icon: FileText,
+        },
         { name: "Refund Policy", href: "/refund-policy", icon: FileText },
         { name: "Shipping Policy", href: "/shipping-policy", icon: Truck },
       ],
@@ -97,11 +97,12 @@ const Footer = () => {
   ];
 
   const quickLinks = [
-    { name: "About Us", href: "/about" },
-    { name: "Careers", href: "/careers" },
-    { name: "Press", href: "/press" },
-    { name: "Blog", href: "/blog" },
-    { name: "Sitemap", href: "/sitemap" },
+    { name: "Privacy Policy", href: "/privacy-policy" },
+    { name: "Terms & Conditions", href: "/terms-and-conditions" },
+    { name: "Refund Policy", href: "/refund-policy" },
+    { name: "Shipping Policy", href: "/shipping-policy" },
+    { name: "Learn", href: "/learn" },
+    { name: "Contact", href: "mailto:support@openxmart.com" },
   ];
 
   return (
@@ -164,7 +165,7 @@ const Footer = () => {
               <div className="space-y-3">
                 <div className="flex items-center space-x-3 text-gray-300">
                   <Mail className="w-5 h-5 text-blue-400" />
-                  <span>support@yourplatform.com</span>
+                  <span>support@openxmart.com</span>
                 </div>
                 <div className="flex items-center space-x-3 text-gray-300">
                   <Phone className="w-5 h-5 text-green-400" />
@@ -222,28 +223,35 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
               <p className="text-gray-400 text-sm">
-                © {currentYear} Your Platform Name. All rights reserved.
+                © {currentYear} OpenXmart Technologies. All rights reserved.
               </p>
               <div className="flex items-center space-x-4 text-xs text-gray-500">
                 <Link
-                  href="/privacy"
+                  href="/privacy-policy"
                   className="hover:text-gray-300 transition-colors"
                 >
                   Privacy
                 </Link>
                 <span>•</span>
                 <Link
-                  href="/terms"
+                  href="/terms-and-conditions"
                   className="hover:text-gray-300 transition-colors"
                 >
                   Terms
                 </Link>
                 <span>•</span>
                 <Link
-                  href="/cookies"
+                  href="/refund-policy"
                   className="hover:text-gray-300 transition-colors"
                 >
-                  Cookies
+                  Refunds
+                </Link>
+                <span>•</span>
+                <Link
+                  href="/shipping-policy"
+                  className="hover:text-gray-300 transition-colors"
+                >
+                  Shipping
                 </Link>
               </div>
             </div>
