@@ -15,12 +15,16 @@ import {
   Shield,
   Flag,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Button } from "../ui/button";
 
-const sidebarGroups = [
+type SidebarItem = { name: string; href: string; icon: LucideIcon };
+type SidebarGroup = { label: string; items: SidebarItem[] };
+
+const sidebarGroups: SidebarGroup[] = [
   {
     label: "Account",
     items: [
@@ -64,7 +68,7 @@ const sidebarGroups = [
       { name: "Notice", href: "/supplier/notice", icon: Flag },
     ],
   },
-] as const;
+];
 
 export function Sidebar({
   profileUrl,

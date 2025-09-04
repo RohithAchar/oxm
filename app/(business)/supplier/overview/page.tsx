@@ -34,6 +34,11 @@ import {
 } from "@/components/ui/table";
 import { Tables } from "@/utils/supabase/database.types";
 import { createClient } from "@/utils/supabase/client";
+import {
+  PageHeader,
+  PrimaryActionButton,
+  SecondaryActionButton,
+} from "@/components/PageHeader";
 
 // Type definitions based on your schema
 type OrderWithDetails = Tables<"sample_orders"> & {
@@ -319,23 +324,23 @@ const OverviewPage = () => {
     <div className="min-h-screen bg-background rounded-2xl pb-24 md:pb-12 lg:mt-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-light">Overview</h1>
-            <p className="text-muted-foreground mt-1 font-light">
-              Welcome back! Here's what's happening with your business.
-            </p>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            <Button variant="outline" className="w-full md:w-auto">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </Button>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Product
-            </Button>
-          </div>
+        <div className="mb-8">
+          <PageHeader
+            title="Overview"
+            description="Welcome back! Here's what's happening with your business."
+            actions={
+              <>
+                <SecondaryActionButton className="w-full md:w-auto">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </SecondaryActionButton>
+                <PrimaryActionButton>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Product
+                </PrimaryActionButton>
+              </>
+            }
+          />
         </div>
 
         {/* Stats Grid */}

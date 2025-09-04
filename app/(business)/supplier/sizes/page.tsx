@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 type Size = { id: string; name: string };
 
@@ -57,8 +58,11 @@ export default function SupplierSizesPage() {
   };
 
   return (
-    <main className="p-4 lg:p-6">
-      <h1 className="text-xl font-semibold mb-4">Manage Sizes</h1>
+    <main className="p-4 lg:p-6 space-y-6">
+      <PageHeader
+        title="Manage Sizes"
+        description="Create, update, and remove standard sizes for your products."
+      />
       <Card>
         <CardContent className="p-4 space-y-4">
           <div className="flex gap-2">

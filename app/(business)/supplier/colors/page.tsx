@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 
 type Color = { id: string; name: string; hex_code: string };
 
@@ -59,8 +60,11 @@ export default function SupplierColorsPage() {
   };
 
   return (
-    <main className="p-4 lg:p-6">
-      <h1 className="text-xl font-semibold mb-4">Manage Colors</h1>
+    <main className="p-4 lg:p-6 space-y-6">
+      <PageHeader
+        title="Manage Colors"
+        description="Create, update, and remove available colors for your catalog."
+      />
       <Card>
         <CardContent className="p-4 space-y-4">
           <div className="flex gap-2">

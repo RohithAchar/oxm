@@ -7,16 +7,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PageHeader } from "@/components/PageHeader";
+
+export const metadata = {
+  title: "Sample Orders | Supplier Portal | OpenXmart",
+  description: "Track and manage all sample requests and orders.",
+};
 
 const OrdersPage = async () => {
   return (
-    <div className="p-6">
+    <div className="p-6 space-y-6">
+      <PageHeader
+        title="Sample Orders"
+        description="Track and manage all sample requests and orders."
+      />
       <Card className="rounded-2xl shadow-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold text-gray-900">
-            Sample Orders
-          </CardTitle>
-        </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
