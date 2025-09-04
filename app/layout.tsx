@@ -64,14 +64,14 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta
           name="viewport"
           content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
         <meta name="theme-color" content="#0a0a0a" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta
           name="apple-mobile-web-app-status-bar-style"
           content="black-translucent"
@@ -88,7 +88,7 @@ export default async function RootLayout({
           <Navbar />
           <MobileMenu />
           <main
-            className="font-playfair pt-2 md:pt-14 pb-16 md:pb-0"
+            className="font-playfair pt-2 md:pt-14 md:pb-0"
             style={{
               paddingLeft: "env(safe-area-inset-left)",
               paddingRight: "env(safe-area-inset-right)",

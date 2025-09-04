@@ -7,6 +7,7 @@ import { BadgeCheckIcon, Eye } from "lucide-react";
 import { Badge } from "../ui/badge";
 
 import { useTheme } from "next-themes";
+import { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 
 interface ProductCardProps {
@@ -27,6 +28,11 @@ export const ProductCard = ({
   is_verified,
 }: ProductCardProps) => {
   const { theme } = useTheme();
+  const [imgSrc, setImgSrc] = useState<string>(
+    imageUrl && (imageUrl.startsWith("http") || imageUrl.startsWith("/"))
+      ? imageUrl
+      : "/product-placeholder.png"
+  );
   return (
     <div
       key={id}
@@ -44,8 +50,10 @@ export const ProductCard = ({
       <div className="relative aspect-square w-full overflow-hidden rounded-lg">
         <Image
           fill
-          src={imageUrl || "/product-placeholder.png"}
+          src={imgSrc || "/product-placeholder.png"}
           alt="Product Image"
+          onError={() => setImgSrc("/product-placeholder.png")}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className={`
       object-cover rounded-lg
       transition duration-300

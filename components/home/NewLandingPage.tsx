@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   GraduationCap,
   Sparkles,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,8 @@ import {
   NewLaunchedItems,
   NewLaunchedItemsSkeleton,
 } from "@/components/home/new-launched-list";
+import { Carousal } from "@/components/home/carousal";
+import { CustomCarousalSkeleton } from "./custom-carousal";
 
 const NewLandingPage = async () => {
   return (
@@ -61,8 +64,81 @@ const NewLandingPage = async () => {
         }}
       />
 
-      {/* Hero */}
-      <section className="relative max-w-7xl mx-auto px-4 pt-4 lg:pt-10">
+      {/* Mobile-only layout */}
+      <section className="md:hidden max-w-7xl mx-auto px-4 pt-2 space-y-4">
+        {/* Header: Logo, Search, Notification */}
+        <div className="flex items-center gap-2">
+          <Link href="/" className="font-semibold text-xl leading-none">
+            <span className="text-foreground">Open</span>
+            <span className="text-primary">X</span>
+            <span className="text-foreground">mart</span>
+          </Link>
+          <div className="flex-1">
+            <div className="flex items-center rounded-full border bg-background overflow-hidden h-10">
+              <div className="pl-3 pr-2 text-muted-foreground">
+                <Search className="h-4 w-4" />
+              </div>
+              <input
+                className="w-full h-full bg-transparent outline-none text-sm placeholder:text-muted-foreground px-1"
+                placeholder="Search products & suppliers"
+                disabled
+              />
+              <Link
+                href="/products"
+                className="pr-3 pl-2 text-sm text-primary font-medium"
+              >
+                Search
+              </Link>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" aria-label="Notifications">
+            <Bell className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Custom Carousel */}
+        <Suspense fallback={<CustomCarousalSkeleton />}>
+          {/* Using existing carousal that renders CustomCarousal items */}
+          <Carousal />
+        </Suspense>
+
+        {/* Horizontal pill nav */}
+        <div className="flex justify-center gap-2 overflow-x-auto no-scrollbar py-1">
+          <Link href="/products">
+            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+              Explore
+            </div>
+          </Link>
+          <Link href="/intro">
+            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+              MyBox
+            </div>
+          </Link>
+          <Link href="/learn">
+            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+              Learnx
+            </div>
+          </Link>
+          <Link href="/products?dropship_available=true">
+            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+              Dropship
+            </div>
+          </Link>
+        </div>
+
+        {/* New Arrivals */}
+        <div>
+          <Suspense fallback={<NewLaunchedItemsSkeleton />}>
+            <NewLaunchedItems />
+          </Suspense>
+        </div>
+
+        {/* Recently Viewed */}
+        <RecentlyViewedList />
+      </section>
+
+      {/* Desktop / large-screen content */}
+      <section className="hidden md:block relative max-w-7xl mx-auto px-4 pt-4 lg:pt-10">
         <div className="rounded-3xl border p-4 pt-8 md:p-12 shadow">
           {/* subtle accent removed for cleaner light mode */}
           <div className="relative mx-auto max-w-3xl text-center space-y-6">
@@ -153,8 +229,8 @@ const NewLandingPage = async () => {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="max-w-7xl mx-auto px-4">
+      {/* How it works (desktop only) */}
+      <section className="hidden md:block max-w-7xl mx-auto px-4">
         <div className="w-full text-center mb-8">
           <h2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
             How OpenXmart works for you
@@ -322,13 +398,14 @@ const NewLandingPage = async () => {
         </div>
       </section>
 
-      {/* Recently Viewed */}
-      <RecentlyViewedList />
-
-      {/* New Arrivals */}
-      <Suspense fallback={<NewLaunchedItemsSkeleton />}>
-        <NewLaunchedItems />
-      </Suspense>
+      {/* Recently Viewed and New Arrivals already shown on mobile above.
+          Show them here as well for desktop. */}
+      <div className="hidden md:block">
+        <RecentlyViewedList />
+        <Suspense fallback={<NewLaunchedItemsSkeleton />}>
+          <NewLaunchedItems />
+        </Suspense>
+      </div>
 
       {/* Footer */}
       <Footer />
