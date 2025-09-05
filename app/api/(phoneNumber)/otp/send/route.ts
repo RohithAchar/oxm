@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const phone: string | undefined = body?.phone;
-    const purpose: string | undefined = body?.purpose; // e.g., "alternate" | undefined (primary)
+    const purpose: string | undefined = body?.purpose; // e.g., "alternate" | "update" | undefined (primary)
 
     const indianPhoneRegex = /^[6-9]\d{9}$/;
     if (!phone || !indianPhoneRegex.test(phone)) {
@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
       .services(verifyServiceSid)
       .verifications.create({ to: e164Phone, channel: "sms" });
 
-    // For primary flow we historically persisted the phone on send.
-    // For alternate flow, DO NOT persist anything on send.
-    if (purpose !== "alternate") {
+    // Do not persist phone on send for "alternate" or "update" purpose.
+    // Keep historical behavior only for a strict primary flow (no purpose provided).
+    if (!purpose) {
       await supabase
         .from("profiles")
         .update({ phone_number: Number(phone) })
@@ -64,5 +64,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-
