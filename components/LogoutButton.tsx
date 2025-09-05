@@ -1,15 +1,27 @@
 "use client";
 
+import React from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 
-type props = {
+interface LogoutButtonProps {
   className?: string;
-  variant?: "default" | "destructive" | "ghost" | "link";
-};
+  variant?:
+    | "default"
+    | "destructive"
+    | "ghost"
+    | "link"
+    | "outline"
+    | "secondary";
+  children?: React.ReactNode;
+}
 
-export default function LogoutButton({ className, variant }: props) {
+export default function LogoutButton({
+  className,
+  variant,
+  children,
+}: LogoutButtonProps) {
   const router = useRouter();
   const supabase = createClient();
 
@@ -25,7 +37,7 @@ export default function LogoutButton({ className, variant }: props) {
       variant={variant || "ghost"}
       className={`text-base ${className}`}
     >
-      Logout
+      {children || "Logout"}
     </Button>
   );
 }
