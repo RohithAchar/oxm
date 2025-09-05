@@ -3,11 +3,23 @@ import {
   UserAddress,
   CreateUserAddressInput,
   UpdateUserAddressInput,
+  AddressType, // Make sure this is imported
 } from "@/types/address";
+
+// Helper function to convert Supabase response to UserAddress
+function convertToUserAddress(data: any): UserAddress {
+  return {
+    ...data,
+    address_type: data.address_type as AddressType,
+  };
+}
+
+function convertToUserAddresses(data: any[]): UserAddress[] {
+  return data.map(convertToUserAddress);
+}
 
 export async function getUserAddresses(): Promise<UserAddress[]> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -21,12 +33,11 @@ export async function getUserAddresses(): Promise<UserAddress[]> {
     .order("created_at", { ascending: false });
 
   if (error) throw error;
-  return data || [];
+  return data ? convertToUserAddresses(data) : [];
 }
 
 export async function getAddressById(id: string): Promise<UserAddress | null> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -44,15 +55,13 @@ export async function getAddressById(id: string): Promise<UserAddress | null> {
     if (error.code === "PGRST116") return null; // No rows returned
     throw error;
   }
-
-  return data;
+  return data ? convertToUserAddress(data) : null;
 }
 
 export async function createAddress(
   addressData: CreateUserAddressInput
 ): Promise<UserAddress> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -79,21 +88,19 @@ export async function createAddress(
     .single();
 
   if (error) throw error;
-  return data;
+  return convertToUserAddress(data);
 }
 
 export async function updateAddress(
   addressData: UpdateUserAddressInput
 ): Promise<UserAddress> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) throw new Error("User not authenticated");
 
   const { id, ...updateData } = addressData;
-
   const { data, error } = await supabase
     .from("user_addresses")
     .update(updateData)
@@ -103,12 +110,11 @@ export async function updateAddress(
     .single();
 
   if (error) throw error;
-  return data;
+  return convertToUserAddress(data);
 }
 
 export async function deleteAddress(id: string): Promise<void> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -128,7 +134,6 @@ export async function deleteAddress(id: string): Promise<void> {
 
 export async function setPrimaryAddress(id: string): Promise<UserAddress> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -151,14 +156,13 @@ export async function setPrimaryAddress(id: string): Promise<UserAddress> {
     .single();
 
   if (error) throw error;
-  return data;
+  return convertToUserAddress(data);
 }
 
 export async function setDefaultShippingAddress(
   id: string
 ): Promise<UserAddress> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -181,14 +185,13 @@ export async function setDefaultShippingAddress(
     .single();
 
   if (error) throw error;
-  return data;
+  return convertToUserAddress(data);
 }
 
 export async function setDefaultBillingAddress(
   id: string
 ): Promise<UserAddress> {
   const supabase = await createClient();
-
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -211,5 +214,5 @@ export async function setDefaultBillingAddress(
     .single();
 
   if (error) throw error;
-  return data;
+  return convertToUserAddress(data);
 }
