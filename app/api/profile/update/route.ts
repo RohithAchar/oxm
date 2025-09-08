@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
     // Parse the form data
     const formData = await request.formData();
     const full_name = formData.get("full_name") as string;
+    const business_type = formData.get("business_type") as string;
     const avatarFile = formData.get("avatar") as File | null;
 
     if (!full_name) {
@@ -87,11 +88,17 @@ export async function POST(request: NextRequest) {
     }
 
     // Update user metadata
+    const updateData: any = {
+      full_name,
+      avatar_url,
+    };
+
+    if (business_type) {
+      updateData.business_type = business_type;
+    }
+
     const { error: updateError } = await supabase.auth.updateUser({
-      data: {
-        full_name,
-        avatar_url,
-      },
+      data: updateData,
     });
 
     if (updateError) {
@@ -103,13 +110,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Also update the profiles table
+    const profileUpdateData: any = {
+      full_name,
+      avatar_url,
+      updated_at: new Date().toISOString(),
+    };
+
+    if (business_type) {
+      profileUpdateData.business_type = business_type;
+    }
+
     const { error: profileError } = await supabase
       .from("profiles")
-      .update({
-        full_name,
-        avatar_url,
-        updated_at: new Date().toISOString(),
-      })
+      .update(profileUpdateData)
       .eq("id", user.id);
 
     if (profileError) {

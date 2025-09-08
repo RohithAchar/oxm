@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +12,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { InfoIcon, X } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -25,6 +34,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const profileUpdateSchema = z.object({
   full_name: z.string().min(2, "Full name must be at least 2 characters"),
   avatar: z.any().optional(),
+  business_type: z.enum([
+    "Ecommerce seller",
+    "Dropshipper", 
+    "Reseller / wholesaler",
+    "Retailer",
+    "Others"
+  ]).optional(),
 });
 
 type ProfileUpdateData = z.infer<typeof profileUpdateSchema>;
@@ -40,14 +56,28 @@ export const ProfileEditForm = ({ user }: ProfileEditFormProps) => {
   );
   const [phone, setPhone] = useState<string>("");
   const [updatingPhone, setUpdatingPhone] = useState<boolean>(false);
+  const [showBusinessTypeReminder, setShowBusinessTypeReminder] = useState<boolean>(false);
   const router = useRouter();
 
   const form = useForm<ProfileUpdateData>({
     resolver: zodResolver(profileUpdateSchema),
     defaultValues: {
       full_name: user.user_metadata.full_name || "",
+      business_type: user.user_metadata.business_type || undefined,
     },
   });
+
+  // Check if user has business type and show reminder
+  useEffect(() => {
+    const hasBusinessType = user.user_metadata.business_type;
+    setShowBusinessTypeReminder(!hasBusinessType);
+  }, [user.user_metadata.business_type]);
+
+  // Handle business type selection
+  const handleBusinessTypeChange = (value: string) => {
+    form.setValue("business_type", value as "Ecommerce seller" | "Dropshipper" | "Reseller / wholesaler" | "Retailer" | "Others");
+    setShowBusinessTypeReminder(false);
+  };
 
   const onSubmit = async (data: ProfileUpdateData) => {
     try {
@@ -55,6 +85,10 @@ export const ProfileEditForm = ({ user }: ProfileEditFormProps) => {
 
       const formData = new FormData();
       formData.append("full_name", data.full_name);
+
+      if (data.business_type) {
+        formData.append("business_type", data.business_type);
+      }
 
       if (data.avatar) {
         formData.append("avatar", data.avatar);
@@ -109,6 +143,26 @@ export const ProfileEditForm = ({ user }: ProfileEditFormProps) => {
       <CardHeader>
         <CardTitle>Profile Information</CardTitle>
       </CardHeader>
+      {showBusinessTypeReminder && (
+        <div className="px-6 pt-0 pb-4">
+          <Alert className="border-amber-200 bg-amber-50">
+            <InfoIcon className="h-4 w-4 text-amber-600" />
+            <AlertDescription className="text-amber-800 flex items-center justify-between">
+              <span>
+                <strong>Complete your profile setup!</strong> Adding your business type helps us customize your experience and provide relevant features for your business.
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowBusinessTypeReminder(false)}
+                className="h-6 w-6 p-0 text-amber-600 hover:text-amber-800 hover:bg-amber-100"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -176,6 +230,40 @@ export const ProfileEditForm = ({ user }: ProfileEditFormProps) => {
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="business_type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Business Type</FormLabel>
+                  <Select onValueChange={handleBusinessTypeChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your business type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Ecommerce seller">Ecommerce seller</SelectItem>
+                      <SelectItem value="Dropshipper">Dropshipper</SelectItem>
+                      <SelectItem value="Reseller / wholesaler">Reseller / wholesaler</SelectItem>
+                      <SelectItem value="Retailer">Retailer</SelectItem>
+                      <SelectItem value="Others">Others</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {showBusinessTypeReminder && (
+              <Alert className="border-blue-200 bg-blue-50">
+                <InfoIcon className="h-4 w-4 text-blue-600" />
+                <AlertDescription className="text-blue-800">
+                  <strong>Complete your profile!</strong> Please select your business type to help us provide you with better recommendations and features tailored to your business needs.
+                </AlertDescription>
+              </Alert>
+            )}
 
             <div className="space-y-2">
               <Label>Email</Label>
