@@ -2,7 +2,6 @@ import {
   NewLaunchedItems,
   NewLaunchedItemsSkeleton,
 } from "./new-launched-list";
-import Footer from "../footer";
 import Link from "next/link";
 import {
   Card,
@@ -317,7 +316,6 @@ const LandingPage = async () => {
       </Suspense>
 
       <RecentlyViewedList />
-      <Footer />
     </main>
   );
 };

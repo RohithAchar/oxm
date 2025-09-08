@@ -6,6 +6,7 @@ import MobileMenu from "@/components/nav/mobile-menu";
 import { Open_Sans, Playfair_Display } from "next/font/google";
 import PhoneNumberPopover from "@/components/phone-number-popover";
 import RegisterSW from "@/components/RegisterSW";
+import Footer from "@/components/footer";
 
 export const metadata = {
   title:
@@ -98,6 +99,7 @@ export default async function RootLayout({
           </main>
           <PhoneNumberPopover />
           <RegisterSW />
+          <Footer />
         </Providers>
       </body>
     </html>

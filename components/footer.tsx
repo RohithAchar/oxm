@@ -6,16 +6,12 @@ import {
   GraduationCap,
   Truck,
   Mail,
-  Phone,
-  MapPin,
-  Facebook,
   Twitter,
   Instagram,
   Linkedin,
+  Youtube,
   Shield,
   FileText,
-  HelpCircle,
-  Building2,
 } from "lucide-react";
 
 // Usage example in your LandingPage component:
@@ -28,49 +24,13 @@ const Footer = () => {
 
   const footerSections = [
     {
-      title: "Products & Services",
+      title: "Links",
       links: [
-        { name: "Explore Products", href: "/products", icon: Package },
-        { name: "New Launches", href: "/products?filter=new", icon: Package },
-      ],
-    },
-    {
-      title: "For Suppliers",
-      links: [
-        {
-          name: "Supplier Overview",
-          href: "/supplier/overview",
-          icon: Building2,
-        },
-        { name: "Add Products", href: "/supplier/add-product", icon: Package },
-        {
-          name: "Manage Products",
-          href: "/supplier/manage-products",
-          icon: Package,
-        },
-        { name: "View Profile", href: "/supplier/profile", icon: Users },
-        { name: "Trust Score", href: "/supplier/trust-score", icon: Shield },
-        { name: "Supplier Tips", href: "/supplier/tips", icon: GraduationCap },
-      ],
-    },
-    {
-      title: "Business Solutions",
-      links: [
-        { name: "Create Business", href: "/create-business", icon: Building2 },
-        { name: "Orders Management", href: "/supplier/orders", icon: Package },
-        { name: "Business Enquiries", href: "/supplier/enquiry", icon: Mail },
-      ],
-    },
-    {
-      title: "Learning & Support",
-      links: [
-        { name: "Learn X", href: "/learn", icon: GraduationCap },
-        {
-          name: "Contact Support",
-          href: "mailto:support@openxmart.com",
-          icon: Mail,
-        },
-        { name: "Business Tips", href: "/supplier/tips", icon: GraduationCap },
+        { name: "About", href: "/about", icon: FileText },
+        { name: "LearnX Blog", href: "/learn", icon: GraduationCap },
+        { name: "Buyer Policy", href: "/buyer-policy", icon: FileText },
+        { name: "Supplier Policy", href: "/supplier-policy", icon: FileText },
+        { name: "Contact", href: "mailto:support@openxmart.com", icon: Mail },
       ],
     },
     {
@@ -79,7 +39,7 @@ const Footer = () => {
         { name: "Login", href: "/login", icon: Users },
         { name: "Privacy Policy", href: "/privacy-policy", icon: Shield },
         {
-          name: "Terms & Conditions",
+          name: "Terms of Service",
           href: "/terms-and-conditions",
           icon: FileText,
         },
@@ -90,26 +50,20 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { name: "Facebook", href: "https://facebook.com", icon: Facebook },
-    { name: "Twitter", href: "https://twitter.com", icon: Twitter },
-    { name: "Instagram", href: "https://instagram.com", icon: Instagram },
     { name: "LinkedIn", href: "https://linkedin.com", icon: Linkedin },
+    { name: "Instagram", href: "https://instagram.com", icon: Instagram },
+    { name: "YouTube", href: "https://youtube.com", icon: Youtube },
+    { name: "Threads", href: "https://www.threads.net", icon: Instagram },
+    { name: "X (Twitter)", href: "https://twitter.com", icon: Twitter },
   ];
 
-  const quickLinks = [
-    { name: "Privacy Policy", href: "/privacy-policy" },
-    { name: "Terms & Conditions", href: "/terms-and-conditions" },
-    { name: "Refund Policy", href: "/refund-policy" },
-    { name: "Shipping Policy", href: "/shipping-policy" },
-    { name: "Learn", href: "/learn" },
-    { name: "Contact", href: "mailto:support@openxmart.com" },
-  ];
+  const quickLinks: { name: string; href: string }[] = [];
 
   return (
     <footer className="bg-gray-900 text-white mt-24 lg:mt-48">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
               <h3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
@@ -132,89 +86,48 @@ const Footer = () => {
               </ul>
             </div>
           ))}
+          {/* Social Column */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+              Social
+            </h3>
+            <div className="flex items-center gap-3 pt-1">
+              {socialLinks.map((social, index) => (
+                <a
+                  key={index}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
+                  aria-label={`Follow us on ${social.name}`}
+                >
+                  <social.icon className="w-4 h-4" />
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Newsletter Signup */}
         <div className="mt-16 pt-8 border-t border-gray-700">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div>
-              <h3 className="text-2xl font-bold text-white mb-4">
-                Stay Updated
-              </h3>
-              <p className="text-gray-300 mb-6">
-                Get the latest product updates, exclusive deals, and business
-                tips delivered to your inbox.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  className="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200 whitespace-nowrap">
-                  Subscribe Now
-                </button>
-              </div>
-            </div>
-
-            {/* Contact Info */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-white mb-4">
-                Get In Touch
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3 text-gray-300">
-                  <Mail className="w-5 h-5 text-blue-400" />
-                  <span>support@openxmart.com</span>
-                </div>
-                <div className="flex items-center space-x-3 text-gray-300">
-                  <Phone className="w-5 h-5 text-green-400" />
-                  <span>+91 12345 67890</span>
-                </div>
-                <div className="flex items-center space-x-3 text-gray-300">
-                  <MapPin className="w-5 h-5 text-red-400" />
-                  <span>Bengaluru, Karnataka, India</span>
-                </div>
-              </div>
-
-              {/* Social Links */}
-              <div className="pt-4">
-                <h4 className="text-sm font-semibold text-white mb-3">
-                  Follow Us
-                </h4>
-                <div className="flex space-x-4">
-                  {socialLinks.map((social, index) => (
-                    <a
-                      key={index}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-700 transition-all duration-200"
-                      aria-label={`Follow us on ${social.name}`}
-                    >
-                      <social.icon className="w-5 h-5" />
-                    </a>
-                  ))}
-                </div>
-              </div>
+          <div className="max-w-3xl">
+            <h3 className="text-2xl font-bold text-white mb-4">
+              Get Weekly Winning Products
+            </h3>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                placeholder="Enter Email/WhatsApp"
+                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200 whitespace-nowrap">
+                Subscribe
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Quick Links */}
-        <div className="mt-12 pt-8 border-t border-gray-700">
-          <div className="flex flex-wrap justify-center gap-6 mb-8">
-            {quickLinks.map((link, index) => (
-              <Link
-                key={index}
-                href={link.href}
-                className="text-gray-300 hover:text-white text-sm transition-colors duration-200 hover:underline"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* Quick Links removed as per updated footer content */}
       </div>
 
       {/* Bottom Bar */}

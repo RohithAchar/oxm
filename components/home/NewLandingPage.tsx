@@ -19,7 +19,6 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import RecentlyViewedList from "@/components/home/recently-viewed-list";
-import Footer from "@/components/footer";
 import {
   NewLaunchedItems,
   NewLaunchedItemsSkeleton,
@@ -407,8 +406,7 @@ const NewLandingPage = async () => {
         </Suspense>
       </div>
 
-      {/* Footer */}
-      <Footer />
+      {/* Footer is rendered globally via layout */}
     </main>
   );
 };
