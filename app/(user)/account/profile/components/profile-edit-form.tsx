@@ -39,10 +39,7 @@ export const ProfileEditForm = ({ user }: ProfileEditFormProps) => {
     user.user_metadata.avatar_url || null
   );
   const [phone, setPhone] = useState<string>("");
-  const [otp, setOtp] = useState<string>("");
-  const [otpSent, setOtpSent] = useState<boolean>(false);
-  const [sendingOtp, setSendingOtp] = useState<boolean>(false);
-  const [verifyingOtp, setVerifyingOtp] = useState<boolean>(false);
+  const [updatingPhone, setUpdatingPhone] = useState<boolean>(false);
   const router = useRouter();
 
   const form = useForm<ProfileUpdateData>({
@@ -82,55 +79,28 @@ export const ProfileEditForm = ({ user }: ProfileEditFormProps) => {
     }
   };
 
-  const sendOtp = async () => {
+  const updatePhone = async () => {
     const indianPhoneRegex = /^[6-9]\d{9}$/;
     if (!indianPhoneRegex.test(phone)) {
       toast.error("Enter a valid 10-digit Indian number");
       return;
     }
     try {
-      setSendingOtp(true);
-      const res = await fetch("/api/otp/send", {
+      setUpdatingPhone(true);
+      const res = await fetch("/api/phone-number-exists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, purpose: "update" }),
+        body: JSON.stringify({ phone }),
       });
       const data = await res.json();
       if (!res.ok || !data?.success) {
-        throw new Error(data?.message || "Failed to send OTP");
+        throw new Error(data?.message || "Failed to update phone number");
       }
-      toast.success("OTP sent to +91 " + phone);
-      setOtpSent(true);
+      toast.success("Phone number updated successfully");
     } catch (e: any) {
-      toast.error(e?.message || "Could not send OTP");
+      toast.error(e?.message || "Could not update phone number");
     } finally {
-      setSendingOtp(false);
-    }
-  };
-
-  const verifyOtp = async () => {
-    if (otp.length !== 6) {
-      toast.error("Enter the 6-digit OTP");
-      return;
-    }
-    try {
-      setVerifyingOtp(true);
-      const res = await fetch("/api/otp/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, code: otp, purpose: "update" }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data?.success || !data?.verified) {
-        throw new Error(data?.message || "OTP verification failed");
-      }
-      toast.success("Phone number updated and verified");
-      setOtp("");
-      setOtpSent(false);
-    } catch (e: any) {
-      toast.error(e?.message || "Verification failed");
-    } finally {
-      setVerifyingOtp(false);
+      setUpdatingPhone(false);
     }
   };
 
@@ -236,51 +206,20 @@ export const ProfileEditForm = ({ user }: ProfileEditFormProps) => {
                       .replace(/\D/g, "")
                       .slice(0, 10);
                     setPhone(digits);
-                    setOtpSent(false);
-                    setOtp("");
                   }}
-                  disabled={loading || sendingOtp || verifyingOtp}
+                  disabled={loading || updatingPhone}
                   className="flex-1"
                 />
                 <Button
                   type="button"
-                  onClick={sendOtp}
-                  disabled={sendingOtp || verifyingOtp || phone.length !== 10}
+                  onClick={updatePhone}
+                  disabled={updatingPhone || phone.length !== 10}
                 >
-                  {sendingOtp
-                    ? "Sending..."
-                    : otpSent
-                    ? "Resend OTP"
-                    : "Send OTP"}
+                  {updatingPhone ? "Updating..." : "Update Phone"}
                 </Button>
               </div>
-              {otpSent && (
-                <div className="flex gap-2 pt-2">
-                  <Input
-                    inputMode="numeric"
-                    placeholder="Enter 6-digit OTP"
-                    maxLength={6}
-                    value={otp}
-                    onChange={(e) => {
-                      const digits = e.target.value
-                        .replace(/\D/g, "")
-                        .slice(0, 6);
-                      setOtp(digits);
-                    }}
-                    disabled={verifyingOtp}
-                  />
-                  <Button
-                    type="button"
-                    onClick={verifyOtp}
-                    disabled={verifyingOtp || otp.length !== 6}
-                  >
-                    {verifyingOtp ? "Verifying..." : "Verify"}
-                  </Button>
-                </div>
-              )}
               <p className="text-sm text-muted-foreground">
-                Use your active Indian mobile number. We’ll verify it with an
-                OTP.
+                Enter your Indian mobile number. It will be updated without verification.
               </p>
             </div>
 

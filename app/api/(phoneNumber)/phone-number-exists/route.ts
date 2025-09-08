@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     const phoneNumber = Number(phone);
     const { error: upsertError } = await supabase
       .from("profiles")
-      .update({ phone_number: phoneNumber })
+      .update({ phone_number: phoneNumber, is_phone_verified: false })
       .eq("id", user.id as any);
 
     if (upsertError) {
