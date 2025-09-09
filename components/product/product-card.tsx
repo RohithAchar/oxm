@@ -36,6 +36,15 @@ export const ProductCard = ({
       <div className="relative p-2 bg-card border rounded-xl space-y-4 hover:shadow-md transition-shadow">
         {/* Top badges - stacked vertically when both present */}
         <div className="absolute right-3 top-3 z-20 flex flex-col gap-1">
+          {is_verified && (
+            <Badge
+              variant="secondary"
+              className="bg-blue-500 text-white dark:bg-blue-600"
+            >
+              <BadgeCheckIcon className="w-3 h-3 mr-1" />
+              Verified
+            </Badge>
+          )}
           {is_sample_available && (
             <Badge
               variant="secondary"
@@ -63,11 +72,6 @@ export const ProductCard = ({
           </h1>
           <div className="flex items-center justify-between">
             <p className="truncate text-muted-foreground text-xs">{brand}</p>
-            {is_verified && (
-              <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
-                Verified ✓
-              </span>
-            )}
           </div>
           {city && (
             <p className="flex items-center gap-1 truncate text-muted-foreground text-xs">

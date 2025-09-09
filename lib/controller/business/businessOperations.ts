@@ -289,7 +289,7 @@ export const isBusinessVerified = async (
 
   const { data, error } = await supabase
     .from("supplier_businesses")
-    .select("*")
+    .select("is_verified")
     .eq("id", user.id)
     .single();
 
@@ -305,5 +305,5 @@ export const isBusinessVerified = async (
     throw error;
   }
 
-  return data !== null;
+  return data.is_verified || false;
 };
