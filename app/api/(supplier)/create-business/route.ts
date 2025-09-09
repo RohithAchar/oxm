@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
       gst_certificate_url,
       profile_avatar_url,
       type,
+      main_phone,
       alternate_phone,
     } = body;
 
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest) {
       !state ||
       !pincode ||
       !type ||
+      !main_phone ||
       !alternate_phone
     ) {
       return NextResponse.json(
@@ -67,6 +69,7 @@ export async function POST(req: NextRequest) {
             state: !state ? "State is required" : null,
             pincode: !pincode ? "Pincode is required" : null,
             type: !type ? "Type is required" : null,
+            main_phone: !main_phone ? "Main phone is required" : null,
             alternate_phone: !alternate_phone
               ? "Alternate phone is required"
               : null,
@@ -109,7 +112,7 @@ export async function POST(req: NextRequest) {
           city,
           state,
           pincode,
-          phone: Number(profile.data?.phone_number),
+          phone: Number(main_phone),
           gst_certificate_url,
           is_verified: true,
           profile_avatar_url,

@@ -4,7 +4,6 @@ import Providers from "@/lib/Providers";
 import { Navbar } from "@/components/nav/navbar";
 import MobileMenu from "@/components/nav/mobile-menu";
 import { Open_Sans, Playfair_Display } from "next/font/google";
-import PhoneNumberPopover from "@/components/phone-number-popover";
 import RegisterSW from "@/components/RegisterSW";
 import Footer from "@/components/footer";
 
@@ -97,7 +96,6 @@ export default async function RootLayout({
           >
             {children}
           </main>
-          <PhoneNumberPopover />
           <RegisterSW />
           <Footer />
         </Providers>

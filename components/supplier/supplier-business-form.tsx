@@ -54,17 +54,23 @@ const businessType = [
 
 const SupplierBusinessForm = ({ userId }: { userId: string }) => {
   const [loading, setLoading] = useState(false);
+  const [mainPhone, setMainPhone] = useState("");
+  const [mainOtpSent, setMainOtpSent] = useState(false);
+  const [mainOtp, setMainOtp] = useState("");
+  const [mainVerified, setMainVerified] = useState(false);
   const [altPhone, setAltPhone] = useState("");
   const [altOtpSent, setAltOtpSent] = useState(false);
   const [altOtp, setAltOtp] = useState("");
   const [altVerified, setAltVerified] = useState(false);
   const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [gstCertificate, setGstCertificate] = useState<string | null>(null);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof createBusinessformSchema>>({
     resolver: zodResolver(createBusinessformSchema),
     defaultValues: {
       businessName: "",
+      main_phone: "",
       alternative_phone: "",
       gstNumber: "",
       city: "",
@@ -72,6 +78,7 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
       pincode: "",
       businessAddress: "",
       profile_pic: undefined,
+      gst_certificate: undefined,
     },
   });
 
@@ -91,7 +98,12 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
 
   function resetForm() {
     setProfilePic(null);
+    setGstCertificate(null);
     form.reset();
+    setMainPhone("");
+    setMainOtp("");
+    setMainOtpSent(false);
+    setMainVerified(false);
     setAltPhone("");
     setAltOtp("");
     setAltOtpSent(false);
@@ -207,6 +219,106 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
 
             <FormField
               control={form.control}
+              name="main_phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Main Phone Number</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex gap-2">
+                        <Input
+                          type="number"
+                          placeholder="9876543210"
+                          value={mainPhone}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setMainPhone(value);
+                            setMainVerified(false);
+                            setMainOtpSent(false);
+                            setMainOtp("");
+                            field.onChange(value);
+                          }}
+                          disabled={loading}
+                        />
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          disabled={loading || mainPhone.length !== 10 || mainVerified}
+                          onClick={async () => {
+                            try {
+                              setLoading(true);
+                              const res = await fetch("/api/otp/send", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ phone: mainPhone, purpose: "main" }),
+                              });
+                              const data = await res.json();
+                              if (!res.ok || !data?.success) {
+                                throw new Error(data?.message || "Failed to send OTP");
+                              }
+                              setMainOtpSent(true);
+                              toast.success("OTP sent to main number");
+                            } catch (err: any) {
+                              toast.error(err?.message || "Failed to send OTP");
+                            } finally {
+                              setLoading(false);
+                            }
+                          }}
+                        >
+                          {mainVerified ? "Verified" : mainOtpSent ? "Resend OTP" : "Send OTP"}
+                        </Button>
+                      </div>
+                      {mainOtpSent && !mainVerified && (
+                        <div className="flex gap-2">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            maxLength={6}
+                            placeholder="Enter 6-digit OTP"
+                            value={mainOtp}
+                            onChange={(e) => setMainOtp(e.target.value)}
+                            disabled={loading}
+                          />
+                          <Button
+                            type="button"
+                            disabled={loading || mainOtp.length !== 6}
+                            onClick={async () => {
+                              try {
+                                setLoading(true);
+                                const res = await fetch("/api/otp/verify", {
+                                  method: "POST",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ phone: mainPhone, code: mainOtp, purpose: "main" }),
+                                });
+                                const data = await res.json();
+                                if (!res.ok || !data?.success) {
+                                  throw new Error(data?.message || "Invalid or expired OTP");
+                                }
+                                setMainVerified(true);
+                                toast.success("Main phone verified");
+                              } catch (err: any) {
+                                toast.error(err?.message || "Failed to verify OTP");
+                              } finally {
+                                setLoading(false);
+                              }
+                            }}
+                          >
+                            Verify
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormDescription>
+                    Provide your main business contact number. It will be saved only after OTP verification.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="alternative_phone"
               render={({ field }) => (
                 <FormItem>
@@ -304,28 +416,65 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="gstNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>GST Number</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="text"
-                      placeholder="22AAAAA0000A1Z5"
-                      {...field}
-                      disabled={loading}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Enter your 15-digit GST registration number issued by the
-                    tax authorities.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="gstNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>GST Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        placeholder="22AAAAA0000A1Z5"
+                        {...field}
+                        disabled={loading}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Enter your 15-digit GST registration number issued by the
+                      tax authorities.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="gst_certificate"
+                render={({ field: { onChange, value, ...field } }) => (
+                  <FormItem>
+                    <FormLabel>GST Certificate</FormLabel>
+                    <FormControl>
+                      <div className="space-y-2">
+                        <Input
+                          type="file"
+                          accept=".pdf,.jpg,.jpeg,.png,.webp"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              onChange(file);
+                              setGstCertificate(file.name);
+                            }
+                          }}
+                          disabled={loading}
+                          {...field}
+                        />
+                        {gstCertificate && (
+                          <p className="text-sm text-green-600">
+                            Selected: {gstCertificate}
+                          </p>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormDescription>
+                      Upload your GST certificate (PDF, JPEG, PNG, or WEBP format, max 5MB).
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="city"
@@ -424,6 +573,8 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                 type="submit"
                 disabled={
                   loading ||
+                  // Main phone is required and must be verified
+                  !mainVerified ||
                   // If alt phone provided, require verified before submit
                   (altPhone.trim().length > 0 && !altVerified)
                 }

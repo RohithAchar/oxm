@@ -24,6 +24,10 @@ export const createBusinessformSchema = z.object({
     "IMPORTER",
     "OTHER",
   ]),
+  main_phone: z
+    .string()
+    .min(10, "Main phone number is required")
+    .max(10, "Main phone number must be 10 characters"),
   alternative_phone: z
     .string()
     .min(10, "Alternative phone number is required")
@@ -41,4 +45,17 @@ export const createBusinessformSchema = z.object({
       message: "Profile picture must be JPEG, PNG, or WEBP and under 1MB",
     }
   ),
+  gst_certificate: z.custom<File>(
+    (file) => {
+      if (!(file instanceof File)) return false;
+
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+
+      return file.size <= maxSizeInBytes && allowedTypes.includes(file.type);
+    },
+    {
+      message: "GST certificate must be JPEG, PNG, WEBP, or PDF and under 5MB",
+    }
+  ).optional(),
 });

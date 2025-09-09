@@ -53,6 +53,7 @@ export const ProfileForm = ({ business }: { business: BusinessSchema }) => {
       state: business.state,
       pincode: business.pincode,
       type: business.type || "OTHER",
+      main_phone: business.phone?.toString() || "",
       alternate_phone: business.alternate_phone || "",
     },
   });
@@ -178,6 +179,24 @@ export const ProfileForm = ({ business }: { business: BusinessSchema }) => {
                 <FormDescription>
                   What type of business is this?
                 </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="main_phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Main Phone</FormLabel>
+                <FormControl>
+                  <Input
+                    disabled={loading}
+                    type="number"
+                    {...field}
+                    placeholder="Enter Main Phone"
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

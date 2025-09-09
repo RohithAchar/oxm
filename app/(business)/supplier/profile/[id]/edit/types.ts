@@ -34,6 +34,9 @@ export const BusinessProfileUpdateSchema = z.object({
   state: z.string().min(1, "State is required"),
   pincode: z.string().min(1, "Pincode is required"),
   type: z.enum(businessType, "Business type is required"),
+  main_phone: z
+    .string()
+    .min(10, "Main phone number must be at least 10 digits"),
   alternate_phone: z
     .string()
     .min(10, "Alternate phone number must be at least 10 digits"),

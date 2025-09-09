@@ -102,6 +102,7 @@ export const updateBusiness = async (
         state: data.state,
         pincode: data.pincode,
         type: data.type,
+        phone: Number(data.main_phone),
         alternate_phone: data.alternate_phone,
         profile_avatar_url: imageUrl,
       })
@@ -157,6 +158,7 @@ export const createBusiness = async (
 
     const validatedFields = createBusinessformSchema.safeParse({
       businessName: data.businessName,
+      main_phone: data.main_phone,
       alternative_phone: data.alternative_phone,
       gstNumber: data.gstNumber,
       city: data.city,
@@ -164,6 +166,7 @@ export const createBusiness = async (
       pincode: data.pincode,
       businessAddress: data.businessAddress,
       profile_pic: data.profile_pic,
+      gst_certificate: data.gst_certificate,
       type: data.type,
     });
 
@@ -194,6 +197,30 @@ export const createBusiness = async (
       imageUrl = urlData.publicUrl;
     }
 
+    // Upload GST certificate and get the public URL
+    let gstCertificateUrl = null;
+    if (data.gst_certificate) {
+      const timestamp = Date.now();
+      const randomString = Math.random().toString(36).substring(2, 15);
+      const fileExtension = data.gst_certificate.name.split('.').pop();
+      const fileName = `gst-certificate-${timestamp}-${randomString}.${fileExtension}`;
+
+      const { data: gstData, error: gstError } = await supabase.storage
+        .from("gst-certificates")
+        .upload(fileName, data.gst_certificate);
+
+      if (gstError) {
+        throw gstError;
+      }
+
+      // Get the public URL
+      const { data: gstUrlData } = supabase.storage
+        .from("gst-certificates")
+        .getPublicUrl(fileName);
+
+      gstCertificateUrl = gstUrlData.publicUrl;
+    }
+
     // Get profile data
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
@@ -218,8 +245,9 @@ export const createBusiness = async (
         type: data.type,
         alternate_phone: data.alternative_phone,
         profile_avatar_url: imageUrl,
+        gst_certificate_url: gstCertificateUrl,
         gst_number: data.gstNumber,
-        phone: Number(profile.phone_number),
+        phone: Number(data.main_phone),
       })
       .single();
 
