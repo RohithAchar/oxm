@@ -52,6 +52,8 @@ import {
   Filter,
   X,
   Tags,
+  CheckCircle,
+  XCircle,
 } from "lucide-react";
 import { Database } from "@/utils/supabase/database.types";
 
@@ -69,6 +71,7 @@ const AdminBusinessVerification = () => {
   const [newStatus, setNewStatus] = useState<VerificationStatus>("PENDING");
   const [message, setMessage] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [togglingBusiness, setTogglingBusiness] = useState<string | null>(null);
 
   // Filter states
   const [searchTerm, setSearchTerm] = useState("");
@@ -240,6 +243,52 @@ const AdminBusinessVerification = () => {
     setCityFilter("ALL");
   };
 
+  const handleToggleVerified = async (business: Business) => {
+    setTogglingBusiness(business.id);
+    try {
+      const newVerifiedStatus = !business.is_verified;
+      
+      const response = await axios.patch(
+        `/api/businesses/${business.id}/verification`,
+        {
+          status: business.status,
+          message: business.message,
+          is_verified: newVerifiedStatus,
+        }
+      );
+
+      // Update the local state
+      setBusinesses((prev) =>
+        prev.map((b) =>
+          b.id === business.id
+            ? {
+                ...b,
+                is_verified: newVerifiedStatus,
+                updated_at: new Date().toISOString(),
+              }
+            : b
+        )
+      );
+
+      toast.success(
+        `Business ${newVerifiedStatus ? "verified" : "unverified"} successfully`
+      );
+    } catch (error: any) {
+      console.error("Toggle error:", error);
+      if (axios.isAxiosError(error)) {
+        const errorMessage =
+          error.response?.data?.message ||
+          error.response?.data?.error ||
+          "Failed to toggle verification status";
+        toast.error(errorMessage);
+      } else {
+        toast.error("Unexpected error occurred");
+      }
+    } finally {
+      setTogglingBusiness(null);
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -382,6 +431,7 @@ const AdminBusinessVerification = () => {
                   <TableHead>Phone</TableHead>
                   <TableHead>GST Number</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Verified</TableHead>
                   <TableHead>Submitted</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -390,7 +440,7 @@ const AdminBusinessVerification = () => {
                 {filteredBusinesses.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={8}
+                      colSpan={9}
                       className="text-center py-8 text-gray-500"
                     >
                       {businesses.length === 0
@@ -417,11 +467,21 @@ const AdminBusinessVerification = () => {
                       </TableCell>
                       <TableCell>{business.phone}</TableCell>
                       <TableCell>
-                        <code className="text-xs bg-gray-100 px-2 py-1 rounded">
+                        <code className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
                           {business.gst_number}
                         </code>
                       </TableCell>
                       <TableCell>{getStatusBadge(business.status)}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={business.is_verified 
+                            ? "bg-green-100 text-green-800 hover:bg-green-100" 
+                            : "bg-gray-100 text-gray-800 hover:bg-gray-100"
+                          }
+                        >
+                          {business.is_verified ? "Yes" : "No"}
+                        </Badge>
+                      </TableCell>
                       <TableCell className="text-sm text-gray-500">
                         {formatDate(business.created_at)}
                       </TableCell>
@@ -435,11 +495,19 @@ const AdminBusinessVerification = () => {
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant="outline"
+                            variant={business.is_verified ? "destructive" : "default"}
                             size="sm"
-                            onClick={() => handleEdit(business)}
+                            onClick={() => handleToggleVerified(business)}
+                            disabled={togglingBusiness === business.id}
+                            className={business.is_verified ? "bg-green-600 hover:bg-green-700" : "bg-gray-600 hover:bg-gray-700"}
                           >
-                            <Edit className="h-4 w-4" />
+                            {togglingBusiness === business.id ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            ) : business.is_verified ? (
+                              <CheckCircle className="h-4 w-4" />
+                            ) : (
+                              <XCircle className="h-4 w-4" />
+                            )}
                           </Button>
                         </div>
                       </TableCell>
@@ -507,7 +575,7 @@ const AdminBusinessVerification = () => {
                   <FileText className="h-4 w-4" />
                   GST Number
                 </Label>
-                <code className="text-sm bg-gray-100 px-2 py-1 rounded block">
+                <code className="text-sm bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded block border border-gray-200 dark:border-gray-700">
                   {selectedBusiness.gst_number}
                 </code>
               </div>

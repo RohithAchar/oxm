@@ -41,7 +41,9 @@ export const Profile = async () => {
       <div className="bg-card p-4 rounded-xl flex flex-col gap-6 border">
         <div>
           <p>GST Number</p>
-          <p className="text-muted-foreground text-sm">{business.gst_number}</p>
+          <code className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
+            {business.gst_number}
+          </code>
         </div>
         <div>
           <p>Alternate Phone Number</p>

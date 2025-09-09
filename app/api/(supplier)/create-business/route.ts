@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
           pincode,
           phone: Number(main_phone),
           gst_certificate_url,
-          is_verified: true,
+          is_verified: false,
           profile_avatar_url,
           type,
           status: "APPROVED",

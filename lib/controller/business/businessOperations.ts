@@ -248,6 +248,7 @@ export const createBusiness = async (
         gst_certificate_url: gstCertificateUrl,
         gst_number: data.gstNumber,
         phone: Number(data.main_phone),
+        is_verified: false,
       })
       .single();
 
