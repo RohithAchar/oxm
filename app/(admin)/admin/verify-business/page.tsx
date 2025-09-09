@@ -312,12 +312,12 @@ const AdminBusinessVerification = () => {
   }
 
   return (
-    <div className="container mx-auto py-6 px-4">
+    <div className="container mx-auto py-4 px-3">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-foreground">
           Business Verification
         </h1>
-        <p className="text-gray-600 mt-1">
+        <p className="text-muted-foreground mt-1">
           Review and manage business verification requests
         </p>
       </div>
@@ -331,7 +331,7 @@ const AdminBusinessVerification = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="space-y-2">
               <Label htmlFor="search">Search</Label>
@@ -421,18 +421,18 @@ const AdminBusinessVerification = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
+          <div className="rounded-md border w-full overflow-x-auto">
+            <Table className="min-w-[880px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Business Name</TableHead>
-                  <TableHead>Type</TableHead>
+                  <TableHead className="hidden md:table-cell">Type</TableHead>
                   <TableHead>Location</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>GST Number</TableHead>
+                  <TableHead className="hidden sm:table-cell">Phone</TableHead>
+                  <TableHead className="hidden lg:table-cell">GST Number</TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead>Verified</TableHead>
-                  <TableHead>Submitted</TableHead>
+                  <TableHead className="hidden sm:table-cell">Verified</TableHead>
+                  <TableHead className="hidden md:table-cell">Submitted</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -452,9 +452,14 @@ const AdminBusinessVerification = () => {
                   filteredBusinesses.map((business) => (
                     <TableRow key={business.id}>
                       <TableCell className="font-medium">
-                        {business.business_name}
+                        <div className="flex flex-col">
+                          <span>{business.business_name}</span>
+                          <span className="text-xs text-muted-foreground md:hidden">
+                            {business.type} • {business.phone}
+                          </span>
+                        </div>
                       </TableCell>
-                      <TableCell>{business.type}</TableCell>
+                      <TableCell className="hidden md:table-cell">{business.type}</TableCell>
                       <TableCell>
                         <div className="text-sm">
                           <div>
@@ -465,14 +470,14 @@ const AdminBusinessVerification = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{business.phone}</TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">{business.phone}</TableCell>
+                      <TableCell className="hidden lg:table-cell">
                         <code className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
                           {business.gst_number}
                         </code>
                       </TableCell>
                       <TableCell>{getStatusBadge(business.status)}</TableCell>
-                      <TableCell>
+                      <TableCell className="hidden sm:table-cell">
                         <Badge 
                           className={business.is_verified 
                             ? "bg-green-100 text-green-800 hover:bg-green-100" 
@@ -482,7 +487,7 @@ const AdminBusinessVerification = () => {
                           {business.is_verified ? "Yes" : "No"}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-sm text-gray-500">
+                      <TableCell className="hidden md:table-cell text-sm text-gray-500">
                         {formatDate(business.created_at)}
                       </TableCell>
                       <TableCell className="text-right">
@@ -522,7 +527,7 @@ const AdminBusinessVerification = () => {
 
       {/* View Business Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5" />
@@ -534,7 +539,7 @@ const AdminBusinessVerification = () => {
           </DialogHeader>
           {selectedBusiness && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium flex items-center gap-2">
                     <Building2 className="h-4 w-4" />
@@ -618,7 +623,7 @@ const AdminBusinessVerification = () => {
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-gray-500">
                 <div>
                   <Label className="text-xs font-medium flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
@@ -641,7 +646,7 @@ const AdminBusinessVerification = () => {
 
       {/* Edit Status Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-[95vw] sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>Update Verification Status</DialogTitle>
             <DialogDescription>

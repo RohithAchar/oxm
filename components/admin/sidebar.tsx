@@ -32,7 +32,7 @@ export function Sidebar({
   return (
     <>
       {/* Mobile Top Tabs */}
-      <div className="flex md:hidden border-b bg-background">
+      <div className="flex md:hidden sticky top-0 z-30 border-b bg-background">
         {sidebarItems.map(({ name, href, icon: Icon }) => {
           const isActive = pathname === href;
           return (
