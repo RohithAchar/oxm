@@ -480,6 +480,7 @@ const getProductById = async (productId: string) => {
         breadth,
         height,
         weight,
+        brand,
         product_images (
           id,
           image_url,

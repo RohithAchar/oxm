@@ -46,9 +46,12 @@ export const ProductView = async ({ id }: { id: string }) => {
             name: data.name,
             product_images: data.product_images,
             brand: data.brand,
-            is_verified: data.is_verified,
+            is_verified: business?.is_verified,
             is_sample_available: data.is_sample_available,
-            priceAndQuantity: data.priceAndQuantity,
+            priceAndQuantity: data.product_tier_pricing.map((tier) => ({
+              quantity: tier.quantity,
+              price: parseFloat(tier.price),
+            })),
             supplier_name: business?.business_name,
           }}
         />
