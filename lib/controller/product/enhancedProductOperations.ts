@@ -34,7 +34,7 @@ export interface EnhancedProductsResponse {
   totalPages: number;
   filters: {
     availableCategories: Array<{ id: string; name: string; count: number }>;
-    availableSubcategories: Array<{ id: string; name: string; count: number }>;
+    availableSubcategories: Array<{ id: string; name: string; parent_id: string; count: number }>;
     availableCities: Array<{ name: string; count: number }>;
     availableStates: Array<{ name: string; count: number }>;
     availableTags: Array<{ name: string; count: number }>;
@@ -127,7 +127,7 @@ const getBusiness = async (supplierId: string) => {
 // Helper function to get product tags
 const getProductTags = async (productId: string) => {
   try {
-    const supabase = await createAnonClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("product_tags")
       .select("tags(name)")
@@ -148,7 +148,7 @@ const getProductTags = async (productId: string) => {
 // Helper function to get product colors
 const getProductColors = async (productId: string) => {
   try {
-    const supabase = await createAnonClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("product_colors")
       .select("supplier_colors(name)")
@@ -169,7 +169,7 @@ const getProductColors = async (productId: string) => {
 // Helper function to get product sizes
 const getProductSizes = async (productId: string) => {
   try {
-    const supabase = await createAnonClient();
+    const supabase = await createClient();
     const { data, error } = await supabase
       .from("product_sizes")
       .select("supplier_sizes(name)")
@@ -439,19 +439,21 @@ export const getEnhancedProducts = async (
     }
 
     if (colors && colors.length > 0) {
-      const beforeCount = filteredProducts.filter(p => p !== undefined).length;
-      filteredProducts = filteredProducts.filter((product) =>
-        product && colors.some((color) => product.colors.includes(color))
-      );
-      const afterCount = filteredProducts.filter(p => p !== undefined).length;
+      const requested = colors.map((c) => (c || "").toString().trim().toLowerCase());
+      filteredProducts = filteredProducts.filter((product) => {
+        if (!product) return false;
+        const productColors = (product.colors || []).map((c: string) => (c || "").toString().trim().toLowerCase());
+        return requested.some((c) => productColors.includes(c));
+      });
     }
 
     if (sizes && sizes.length > 0) {
-      const beforeCount = filteredProducts.filter(p => p !== undefined).length;
-      filteredProducts = filteredProducts.filter((product) =>
-        product && sizes.some((size) => product.sizes.includes(size))
-      );
-      const afterCount = filteredProducts.filter(p => p !== undefined).length;
+      const requested = sizes.map((s) => (s || "").toString().trim().toLowerCase());
+      filteredProducts = filteredProducts.filter((product) => {
+        if (!product) return false;
+        const productSizes = (product.sizes || []).map((s: string) => (s || "").toString().trim().toLowerCase());
+        return requested.some((s) => productSizes.includes(s));
+      });
     }
 
 
