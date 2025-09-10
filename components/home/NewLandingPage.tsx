@@ -73,7 +73,7 @@ const NewLandingPage = async () => {
             <span className="text-foreground">mart</span>
           </Link>
           <div className="flex-1">
-            <div className="flex items-center rounded-full border bg-background overflow-hidden h-10">
+            <div className="flex items-center rounded border bg-background overflow-hidden h-10">
               <div className="pl-3 pr-2 text-muted-foreground">
                 <Search className="h-4 w-4" />
               </div>
@@ -104,22 +104,22 @@ const NewLandingPage = async () => {
         {/* Horizontal pill nav */}
         <div className="flex justify-center gap-2 overflow-x-auto no-scrollbar py-1">
           <Link href="/products">
-            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
               Explore
             </div>
           </Link>
           <Link href="/intro">
-            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
               MyBox
             </div>
           </Link>
           <Link href="/learn">
-            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
               Learnx
             </div>
           </Link>
           <Link href="/products?dropship_available=true">
-            <div className="px-4 py-2 rounded-full border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
               Dropship
             </div>
           </Link>
@@ -149,7 +149,7 @@ const NewLandingPage = async () => {
               bulk, all in one place.
             </p>
             <div className="relative">
-              <div className="flex items-center rounded-full border bg-background shadow-[0_8px_24px_rgba(239,68,68,0.06)] overflow-hidden">
+              <div className="flex items-center rounded border bg-background shadow-[0_8px_24px_rgba(239,68,68,0.06)] overflow-hidden">
                 <div className="pl-4 pr-2 text-muted-foreground">
                   <Search className="h-5 w-5" />
                 </div>

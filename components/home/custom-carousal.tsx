@@ -24,7 +24,7 @@ export const CustomCarousal = ({
   return (
     <CarouselItem className="pl-4" onClick={() => updateClickCount(id)}>
       <Link href={link_url || "/"}>
-        <div className="relative w-full aspect-[7/4] sm:aspect-[7/3] rounded-2xl overflow-hidden">
+        <div className="relative w-full aspect-[7/4] sm:aspect-[7/3] rounded overflow-hidden">
           <Image
             alt="Banner Image"
             src={image_url}
@@ -42,6 +42,6 @@ export const CustomCarousal = ({
 
 export const CustomCarousalSkeleton = () => {
   return (
-    <Skeleton className="h-full w-full aspect-[7/4] sm:aspect-[7/3] rounded-2xl overflow-hidden" />
+    <Skeleton className="h-full w-full aspect-[7/4] sm:aspect-[7/3] rounded overflow-hidden" />
   );
 };
