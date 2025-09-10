@@ -24,13 +24,14 @@ export const NewLaunchedItems = async () => {
             <Button variant="link">View all</Button>
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
           {products.map((products) => (
             <ProductCard
               key={products.id}
               id={products.id}
               name={products.name}
               brand={products.brand || ""}
+              supplierName={products.brand || "Supplier"}
               imageUrl={products.imageUrl || "/product-placeholder.png"}
               priceAndQuantity={products.priceAndQuantity}
               is_verified={products.is_verified || false}
@@ -58,7 +59,7 @@ export const NewLaunchedItemsSkeleton = () => {
             <Button variant="link">View all</Button>
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
           {Array(6)
             .fill(null)
             .map((_, idx) => (

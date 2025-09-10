@@ -1,8 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { Badge } from "../ui/badge";
 import { BadgeCheckIcon, Eye, MapPin, Package } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { useState } from "react";
 
 interface ProductCardProps {
   id: string;
@@ -31,98 +34,81 @@ export const ProductCard = ({
   city,
   is_sample_available,
 }: ProductCardProps) => {
+  const [imageError, setImageError] = useState(false);
+
   return (
     <Link href={`/products/${id}`}>
-      <div className="relative p-2 bg-card border rounded-xl space-y-4 hover:shadow-md transition-shadow">
-        {/* Top badges - stacked vertically when both present */}
-        <div className="absolute right-3 top-3 z-20 flex flex-col gap-1">
+      <div className="relative bg-white dark:bg-card h-fit overflow-hidden">
+        {/* Badges */}
+        <div className="absolute top-1 right-1 z-20 flex flex-col gap-0.5">
           {is_verified && (
             <Badge
               variant="secondary"
-              className="bg-blue-500 text-white dark:bg-blue-600"
+              className="bg-blue-500 text-white dark:bg-blue-600 text-xs px-1.5 py-0.5"
             >
-              <BadgeCheckIcon className="w-3 h-3 mr-1" />
+              <BadgeCheckIcon className="h-2.5 w-2.5 mr-0.5" />
               Verified
             </Badge>
           )}
           {is_sample_available && (
             <Badge
               variant="secondary"
-              className="bg-green-500 text-white dark:bg-green-600"
+              className="bg-green-500 text-white dark:bg-green-600 text-xs px-1.5 py-0.5"
             >
-              <Package className="w-3 h-3 mr-1" />
               Sample
             </Badge>
           )}
         </div>
 
-        <div className="relative aspect-square w-full overflow-hidden rounded-lg">
+        {/* Product Image */}
+        <div className="relative aspect-square w-full overflow-hidden rounded-md">
           <Image
             fill
-            src={imageUrl || "/product-placeholder.png"}
+            src={imageError ? "/product-placeholder.png" : (imageUrl || "/product-placeholder.png")}
             alt="Product Image"
+            onError={() => setImageError(true)}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover object-center rounded-lg"
+            className="object-cover rounded-sm"
           />
         </div>
 
-        <div className="space-y-2">
-          <h1 className="truncate font-semibold text-sm text-foreground">
+        {/* Product Details */}
+        <div className="px-3 py-2 space-y-1.5">
+          {/* Product Title */}
+          <h1 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
             {name}
           </h1>
-          <div className="flex items-center justify-between">
-            <p className="truncate text-muted-foreground text-xs">{brand}</p>
-          </div>
+          
+          {/* Brand */}
+          <p className="text-sm text-muted-foreground truncate">
+            {brand}
+          </p>
+
+          {/* City */}
           {city && (
-            <p className="flex items-center gap-1 truncate text-muted-foreground text-xs">
+            <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
               <MapPin className="w-3 h-3" />
               {city}
             </p>
           )}
-        </div>
 
-        {/* Improved Pricing Section */}
-        {tierPricing && tierPricing.length > 0 && (
-          <div className="bg-muted/50 rounded-lg p-3 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col">
-                <span className="text-xs text-muted-foreground font-medium">
-                  MIN ORDER
-                </span>
-                <span className="text-sm font-semibold text-foreground">
-                  {tierPricing[0].quantity} pcs
-                </span>
-              </div>
-              <div className="flex flex-col text-right">
-                <span className="text-xs text-muted-foreground font-medium">
-                  PRICE
-                </span>
-                <span className="text-sm font-bold text-primary">
-                  ₹{tierPricing[0].price}
-                  <span className="text-xs font-normal text-muted-foreground ml-1">
-                    /pc
+          {/* Price and MOQ */}
+          {tierPricing && tierPricing.length > 0 && (
+            <div className="space-y-1">
+              <div className="text-sm font-medium text-foreground">
+                ₹{tierPricing[0].price}
+                {tierPricing.length > 1 && (
+                  <span className="text-sm text-muted-foreground ml-1">
+                    -{tierPricing[tierPricing.length - 1].price}
                   </span>
-                </span>
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Min. order: {tierPricing[0].quantity} pieces
               </div>
             </div>
-
-            {tierPricing.length > 1 && (
-              <div className="flex items-center justify-center pt-1">
-                <span className="text-xs text-muted-foreground bg-background px-2 py-1 rounded-full">
-                  +{tierPricing.length - 1} more tier
-                  {tierPricing.length > 2 ? "s" : ""}
-                </span>
-              </div>
-            )}
-          </div>
-        )}
-
-        <Button variant="secondary" className="w-full" asChild>
-          <Link href={`/products/${id}`}>
-            <Eye className="h-4 w-4 text-primary mr-2" />
-            View Product
-          </Link>
-        </Button>
+          )}
+        </div>
       </div>
     </Link>
   );

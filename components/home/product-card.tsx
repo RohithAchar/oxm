@@ -14,96 +14,118 @@ interface ProductCardProps {
   id: string;
   name: string;
   brand: string;
+  supplierName: string;
   imageUrl: string;
   priceAndQuantity: any[];
   is_verified: boolean;
+  verificationYears?: number;
+  hasSample?: boolean;
 }
 
 export const ProductCard = ({
   id,
   name,
   brand,
+  supplierName,
   imageUrl,
   priceAndQuantity,
   is_verified,
+  verificationYears,
+  hasSample,
 }: ProductCardProps) => {
   const { theme } = useTheme();
-  const [imgSrc, setImgSrc] = useState<string>(
-    imageUrl && (imageUrl.startsWith("http") || imageUrl.startsWith("/"))
-      ? imageUrl
-      : "/product-placeholder.png"
-  );
+  const [imgSrc, setImgSrc] = useState<string>(imageUrl || "/product-placeholder.png");
+  const [imageError, setImageError] = useState(false);
   return (
-    <div
-      key={id}
-      className="relative p-2 border rounded-xl bg-card space-y-4 h-fit"
-    >
-      {is_verified && (
-        <Badge
-          variant="secondary"
-          className="bg-blue-500 text-white dark:bg-blue-600 absolute right-3 top-3 z-20"
-        >
-          <BadgeCheckIcon />
-          Verified
-        </Badge>
-      )}
-      <div className="relative aspect-square w-full overflow-hidden rounded-lg">
+    <Link href={`/products/${id}`}>
+      <div
+        key={id}
+        className="relative bg-white dark:bg-card h-fit overflow-hidden cursor-pointer"
+      >
+      {/* Badges */}
+      <div className="absolute top-1 right-1 z-20 flex flex-col gap-0.5">
+        {is_verified && (
+          <Badge
+            variant="secondary"
+            className="bg-blue-500 text-white dark:bg-blue-600 text-xs px-1.5 py-0.5"
+          >
+            <BadgeCheckIcon className="h-2.5 w-2.5 mr-0.5" />
+            Verified {verificationYears && `${verificationYears} yrs`}
+          </Badge>
+        )}
+        {hasSample && (
+          <Badge
+            variant="secondary"
+            className="bg-green-500 text-white dark:bg-green-600 text-xs px-1.5 py-0.5"
+          >
+            Sample
+          </Badge>
+        )}
+      </div>
+
+      {/* Product Image */}
+      <div className="relative aspect-square w-full overflow-hidden rounded-md">
         <Image
           fill
-          src={imgSrc || "/product-placeholder.png"}
+          src={imageError ? "/product-placeholder.png" : imgSrc}
           alt="Product Image"
-          onError={() => setImgSrc("/product-placeholder.png")}
+          onError={() => setImageError(true)}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           className={`
-      object-cover rounded-lg
+      object-cover rounded-sm
       transition duration-300
       hover:brightness-100
       ${theme === "dark" ? "brightness-75" : "brightness-100"}
       `}
         />
       </div>
-      <div className="space-y-2">
-        <div>
-          <h1 className="truncate font-semibold text-foreground">{name}</h1>
-          <p className="text-xs text-muted-foreground">{brand}</p>
-        </div>
+
+      {/* Product Details */}
+      <div className="px-3 py-2 space-y-1.5">
+        {/* Product Title */}
+        <h1 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
+          {name}
+        </h1>
+        
+        {/* Supplier Name */}
+        <p className="text-sm text-muted-foreground truncate">
+          {supplierName}
+        </p>
+
+        {/* Price and MOQ */}
         {priceAndQuantity && priceAndQuantity?.length > 0 && (
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            {priceAndQuantity?.length > 0 && (
-              <>
-                <span className="truncate">
-                  Min: {priceAndQuantity[0].quantity} pcs
+          <div className="space-y-1">
+            <div className="text-sm font-medium text-foreground">
+              ₹{priceAndQuantity[0].price}
+              {priceAndQuantity.length > 1 && (
+                <span className="text-sm text-muted-foreground ml-1">
+                  -{priceAndQuantity[priceAndQuantity.length - 1].price}
                 </span>
-                <span className="truncate">
-                  ₹{priceAndQuantity[0].price} / pc
-                </span>
-                {priceAndQuantity.length > 1 && (
-                  <span className="text-xs">...</span>
-                )}
-              </>
-            )}
+              )}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              Min. order: {priceAndQuantity[0].quantity} pieces
+            </div>
           </div>
         )}
       </div>
-      <Button variant={"secondary"} className="w-full" asChild>
-        <Link href={`/products/${id}`}>
-          <Eye className="h-4 w-4 text-primary" />
-          View Product
-        </Link>
-      </Button>
     </div>
+    </Link>
   );
 };
 
 export const ProductCardSkeleton = () => {
   return (
-    <div className="rounded-xl space-y-4 h-fit">
-      <Skeleton className="aspect-square w-full rounded-lg" />
-      <div className="space-y-2">
+    <div className="bg-white dark:bg-card h-fit overflow-hidden">
+      <Skeleton className="aspect-square w-full rounded-sm" />
+      <div className="px-3 py-2 space-y-1.5">
         <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+        <div className="space-y-1">
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
       </div>
-      <Skeleton className="h-4 w-full" />
     </div>
   );
 };

@@ -39,7 +39,7 @@ export default async function ProductsPage({
   const isEmpty = !sortedProducts || sortedProducts.length === 0;
 
   return (
-    <div className="px-4">
+    <div className="max-w-7xl mx-auto px-4">
       {isEmpty ? (
         <div className="flex items-center justify-center py-16 md:py-24">
           <Card className="w-full max-w-xl border-muted-foreground/20">
@@ -70,7 +70,7 @@ export default async function ProductsPage({
       ) : (
         <>
           {/* Products Grid */}
-          <div className="grid gap-2 md:gap-4 lg:gap-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid gap-3 md:gap-4 lg:gap-5 xl:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
             {sortedProducts.map((p) => {
               if (!p) return null;
               return (
