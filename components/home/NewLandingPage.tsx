@@ -18,13 +18,13 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import RecentlyViewedList from "@/components/home/recently-viewed-list";
 import {
   NewLaunchedItems,
   NewLaunchedItemsSkeleton,
 } from "@/components/home/new-launched-list";
 import { Carousal } from "@/components/home/carousal";
 import { CustomCarousalSkeleton } from "./custom-carousal";
+import RecentlyViewedList from "@/components/recent/RecentlyViewedList";
 
 const NewLandingPage = async () => {
   return (
@@ -132,8 +132,7 @@ const NewLandingPage = async () => {
           </Suspense>
         </div>
 
-        {/* Recently Viewed */}
-        <RecentlyViewedList />
+        
       </section>
 
       {/* Desktop / large-screen content */}
@@ -400,11 +399,14 @@ const NewLandingPage = async () => {
       {/* Recently Viewed and New Arrivals already shown on mobile above.
           Show them here as well for desktop. */}
       <div className="hidden md:block">
-        <RecentlyViewedList />
+        
         <Suspense fallback={<NewLaunchedItemsSkeleton />}>
           <NewLaunchedItems />
         </Suspense>
       </div>
+
+      {/* Recently viewed (bottom of page) */}
+      <RecentlyViewedList />
 
       {/* Footer is rendered globally via layout */}
     </main>

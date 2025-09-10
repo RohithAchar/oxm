@@ -17,7 +17,6 @@ import {
   Truck,
   Users,
 } from "lucide-react";
-import RecentlyViewedList from "./recently-viewed-list";
 import { Carousal } from "./carousal";
 import { Suspense } from "react";
 import { CustomCarousalSkeleton } from "./custom-carousal";
@@ -315,7 +314,7 @@ const LandingPage = async () => {
         <NewLaunchedItems />
       </Suspense>
 
-      <RecentlyViewedList />
+      
     </main>
   );
 };

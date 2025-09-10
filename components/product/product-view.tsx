@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { getBusiness } from "@/lib/controller/business/businessOperations";
 import { getProductByIdCached } from "@/lib/controller/product/productOperations";
 import Link from "next/link";
+import RecentlyViewedTracker from "@/components/recent/RecentlyViewedTracker";
 
 export const ProductView = async ({ id }: { id: string }) => {
   const data = await getProductByIdCached(id);
@@ -39,6 +40,18 @@ export const ProductView = async ({ id }: { id: string }) => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-8">
+        <RecentlyViewedTracker
+          product={{
+            id: data.id,
+            name: data.name,
+            product_images: data.product_images,
+            brand: data.brand,
+            is_verified: data.is_verified,
+            is_sample_available: data.is_sample_available,
+            priceAndQuantity: data.priceAndQuantity,
+            supplier_name: business?.business_name,
+          }}
+        />
         {/* Main Product Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
           {/* Product Images */}
