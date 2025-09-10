@@ -1,7 +1,7 @@
 "use server";
 
 import { BannerFormSchema } from "@/app/(admin)/admin/banner/types";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, createAnonClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import z from "zod";
 
@@ -53,7 +53,7 @@ export const createBanner = async (
 };
 
 export const getBanners = async () => {
-  const supabase = await createClient();
+  const supabase = await createAnonClient();
   try {
     const { data, error } = await supabase.from("banners").select("*");
     if (error) {

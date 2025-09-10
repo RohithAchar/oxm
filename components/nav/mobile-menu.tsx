@@ -30,6 +30,7 @@ const menuItems = [
 
 const MobileMenu = () => {
   const pathname = usePathname();
+  const showThemeToggle = pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
 
   return (
     <div
@@ -37,7 +38,7 @@ const MobileMenu = () => {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <nav className="max-w-7xl mx-auto px-3 h-16 flex items-stretch">
-        <ul className="grid grid-cols-5 w-full">
+        <ul className={`grid ${showThemeToggle ? "grid-cols-5" : "grid-cols-4"} w-full`}>
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -71,16 +72,18 @@ const MobileMenu = () => {
             );
           })}
           {/* Theme toggle */}
-          <li className="flex">
-            <div className="group flex-1 flex flex-col items-center justify-center gap-1 rounded-xl mx-1">
-              <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-muted/60">
-                <ModeToggle />
-              </span>
-              <span className="text-[11px] font-medium leading-none text-muted-foreground">
-                Theme
-              </span>
-            </div>
-          </li>
+          {showThemeToggle && (
+            <li className="flex">
+              <div className="group flex-1 flex flex-col items-center justify-center gap-1 rounded-xl mx-1">
+                <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-muted/60">
+                  <ModeToggle />
+                </span>
+                <span className="text-[11px] font-medium leading-none text-muted-foreground">
+                  Theme
+                </span>
+              </div>
+            </li>
+          )}
         </ul>
       </nav>
     </div>

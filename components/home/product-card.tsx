@@ -6,7 +6,6 @@ import Link from "next/link";
 import { BadgeCheckIcon, Eye } from "lucide-react";
 import { Badge } from "../ui/badge";
 
-import { useTheme } from "next-themes";
 import { useState } from "react";
 import { Skeleton } from "../ui/skeleton";
 
@@ -33,7 +32,6 @@ export const ProductCard = ({
   verificationYears,
   hasSample,
 }: ProductCardProps) => {
-  const { theme } = useTheme();
   const [imgSrc, setImgSrc] = useState<string>(imageUrl || "/product-placeholder.png");
   const [imageError, setImageError] = useState(false);
   return (
@@ -71,12 +69,8 @@ export const ProductCard = ({
           alt="Product Image"
           onError={() => setImageError(true)}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          className={`
-      object-cover rounded-sm
-      transition duration-300
-      hover:brightness-100
-      ${theme === "dark" ? "brightness-75" : "brightness-100"}
-      `}
+          unoptimized
+          className="object-cover rounded-sm transition duration-300 hover:brightness-100 brightness-100 dark:brightness-75"
         />
       </div>
 

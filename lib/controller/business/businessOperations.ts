@@ -3,7 +3,7 @@
 import { createBusinessformSchema } from "@/app/(business)/create-business/types";
 import { UpdateProfileFormData } from "@/app/(business)/supplier/profile/[id]/edit/types";
 import { Database } from "@/utils/supabase/database.types";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, createAnonClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import z from "zod";
@@ -267,43 +267,62 @@ export const createBusiness = async (
 export const isBusinessVerified = async (
   supplierId: string
 ): Promise<boolean> => {
-  const supabase = await createClient();
+  try {
+    // Public check, no auth needed
+    const supabase = await createAnonClient();
 
-  const { data: user, error: businessError } = await supabase
-    .from("supplier_businesses")
-    .select("id")
-    .eq("profile_id", supplierId)
-    .single();
+    const { data: user, error: businessError } = await supabase
+      .from("supplier_businesses")
+      .select("id")
+      .eq("profile_id", supplierId)
+      .single();
 
-  if (businessError?.code === "404") {
+    if (businessError?.code === "404") {
+      return false;
+    }
+
+    if (businessError?.code === "PGRST116") {
+      return false;
+    }
+
+    if (businessError?.code === "PGRST301") {
+      // JWT expired, return false as fallback
+      console.warn("JWT expired while checking business verification status");
+      return false;
+    }
+
+    if (businessError) {
+      throw businessError;
+    }
+
+    const { data, error } = await supabase
+      .from("supplier_businesses")
+      .select("is_verified")
+      .eq("id", user.id)
+      .single();
+
+    if (error?.code === "404") {
+      return false;
+    }
+
+    if (error?.code === "PGRST116") {
+      return false;
+    }
+
+    if (error?.code === "PGRST301") {
+      // JWT expired, return false as fallback
+      console.warn("JWT expired while checking business verification status");
+      return false;
+    }
+
+    if (error) {
+      throw error;
+    }
+
+    return data.is_verified || false;
+  } catch (error) {
+    console.error("Error checking business verification status:", error);
+    // Return false as fallback instead of throwing
     return false;
   }
-
-  if (businessError?.code === "PGRST116") {
-    return false;
-  }
-
-  if (businessError) {
-    throw businessError;
-  }
-
-  const { data, error } = await supabase
-    .from("supplier_businesses")
-    .select("is_verified")
-    .eq("id", user.id)
-    .single();
-
-  if (error?.code === "404") {
-    return false;
-  }
-
-  if (error?.code === "PGRST116") {
-    return false;
-  }
-
-  if (error) {
-    throw error;
-  }
-
-  return data.is_verified || false;
 };

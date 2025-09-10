@@ -4,8 +4,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Bell, MessageSquare, Truck, User } from "lucide-react";
 import { ModeToggle } from "./theme-toggle-button";
+import { usePathname } from "next/navigation";
 
 export const Navbar = () => {
+  const pathname = usePathname();
+  const showThemeToggle = pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
   return (
     <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
@@ -16,7 +19,7 @@ export const Navbar = () => {
           <span className="text-muted-foreground text-xs">.com</span>
         </Link>
         <div className="flex items-center gap-1 sm:gap-2">
-          <ModeToggle />
+          {showThemeToggle && <ModeToggle />}
           <Button variant="ghost" size="icon" aria-label="Notifications">
             <Bell className="h-5 w-5" />
           </Button>

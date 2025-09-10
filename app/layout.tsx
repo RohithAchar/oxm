@@ -6,6 +6,7 @@ import MobileMenu from "@/components/nav/mobile-menu";
 import { Open_Sans, Playfair_Display } from "next/font/google";
 import RegisterSW from "@/components/RegisterSW";
 import Footer from "@/components/footer";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export const metadata = {
   title:
@@ -85,19 +86,21 @@ export default async function RootLayout({
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <Providers>
-          <Navbar />
-          <MobileMenu />
-          <main
-            className="font-playfair pt-2 md:pt-14 md:pb-0"
-            style={{
-              paddingLeft: "env(safe-area-inset-left)",
-              paddingRight: "env(safe-area-inset-right)",
-            }}
-          >
-            {children}
-          </main>
-          <RegisterSW />
-          <Footer />
+          <ErrorBoundary>
+            <Navbar />
+            <MobileMenu />
+            <main
+              className="font-playfair pt-2 md:pt-14 md:pb-0"
+              style={{
+                paddingLeft: "env(safe-area-inset-left)",
+                paddingRight: "env(safe-area-inset-right)",
+              }}
+            >
+              {children}
+            </main>
+            <RegisterSW />
+            <Footer />
+          </ErrorBoundary>
         </Providers>
       </body>
     </html>

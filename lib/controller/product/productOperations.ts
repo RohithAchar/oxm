@@ -58,10 +58,10 @@ const fetchProductsWithMetadata = async (products: ProductWithMetadata[]) => {
         getPricesAndQuantities(product.id).catch(() => null)
       )
     ),
-    // Fetch all verification statuses in parallel
+    // Fetch all verification statuses in parallel with fallback
     Promise.all(
       products.map((product) =>
-        isBusinessVerified(product.supplier_id!).catch(() => null)
+        isBusinessVerified(product.supplier_id!).catch(() => false)
       )
     ),
   ]);
@@ -73,9 +73,7 @@ const fetchProductsWithMetadata = async (products: ProductWithMetadata[]) => {
   if (priceAndQuantityData.some((data) => data === null)) {
     throw new Error("Failed to fetch product prices and quantities");
   }
-  if (isVerifiedData.some((data) => data === null)) {
-    throw new Error("Failed to fetch supplier verification status");
-  }
+  // Note: isVerifiedData can have false values, which is acceptable
 
   return { imageUrls, priceAndQuantityData, isVerifiedData };
 };

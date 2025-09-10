@@ -1,8 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -11,12 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, Filter, X } from "lucide-react";
+import { Filter, X } from "lucide-react";
 
 export function OrdersFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState(searchParams.get("search") || "");
 
   const handleStatusChange = (status: string) => {
     const params = new URLSearchParams(searchParams);
@@ -29,39 +26,15 @@ export function OrdersFilters() {
     router.push(`?${params.toString()}`);
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const params = new URLSearchParams(searchParams);
-    if (search) {
-      params.set("search", search);
-    } else {
-      params.delete("search");
-    }
-    params.delete("page"); // Reset to first page
-    router.push(`?${params.toString()}`);
-  };
 
   const clearFilters = () => {
-    setSearch("");
     router.push("/supplier/orders");
   };
 
-  const hasFilters = searchParams.get("status") || searchParams.get("search");
+  const hasFilters = searchParams.get("status");
 
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-      <form onSubmit={handleSearchSubmit} className="flex-1 max-w-sm">
-        <div className="relative">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by order number or buyer name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-      </form>
-
       <div className="flex items-center gap-2">
         <Select
           value={searchParams.get("status") || "all"}

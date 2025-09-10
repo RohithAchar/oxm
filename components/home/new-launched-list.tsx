@@ -3,7 +3,13 @@ import { ProductCard, ProductCardSkeleton } from "./product-card";
 import { Button } from "../ui/button";
 
 export const NewLaunchedItems = async () => {
-  const products = await getLatestProducts();
+  let products: Awaited<ReturnType<typeof getLatestProducts>>;
+  try {
+    products = await getLatestProducts();
+  } catch (error) {
+    console.error("Error fetching latest products:", error);
+    products = []; // Fallback to empty array
+  }
 
   if (!products || products.length === 0) {
     return null;
@@ -35,6 +41,7 @@ export const NewLaunchedItems = async () => {
               imageUrl={products.imageUrl || "/product-placeholder.png"}
               priceAndQuantity={products.priceAndQuantity}
               is_verified={products.is_verified || false}
+              hasSample={products.is_sample_available || false}
             />
           ))}
         </div>

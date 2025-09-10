@@ -1,4 +1,6 @@
-import { ProductCard } from "@/components/product/product-card";
+import { ProductCard } from "@/components/home/product-card";
+import { AdvancedSearch } from "@/components/product/advanced-search";
+import { ActiveFilters } from "@/components/product/active-filters";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PackageOpen } from "lucide-react";
-import { getProducts } from "@/lib/controller/product/productOperations";
+import { getEnhancedProducts, EnhancedProductFilters } from "@/lib/controller/product/enhancedProductOperations";
 import Link from "next/link";
 
 export default async function ProductsPage({
@@ -18,28 +20,49 @@ export default async function ProductsPage({
 }) {
   const params = await searchParams; // resolve the promise
 
-  const page = parseInt(params.page ?? "1", 10);
-  const page_size = parseInt(params.page_size ?? "8", 10);
-  const dropshipAvailable = params.dropship_available === "true";
-  const sortBy = params.sort ?? "";
+  // Parse all filter parameters
+  const filters: EnhancedProductFilters = {
+    category: params.category,
+    subcategory: params.subcategory,
+    priceMin: params.price_min ? parseFloat(params.price_min) : undefined,
+    priceMax: params.price_max ? parseFloat(params.price_max) : undefined,
+    city: params.city,
+    state: params.state,
+    sampleAvailable: params.sample_available === "true" ? true : undefined,
+    dropshipAvailable: params.dropship_available === "true" ? true : undefined,
+    tags: params.tags ? params.tags.split(",").filter(Boolean) : undefined,
+    colors: params.colors ? params.colors.split(",").filter(Boolean) : undefined,
+    sizes: params.sizes ? params.sizes.split(",").filter(Boolean) : undefined,
+    sortBy: params.sort || "created_at_desc",
+    page: parseInt(params.page ?? "1", 10),
+    pageSize: parseInt(params.page_size ?? "12", 10),
+  };
 
-  const data = await getProducts({
-    page,
-    page_size,
-    dropship_available: dropshipAvailable,
-  });
+  const data = await getEnhancedProducts(filters);
 
-  // Apply client-side sorting if needed (for fields not supported by API)
-  let sortedProducts = [...data.products];
-
-  if (sortBy) {
-    sortedProducts = sortProducts(data.products, sortBy);
-  }
-
-  const isEmpty = !sortedProducts || sortedProducts.length === 0;
+  const isEmpty = !data.products || data.products.length === 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="space-y-6">
+      {/* Fixed Search and Filter Bar */}
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+        <div className="space-y-4 py-4">
+          {/* Advanced Search Component */}
+          <div>
+            <AdvancedSearch filterOptions={data.filters} />
+          </div>
+
+          {/* Active Filters */}
+          <ActiveFilters />
+
+          {/* Results Summary */}
+          <div className="text-sm text-muted-foreground">
+            Showing {data.products.length} of {data.total} products
+            {data.totalPages > 1 && ` (Page ${data.page} of ${data.totalPages})`}
+          </div>
+        </div>
+      </div>
+
       {isEmpty ? (
         <div className="flex items-center justify-center py-16 md:py-24">
           <Card className="w-full max-w-xl border-muted-foreground/20">
@@ -56,7 +79,7 @@ export default async function ProductsPage({
             <CardContent>
               <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
                 <Button asChild size="sm">
-                  <Link href={`/products?page=1&page_size=${page_size}`}>
+                  <Link href="/products">
                     Reset filters
                   </Link>
                 </Button>
@@ -70,8 +93,8 @@ export default async function ProductsPage({
       ) : (
         <>
           {/* Products Grid */}
-          <div className="grid gap-3 md:gap-4 lg:gap-5 xl:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {sortedProducts.map((p) => {
+          <div className="grid gap-4 md:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {data.products.map((p) => {
               if (!p) return null;
               return (
                 <ProductCard
@@ -80,42 +103,43 @@ export default async function ProductsPage({
                   imageUrl={p.imageUrl}
                   name={p.name}
                   brand={p.brand || ""}
+                  supplierName={p.supplierName}
+                  priceAndQuantity={p.priceAndQuantity || []}
                   is_verified={p.is_verified || false}
-                  city={p.city || ""}
-                  is_sample_available={p.is_sample_available || false}
-                  tierPricing={
-                    p.priceAndQuantity?.map(
-                      (tier: {
-                        id: string;
-                        quantity: number;
-                        price: string;
-                      }) => ({
-                        id: tier.id,
-                        quantity: tier.quantity,
-                        price: tier.price,
-                      })
-                    ) || []
-                  }
+                  hasSample={p.is_sample_available || false}
                 />
               );
             })}
           </div>
 
           {/* Pagination */}
-          <div className="flex gap-2 mt-4 justify-center mb-6">
-            {data.total_pages > 1 &&
-              Array.from({ length: data.total_pages }, (_, i) => {
+          <div className="flex gap-2 mt-8 justify-center">
+            {data.totalPages > 1 &&
+              Array.from({ length: data.totalPages }, (_, i) => {
                 const pageNum = i + 1;
+                const paginationParams = new URLSearchParams();
+                
+                // Preserve all current filters in pagination
+                Object.entries(filters).forEach(([key, value]) => {
+                  if (value !== undefined && value !== "" && value !== false) {
+                    if (Array.isArray(value) && value.length > 0) {
+                      paginationParams.set(key, value.join(","));
+                    } else if (!Array.isArray(value)) {
+                      paginationParams.set(key, String(value));
+                    }
+                  }
+                });
+                
+                paginationParams.set("page", String(pageNum));
+                
                 return (
                   <Button
                     asChild
-                    variant={pageNum === page ? "default" : "outline"}
+                    variant={pageNum === data.page ? "default" : "outline"}
                     key={pageNum}
                   >
                     <Link
-                      href={`/products?page=${pageNum}&page_size=${page_size}${
-                        dropshipAvailable ? "&dropship_available=true" : ""
-                      }${sortBy ? `&sort=${sortBy}` : ""}`}
+                      href={`/products?${paginationParams.toString()}`}
                     >
                       {pageNum}
                     </Link>
@@ -129,58 +153,3 @@ export default async function ProductsPage({
   );
 }
 
-// Client-side sorting function for fields not supported by API
-function sortProducts(products: any[], sortBy: string) {
-  const sorted = [...products];
-
-  switch (sortBy) {
-    case "name_asc":
-      return sorted.sort((a, b) => a.name.localeCompare(b.name));
-
-    case "name_desc":
-      return sorted.sort((a, b) => b.name.localeCompare(a.name));
-
-    case "price_asc":
-      return sorted.sort((a, b) => {
-        const priceA = parseFloat(
-          a.price_per_unit?.replace(/[^\d.]/g, "") || "0"
-        );
-        const priceB = parseFloat(
-          b.price_per_unit?.replace(/[^\d.]/g, "") || "0"
-        );
-        return priceA - priceB;
-      });
-
-    case "price_desc":
-      return sorted.sort((a, b) => {
-        const priceA = parseFloat(
-          a.price_per_unit?.replace(/[^\d.]/g, "") || "0"
-        );
-        const priceB = parseFloat(
-          b.price_per_unit?.replace(/[^\d.]/g, "") || "0"
-        );
-        return priceB - priceA;
-      });
-
-    case "verified_desc":
-      return sorted.sort((a, b) => {
-        if (a.is_verified === b.is_verified) return 0;
-        return a.is_verified ? -1 : 1;
-      });
-
-    case "created_at_asc":
-      return sorted.sort(
-        (a, b) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-      );
-
-    case "created_at_desc":
-      return sorted.sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-
-    default:
-      return sorted;
-  }
-}

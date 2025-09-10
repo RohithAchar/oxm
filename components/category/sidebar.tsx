@@ -82,14 +82,14 @@ const CategorySidebar = () => {
         <Menu strokeWidth={1.5} className="h-4.5 w-4.5 cursor-pointer" />
       </SheetTrigger>
       <SheetContent side="left" className="overflow-y-auto max-h-screen w-80">
-        <SheetHeader className="pb-6">
+        <SheetHeader className="pb-6 px-6 pt-6">
           <SheetTitle className="text-left">Categories</SheetTitle>
           <SheetDescription className="text-left">
             Choose a category to explore products of a similar type.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 px-6 pb-6">
           {/* All Products Link */}
           <Link
             href="/"

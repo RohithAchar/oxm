@@ -2,7 +2,6 @@
 import Link from "next/link";
 import { CarouselItem } from "../ui/carousel";
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import { Skeleton } from "../ui/skeleton";
 
 interface CustomCarousalProps {
@@ -18,8 +17,6 @@ export const CustomCarousal = ({
   image_url,
   title,
 }: CustomCarousalProps) => {
-  const { theme } = useTheme();
-
   const updateClickCount = async (id: string) => {
     // TODO: Update click count for banner
   };
@@ -32,9 +29,7 @@ export const CustomCarousal = ({
             alt="Banner Image"
             src={image_url}
             fill
-            className={`object-cover transition duration-300 hover:brightness-100 ${
-              theme === "dark" ? "brightness-75" : "brightness-100"
-            }`}
+            className="object-cover transition duration-300 hover:brightness-100 brightness-100 dark:brightness-75"
           />
           <p className="absolute z-10 text-2xl md:text-3xl lg:text-4xl bottom-6 left-6 md:bottom-8 md:left-10 lg:bottom-10 lg:left-10 font-semibold mix-blend-difference text-white">
             {title}

@@ -68,7 +68,8 @@ export const ProductCard = ({
             alt="Product Image"
             onError={() => setImageError(true)}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-            className="object-cover rounded-sm"
+            unoptimized
+            className="object-cover rounded-sm brightness-100 dark:brightness-75"
           />
         </div>
 

@@ -4,7 +4,14 @@ import { Carousel, CarouselContent } from "../ui/carousel";
 import { CustomCarousal } from "./custom-carousal";
 
 export const Carousal = async () => {
-  const banners = await getBanners();
+  let banners: Awaited<ReturnType<typeof getBanners>>;
+  try {
+    banners = await getBanners();
+  } catch (error) {
+    console.error("Error fetching banners:", error);
+    banners = []; // Fallback to empty array
+  }
+  
   const currentDateAndTime = getCurrentDateAndTime();
 
   // Use system time for consistency with UTC banner times

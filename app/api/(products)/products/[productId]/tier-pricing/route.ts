@@ -39,7 +39,6 @@ export async function DELETE(req: Request, { params }: PageProps) {
       .order("quantity", { ascending: true });
 
     if (tierPricingError) {
-      console.log("Error fetching tier pricing:", tierPricingError);
       return new Response("Error fetching tier pricing", { status: 500 });
     }
 

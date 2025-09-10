@@ -137,7 +137,7 @@ export function Sidebar({
         </div>
 
         {/* Navigation */}
-        <ScrollArea className="flex-1 px-3 py-4">
+        <ScrollArea className="flex-1 px-6 py-6">
           <nav className="space-y-6">
             {sidebarGroups.map((group) => (
               <div key={group.label} className="space-y-2">
@@ -175,7 +175,7 @@ export function Sidebar({
         </ScrollArea>
 
         {/* Footer */}
-        <div className="px-3 py-4 border-t border-gray-200/50">
+        <div className="px-6 py-6 border-t border-gray-200/50">
           <div className="flex items-center gap-3 px-3 py-2">
             <Avatar>
               <AvatarImage src={userProfileUrl} alt="Profile" />

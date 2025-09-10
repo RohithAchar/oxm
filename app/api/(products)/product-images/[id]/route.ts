@@ -39,7 +39,6 @@ export async function DELETE(request: NextRequest, context: RouteContext) {
     }
 
     // Your existing DELETE logic here
-    console.log("Deleting product image with ID:", id);
     await supabase.from("product_images").delete().eq("id", id);
 
     // Example logic (replace with your actual implementation)
@@ -64,7 +63,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const { id } = await context.params;
 
     // Your GET logic here
-    console.log("Getting product image with ID:", id);
 
     return NextResponse.json({
       message: "Product image retrieved successfully",
@@ -84,7 +82,6 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     const { id } = await context.params;
 
     // Your PUT logic here
-    console.log("Updating product image with ID:", id);
 
     return NextResponse.json({
       message: "Product image updated successfully",

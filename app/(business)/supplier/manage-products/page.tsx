@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, MoreHorizontal, Edit, Eye, Package } from "lucide-react";
+import { MoreHorizontal, Edit, Eye, Package } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -47,7 +46,6 @@ type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Product = Database["public"]["Tables"]["products"]["Row"];
 
 const ManageProductsPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [products, setProducts] = useState<Product[]>([]);
@@ -105,11 +103,6 @@ const ManageProductsPage = () => {
   }, []);
 
   const filteredProducts = products.filter((product) => {
-    const matchesSearch =
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      // product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.brand?.toLowerCase().includes(searchTerm.toLowerCase());
-
     const matchesStatus =
       statusFilter === "all" ||
       (statusFilter === "active" && product.is_active) ||
@@ -118,7 +111,7 @@ const ManageProductsPage = () => {
     const matchesCategory =
       categoryFilter === "all" || product.category_id === categoryFilter;
 
-    return matchesSearch && matchesStatus && matchesCategory;
+    return matchesStatus && matchesCategory;
   });
 
   const handleToggleStatus = async (productId: string, product: Product) => {
@@ -244,20 +237,11 @@ const ManageProductsPage = () => {
             Product Catalog
           </CardTitle>
           <CardDescription className="text-muted-foreground text-base mt-2">
-            Search, filter, and manage your products
+            Filter and manage your products
           </CardDescription>
         </CardHeader>
         <CardContent className="px-8 pb-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-1 items-center space-x-3 bg-muted rounded-xl px-4 py-3">
-              <Search className="h-5 w-5 text-muted-foreground" />
-              <Input
-                placeholder="Search products or brand..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="max-w-sm border-0 bg-transparent focus:ring-0 focus:outline-none placeholder:text-muted-foreground"
-              />
-            </div>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-end">
             <div className="flex items-center space-x-3">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[140px] border-border rounded-xl bg-background hover:bg-muted/50">
