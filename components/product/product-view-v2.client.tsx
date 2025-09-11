@@ -63,11 +63,11 @@ export default function ProductViewV2Client({
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-5 py-5 sm:py-8 pb-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* Left: Gallery */}
           <div>
-            <div className="relative w-full aspect-square rounded-xl overflow-hidden border">
+            <div className="relative w-full aspect-square rounded-lg sm:rounded-xl overflow-hidden border">
               <Image
                 fill
                 src={images[currentImageIdx]?.image_url}
@@ -76,28 +76,46 @@ export default function ProductViewV2Client({
                 priority
               />
             </div>
-            <div className="mt-3 grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2">
-              {images.map((img, idx) => (
-                <button
-                  key={img.id ?? idx}
-                  type="button"
-                  onClick={() => setCurrentImageIdx(idx)}
-                  className={`relative aspect-square rounded-md overflow-hidden border focus:outline-none ${
-                    idx === currentImageIdx ? "ring-2 ring-primary" : ""
-                  }`}
-                  aria-label={`View image ${idx + 1}`}
-                >
-                  <Image fill src={img.image_url} alt="thumb" className="object-cover" />
-                </button>
-              ))}
+            {/* Thumbnails: horizontal scroll on mobile, grid on md+ */}
+            <div className="mt-3">
+              <div className="flex md:hidden gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
+                {images.map((img, idx) => (
+                  <button
+                    key={img.id ?? idx}
+                    type="button"
+                    onClick={() => setCurrentImageIdx(idx)}
+                    className={`relative w-16 h-16 shrink-0 rounded-md overflow-hidden border focus:outline-none ${
+                      idx === currentImageIdx ? "ring-2 ring-primary" : ""
+                    }`}
+                    aria-label={`View image ${idx + 1}`}
+                  >
+                    <Image fill src={img.image_url} alt="thumb" className="object-cover" />
+                  </button>
+                ))}
+              </div>
+              <div className="hidden md:grid grid-cols-6 lg:grid-cols-8 gap-2">
+                {images.map((img, idx) => (
+                  <button
+                    key={img.id ?? idx}
+                    type="button"
+                    onClick={() => setCurrentImageIdx(idx)}
+                    className={`relative aspect-square rounded-md overflow-hidden border focus:outline-none ${
+                      idx === currentImageIdx ? "ring-2 ring-primary" : ""
+                    }`}
+                    aria-label={`View image ${idx + 1}`}
+                  >
+                    <Image fill src={img.image_url} alt="thumb" className="object-cover" />
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Details block below */}
-            <div className="mt-8 bg-muted/50 rounded-lg p-6 border">
-              <h1 className="text-2xl font-semibold mb-2">{product.name}</h1>
+            <div className="mt-6 sm:mt-8 bg-muted/50 rounded-lg p-4 sm:p-6 border">
+              <h1 className="text-xl sm:text-2xl font-semibold mb-2">{product.name}</h1>
               <Description text={product.description} />
 
-              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="mt-4 sm:mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div>
                   <h3 className="font-medium mb-3">Supplier</h3>
                   <div className="flex items-start gap-3">
@@ -133,17 +151,18 @@ export default function ProductViewV2Client({
 
           {/* Right: Sticky purchase panel */}
           <div className="lg:pl-2">
-            <div className="lg:sticky lg:top-20 space-y-6">
+            <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-20">
               {/* Tier Pricing table */}
               {product.product_tier_pricing?.length > 0 && (
                 <div className="border rounded-lg p-4 bg-card">
                   <h3 className="font-medium mb-3">Tier pricing</h3>
-                  <div className="grid grid-cols-3 gap-2 text-sm">
+                  {/* Horizontal scroll on mobile, grid on md+ */}
+                  <div className="flex md:grid md:grid-cols-3 gap-2 text-sm overflow-x-auto no-scrollbar">
                     {product.product_tier_pricing
                       .slice()
                       .sort((a: any, b: any) => a.quantity - b.quantity)
                       .map((tier: any, idx: number) => (
-                        <div key={tier.id ?? idx} className={`rounded-md border px-3 py-2 text-center ${
+                        <div key={tier.id ?? idx} className={`rounded-md border px-3 py-2 text-center min-w-[7rem] md:min-w-0 ${
                           activeTier?.id === tier.id ? "bg-primary/10 border-primary" : "bg-background"
                         }`}>
                           <div className="text-xs text-muted-foreground">{tier.quantity}+</div>
@@ -206,7 +225,7 @@ export default function ProductViewV2Client({
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs text-muted-foreground">Price per unit</div>
-                    <div className="text-2xl font-semibold">₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}</div>
+                    <div className="text-xl sm:text-2xl font-semibold">₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}</div>
                   </div>
                   <Badge variant="secondary">Free delivery</Badge>
                 </div>
@@ -217,13 +236,13 @@ export default function ProductViewV2Client({
                   </div>
                   <div className="ml-auto text-right">
                     <div className="text-xs text-muted-foreground">Total</div>
-                    <div className="text-xl font-semibold">₹{totalPrice.toFixed(2)}</div>
+                    <div className="text-lg sm:text-xl font-semibold">₹{totalPrice.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
 
               {/* Buy button */}
-              <div className="border rounded-lg p-4 bg-card">
+              <div className="border rounded-lg p-3 sm:p-4 bg-card hidden lg:block">
                 <Button className="w-full" size="lg" onClick={() => {
                   // Just log for now as requested
                   console.log("Buy clicked", {
@@ -238,6 +257,32 @@ export default function ProductViewV2Client({
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Mobile floating buy bar (polished) */}
+      <div className="lg:hidden fixed inset-x-0 bottom-20 z-40 flex justify-center px-4">
+        <div className="flex items-center gap-3 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border rounded-full shadow-lg px-4 py-3 max-w-md w-full">
+          <div className="flex-1">
+            <div className="text-[11px] text-muted-foreground">Total • Qty {sampleQuantity}</div>
+            <div className="text-base font-semibold leading-none">₹{totalPrice.toFixed(2)}</div>
+          </div>
+          <Button
+            size="sm"
+            className="rounded-full px-5 py-2"
+            onClick={() => {
+              console.log("Buy clicked (mobile)", {
+                productId: product.id,
+                colorId,
+                sizeId,
+                quantity: sampleQuantity,
+                unitPrice,
+                totalPrice,
+              });
+            }}
+          >
+            Buy
+          </Button>
         </div>
       </div>
     </div>
