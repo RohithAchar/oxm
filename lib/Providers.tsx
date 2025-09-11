@@ -5,6 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   function ThemeEnforcer({ children }: { children: React.ReactNode }) {
@@ -28,8 +29,10 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       enableSystem
       disableTransitionOnChange
     >
-      <Toaster />
-      <ThemeEnforcer>{children}</ThemeEnforcer>
+      <NuqsAdapter>
+        <Toaster />
+        <ThemeEnforcer>{children}</ThemeEnforcer>
+      </NuqsAdapter>
     </NextThemesProvider>
   );
 };

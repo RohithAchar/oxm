@@ -1,39 +1,58 @@
 "use client";
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
+ 
 
 export function ActiveFilters() {
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
+  const [query, setQuery] = useQueryStates({
+    category: parseAsString,
+    subcategory: parseAsString,
+    price_min: parseAsString,
+    price_max: parseAsString,
+    city: parseAsString,
+    state: parseAsString,
+    sample_available: parseAsString,
+    dropship_available: parseAsString,
+    tags: parseAsArrayOf(parseAsString),
+    colors: parseAsArrayOf(parseAsString),
+    sizes: parseAsArrayOf(parseAsString),
+    sort: parseAsString,
+    page: parseAsString,
+  }, { shallow: false, clearOnDefault: true });
 
   const removeFilter = (key: string, value?: string) => {
-    const params = new URLSearchParams(searchParams);
-    
-    if (value) {
-      // For array filters (tags, colors, sizes)
-      const currentValues = params.get(key)?.split(",").filter(Boolean) || [];
-      const newValues = currentValues.filter(v => v !== value);
-      
-      if (newValues.length > 0) {
-        params.set(key, newValues.join(","));
-      } else {
-        params.delete(key);
-      }
-    } else {
-      // For single value filters
-      params.delete(key);
+    if (key === "price_min" || key === "price_max") {
+      setQuery({ price_min: null as any, price_max: null as any, page: null as any } as any);
+      return;
     }
-    
-    params.delete("page"); // Reset to first page
-    router.push(`${pathname}?${params.toString()}`);
+    if (value) {
+      const currentValues = (query as any)[key] || [];
+      const newValues = currentValues.filter((v: string) => v !== value);
+      setQuery({ [key]: newValues.length > 0 ? newValues : null, page: null as any } as any);
+    } else {
+      setQuery({ [key]: null as any, page: null as any } as any);
+    }
   };
 
   const clearAllFilters = () => {
-    router.push(pathname);
+    setQuery({
+      category: null as any,
+      subcategory: null as any,
+      price_min: null as any,
+      price_max: null as any,
+      city: null as any,
+      state: null as any,
+      sample_available: null as any,
+      dropship_available: null as any,
+      tags: null as any,
+      colors: null as any,
+      sizes: null as any,
+      sort: null as any,
+      page: null as any,
+    });
   };
 
   const getActiveFilters = () => {
@@ -41,69 +60,69 @@ export function ActiveFilters() {
 
 
     // Category
-    const category = searchParams.get("category");
+    const category = query.category;
     if (category) {
       filters.push({ key: "category", label: "Category", value: category, type: 'single' });
     }
 
     // Subcategory
-    const subcategory = searchParams.get("subcategory");
+    const subcategory = query.subcategory;
     if (subcategory) {
       filters.push({ key: "subcategory", label: "Subcategory", value: subcategory, type: 'single' });
     }
 
     // Price range
-    const priceMin = searchParams.get("price_min");
-    const priceMax = searchParams.get("price_max");
+    const priceMin = query.price_min;
+    const priceMax = query.price_max;
     if (priceMin || priceMax) {
       const priceRange = `₹${priceMin || "0"} - ₹${priceMax || "∞"}`;
-      filters.push({ key: "price", label: "Price", value: priceRange, type: 'single' });
+      filters.push({ key: "price_min", label: "Price", value: priceRange, type: 'single' });
     }
 
     // Location
-    const city = searchParams.get("city");
+    const city = query.city;
     if (city) {
       filters.push({ key: "city", label: "City", value: city, type: 'single' });
     }
 
-    const state = searchParams.get("state");
+    const state = query.state;
     if (state) {
       filters.push({ key: "state", label: "State", value: state, type: 'single' });
     }
 
 
-    if (searchParams.get("sample_available") === "true") {
+    if (query.sample_available === "true") {
       filters.push({ key: "sample_available", label: "Sample", value: "Sample Available", type: 'single' });
     }
 
-    if (searchParams.get("dropship_available") === "true") {
+    if (query.dropship_available === "true") {
       filters.push({ key: "dropship_available", label: "Dropship", value: "Dropship Available", type: 'single' });
     }
 
     // Array filters
-    const tags = searchParams.get("tags");
-    if (tags) {
-      tags.split(",").forEach(tag => {
+    const tags = query.tags;
+    if (tags && tags.length > 0) {
+      tags.forEach(tag => {
         filters.push({ key: "tags", label: "Tag", value: tag, type: 'array' });
       });
     }
 
-    const colors = searchParams.get("colors");
-    if (colors) {
-      colors.split(",").forEach(color => {
+    const colors = query.colors;
+    if (colors && colors.length > 0) {
+      colors.forEach(color => {
         filters.push({ key: "colors", label: "Color", value: color, type: 'array' });
       });
     }
 
-    const sizes = searchParams.get("sizes");
-    if (sizes) {
-      sizes.split(",").forEach(size => {
+    const sizes = query.sizes;
+    if (sizes && sizes.length > 0) {
+      sizes.forEach(size => {
         filters.push({ key: "sizes", label: "Size", value: size, type: 'array' });
       });
     }
 
     // Sort (only show if not default)
-    const sort = searchParams.get("sort");
+    const sort = query.sort;
     if (sort && sort !== "created_at_desc") {
       const sortLabels: Record<string, string> = {
         "created_at_asc": "Oldest First",
@@ -130,11 +149,14 @@ export function ActiveFilters() {
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-medium">Active Filters</h3>
         <Button
-          variant="ghost"
+          variant="link"
           size="sm"
           onClick={clearAllFilters}
-          className="h-6 px-2 text-xs"
+          aria-label="Clear all filters"
+          title="Clear all filters"
+          className="h-auto p-0 text-xs text-primary underline-offset-4 hover:underline cursor-pointer"
         >
+          <X className="mr-1 h-3 w-3" />
           Clear All
         </Button>
       </div>
@@ -152,7 +174,7 @@ export function ActiveFilters() {
               variant="ghost"
               size="sm"
               onClick={() => removeFilter(filter.key, filter.type === 'array' ? filter.value : undefined)}
-              className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground"
+              className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground cursor-pointer"
             >
               <X className="h-3 w-3" />
             </Button>

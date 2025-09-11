@@ -1,16 +1,6 @@
-import { ProductCard } from "@/components/home/product-card";
-import { AdvancedSearch } from "@/components/product/advanced-search";
-import { ActiveFilters } from "@/components/product/active-filters";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { PackageOpen } from "lucide-react";
-import { getEnhancedProducts, EnhancedProductFilters } from "@/lib/controller/product/enhancedProductOperations";
+import { Suspense } from "react";
+import ProductsRouteLoadingMount from "@/components/product/products-route-loading-mount";
+import ProductsContent from "@/components/product/products-content";
 import Link from "next/link";
 
 export default async function ProductsPage({
@@ -18,137 +8,49 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<Record<string, string | undefined>>;
 }) {
-  const params = await searchParams; // resolve the promise
-
-  // Parse all filter parameters
-  const filters: EnhancedProductFilters = {
-    category: params.category,
-    subcategory: params.subcategory,
-    priceMin: params.price_min ? parseFloat(params.price_min) : undefined,
-    priceMax: params.price_max ? parseFloat(params.price_max) : undefined,
-    city: params.city,
-    state: params.state,
-    sampleAvailable: params.sample_available === "true" ? true : undefined,
-    dropshipAvailable: params.dropship_available === "true" ? true : undefined,
-    tags: params.tags ? params.tags.split(",").filter(Boolean) : undefined,
-    colors: params.colors ? params.colors.split(",").filter(Boolean) : undefined,
-    sizes: params.sizes ? params.sizes.split(",").filter(Boolean) : undefined,
-    sortBy: params.sort || "created_at_desc",
-    page: parseInt(params.page ?? "1", 10),
-    pageSize: parseInt(params.page_size ?? "12", 10),
-  };
-
-  const data = await getEnhancedProducts(filters);
-
-  const isEmpty = !data.products || data.products.length === 0;
+  const params = await searchParams;
 
   return (
     <div className="space-y-6">
-      {/* Fixed Search and Filter Bar */}
-      <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
-        <div className="space-y-4 py-4">
-          {/* Advanced Search Component */}
-          <div>
-            <AdvancedSearch filterOptions={data.filters} />
-          </div>
-
-          {/* Active Filters */}
-          <ActiveFilters />
-
-          {/* Results Summary */}
-          <div className="text-sm text-muted-foreground">
-            Showing {data.products.length} of {data.total} products
-            {data.totalPages > 1 && ` (Page ${data.page} of ${data.totalPages})`}
-          </div>
-        </div>
-      </div>
-
-      {isEmpty ? (
-        <div className="flex items-center justify-center py-16 md:py-24">
-          <Card className="w-full max-w-xl border-muted-foreground/20">
-            <CardHeader className="text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
-                <PackageOpen className="h-7 w-7 text-muted-foreground" />
+      {/* Lightweight client loading indicator for route/query changes */}
+      <ProductsRouteLoadingMount />
+      <Suspense fallback={
+        <div className="space-y-6">
+          <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+            <div className="space-y-4 py-4">
+              <div className="flex items-center gap-2">
+                <div className="h-9 w-28 rounded-md bg-muted animate-pulse" />
+                <div className="h-9 w-20 rounded-md bg-muted animate-pulse" />
               </div>
-              <CardTitle className="text-2xl">No products found</CardTitle>
-              <CardDescription className="text-base">
-                Try adjusting your filters or explore the latest picks on the
-                home page.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
-                <Button asChild size="sm">
-                  <Link href="/products">
-                    Reset filters
-                  </Link>
-                </Button>
-                <Button asChild size="sm" variant="outline">
-                  <Link href="/">Go to home</Link>
-                </Button>
+              <div className="flex flex-wrap gap-2">
+                <div className="h-6 w-20 rounded-full bg-muted animate-pulse" />
+                <div className="h-6 w-24 rounded-full bg-muted animate-pulse" />
+                <div className="h-6 w-16 rounded-full bg-muted animate-pulse" />
               </div>
-            </CardContent>
-          </Card>
-        </div>
-      ) : (
-        <>
-          {/* Products Grid */}
+              <div className="h-4 w-48 bg-muted rounded animate-pulse" />
+            </div>
+          </div>
           <div className="grid gap-4 md:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {data.products.map((p) => {
-              if (!p) return null;
-              return (
-                <ProductCard
-                  key={p.id}
-                  id={p.id}
-                  imageUrl={p.imageUrl}
-                  name={p.name}
-                  brand={p.brand || ""}
-                  supplierName={p.supplierName}
-                  priceAndQuantity={p.priceAndQuantity || []}
-                  is_verified={p.is_verified || false}
-                  hasSample={p.is_sample_available || false}
-                />
-              );
-            })}
+            {Array.from({ length: 12 }).map((_, idx) => (
+              <div key={idx} className="space-y-2">
+                <div className="aspect-square w-full rounded-lg bg-muted animate-pulse" />
+                <div className="h-4 w-3/4 bg-muted rounded animate-pulse" />
+                <div className="h-3 w-1/2 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-1/3 bg-muted rounded animate-pulse" />
+              </div>
+            ))}
           </div>
-
-          {/* Pagination */}
           <div className="flex gap-2 mt-8 justify-center">
-            {data.totalPages > 1 &&
-              Array.from({ length: data.totalPages }, (_, i) => {
-                const pageNum = i + 1;
-                const paginationParams = new URLSearchParams();
-                
-                // Preserve all current filters in pagination
-                Object.entries(filters).forEach(([key, value]) => {
-                  if (value !== undefined && value !== "" && value !== false) {
-                    if (Array.isArray(value) && value.length > 0) {
-                      paginationParams.set(key, value.join(","));
-                    } else if (!Array.isArray(value)) {
-                      paginationParams.set(key, String(value));
-                    }
-                  }
-                });
-                
-                paginationParams.set("page", String(pageNum));
-                
-                return (
-                  <Button
-                    asChild
-                    variant={pageNum === data.page ? "default" : "outline"}
-                    key={pageNum}
-                  >
-                    <Link
-                      href={`/products?${paginationParams.toString()}`}
-                    >
-                      {pageNum}
-                    </Link>
-                  </Button>
-                );
-              })}
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-9 w-9 rounded-md bg-muted animate-pulse" />
+            ))}
           </div>
-        </>
-      )}
+        </div>
+      }>
+        {/* Products content is server-rendered and data-fetching */}
+        {/* We pass resolved params to ensure stable serialization */}
+        <ProductsContent params={params} />
+      </Suspense>
     </div>
   );
 }

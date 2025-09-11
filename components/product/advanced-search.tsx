@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -47,24 +47,26 @@ import {
   Truck,
   SortAsc,
   SortDesc,
+  Loader2,
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { useQueryStates, parseAsString, parseAsArrayOf, parseAsBoolean } from "nuqs";
 
 // Types for filters
 interface FilterState {
   category: string;
   subcategory: string;
-  priceMin: string;
-  priceMax: string;
+  price_min: string;
+  price_max: string;
   city: string;
   state: string;
-  sampleAvailable: boolean | undefined;
-  dropshipAvailable: boolean | undefined;
+  sample_available: boolean;
+  dropship_available: boolean;
   tags: string[];
   colors: string[];
   sizes: string[];
-  sortBy: string;
+  sort: string;
 }
 
 // Types for filter options
@@ -86,16 +88,16 @@ interface AdvancedSearchProps {
 const initialFilters: FilterState = {
   category: "",
   subcategory: "",
-  priceMin: "",
-  priceMax: "",
+  price_min: "",
+  price_max: "",
   city: "",
   state: "",
-  sampleAvailable: undefined,
-  dropshipAvailable: undefined,
+  sample_available: false,
+  dropship_available: false,
   tags: [],
   colors: [],
   sizes: [],
-  sortBy: "created_at_desc",
+  sort: "created_at_desc",
 };
 
 // Sort options
@@ -110,117 +112,62 @@ const sortOptions = [
 
 
 export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
-  const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const isMobile = useIsMobile();
   
-  const [filters, setFilters] = useState<FilterState>(initialFilters);
+  const [filters, setFilters] = useQueryStates({
+    category: parseAsString.withDefault(""),
+    subcategory: parseAsString.withDefault(""),
+    price_min: parseAsString.withDefault(""),
+    price_max: parseAsString.withDefault(""),
+    city: parseAsString.withDefault(""),
+    state: parseAsString.withDefault(""),
+    sample_available: parseAsBoolean.withDefault(false),
+    dropship_available: parseAsBoolean.withDefault(false),
+    tags: parseAsArrayOf(parseAsString).withDefault([]),
+    colors: parseAsArrayOf(parseAsString).withDefault([]),
+    sizes: parseAsArrayOf(parseAsString).withDefault([]),
+    sort: parseAsString.withDefault("created_at_desc"),
+  }, { shallow: false, clearOnDefault: true });
+
   const [isOpen, setIsOpen] = useState(false);
+  const [isApplying, setIsApplying] = useState(false);
+  // Local draft state; UI edits go here without updating URL until applied
+  const [draftFilters, setDraftFilters] = useState<FilterState>(initialFilters);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
-  // Initialize filters from URL params
-  useEffect(() => {
-    const newFilters = { ...initialFilters };
-    
-    // Parse URL parameters
-    searchParams.forEach((value, key) => {
-      switch (key) {
-        case "category":
-          newFilters.category = value;
-          break;
-        case "subcategory":
-          newFilters.subcategory = value;
-          break;
-        case "price_min":
-          newFilters.priceMin = value;
-          break;
-        case "price_max":
-          newFilters.priceMax = value;
-          break;
-        case "city":
-          newFilters.city = value;
-          break;
-        case "state":
-          newFilters.state = value;
-          break;
-        case "sample_available":
-          newFilters.sampleAvailable = value === "true";
-          break;
-        case "dropship_available":
-          newFilters.dropshipAvailable = value === "true";
-          break;
-        case "tags":
-          newFilters.tags = value.split(",").filter(Boolean);
-          break;
-        case "colors":
-          newFilters.colors = value.split(",").filter(Boolean);
-          break;
-        case "sizes":
-          newFilters.sizes = value.split(",").filter(Boolean);
-          break;
-        case "sort":
-          newFilters.sortBy = value;
-          break;
-      }
-    });
-    
-    setFilters(newFilters);
-  }, [searchParams]);
-
-  const updateFilters = (updates: Partial<FilterState>) => {
-    setFilters(prev => ({ ...prev, ...updates }));
+  const updateDraftFilters = (updates: Partial<FilterState>) => {
+    setDraftFilters(prev => ({ ...prev, ...updates }));
   };
 
   const applyFilters = () => {
-    const params = new URLSearchParams();
-    
-    // Map filter keys to URL parameter names
-    const paramMapping: Record<string, string> = {
-      category: "category",
-      subcategory: "subcategory", 
-      priceMin: "price_min",
-      priceMax: "price_max",
-      city: "city",
-      state: "state",
-      sampleAvailable: "sample_available",
-      dropshipAvailable: "dropship_available",
-      tags: "tags",
-      colors: "colors",
-      sizes: "sizes",
-      sortBy: "sort"
-    };
-    
-    // Add non-empty filters to URL
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value === "" || value === false || value === undefined || (Array.isArray(value) && value.length === 0)) {
-        return;
-      }
-      
-      const paramName = paramMapping[key];
-      if (paramName) {
-        if (Array.isArray(value)) {
-          if (value.length > 0) {
-            params.set(paramName, value.join(","));
-          }
-        } else {
-          params.set(paramName, String(value));
-        }
-      }
-    });
-    
-    // Reset to first page when filters change
-    params.delete("page");
-    
-    router.push(`${pathname}?${params.toString()}`);
+    setIsApplying(true);
+    setFilters(draftFilters);
     setIsOpen(false);
   };
 
   const clearFilters = () => {
+    setDraftFilters(initialFilters);
     setFilters(initialFilters);
-    router.push(pathname);
     setIsOpen(false);
   };
+
+  // When URL-bound filters change (navigation), stop showing the applying state
+  // This makes the Apply button show a spinner only while navigation is pending
+  // and the new results are about to render.
+  if (process.env.NODE_ENV !== "production") {
+    // no-op to satisfy tree-shaking comments; keeps file structure stable
+  }
+
+  // Turn off applying state after the URL-synced filters update
+  // Note: This effect intentionally depends on the entire filters object
+  // so it runs whenever any query param changes.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (isApplying) {
+      setIsApplying(false);
+    }
+  }, [filters]);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => {
@@ -238,15 +185,15 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
     let count = 0;
     if (filters.category) count++;
     if (filters.subcategory) count++;
-    if (filters.priceMin || filters.priceMax) count++;
+    if (filters.price_min || filters.price_max) count++;
     if (filters.city) count++;
     if (filters.state) count++;
-    if (filters.sampleAvailable === true) count++;
-    if (filters.dropshipAvailable === true) count++;
+    if (filters.sample_available === true) count++;
+    if (filters.dropship_available === true) count++;
     if (filters.tags.length > 0) count++;
     if (filters.colors.length > 0) count++;
     if (filters.sizes.length > 0) count++;
-    if (filters.sortBy !== "created_at_desc") count++;
+    if (filters.sort !== "created_at_desc") count++;
     return count;
   };
 
@@ -255,7 +202,7 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       {/* Sort */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Sort By</label>
-        <Select value={filters.sortBy} onValueChange={(value) => updateFilters({ sortBy: value })}>
+        <Select value={draftFilters.sort} onValueChange={(value) => updateDraftFilters({ sort: value })}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -279,12 +226,12 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
           {expandedSections.has("categories") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
-          <Select value={filters.category} onValueChange={(value) => updateFilters({ category: value, subcategory: "" })}>
+          <Select value={draftFilters.category} onValueChange={(value) => updateDraftFilters({ category: value === "all" ? "" : value, subcategory: "" })}>
             <SelectTrigger>
               <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Categories</SelectItem>
+              <SelectItem value="all">All Categories</SelectItem>
               {filterOptions?.availableCategories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
@@ -293,13 +240,13 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             </SelectContent>
           </Select>
           
-          {filters.category && (
-            <Select value={filters.subcategory} onValueChange={(value) => updateFilters({ subcategory: value })}>
+          {draftFilters.category && (
+            <Select value={draftFilters.subcategory} onValueChange={(value) => updateDraftFilters({ subcategory: value === "all" ? "" : value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Subcategory" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Subcategories</SelectItem>
+                <SelectItem value="all">All Subcategories</SelectItem>
                 {filterOptions?.availableSubcategories
                   .filter(sub => sub.parent_id === filters.category)
                   .map((subcategory) => (
@@ -324,16 +271,16 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             <Input
               type="number"
               placeholder="Min Price"
-              value={filters.priceMin}
-              onChange={(e) => updateFilters({ priceMin: e.target.value })}
+              value={draftFilters.price_min}
+              onChange={(e) => updateDraftFilters({ price_min: e.target.value })}
               min={filterOptions?.priceRange?.min || 0}
               max={filterOptions?.priceRange?.max || 100000}
             />
             <Input
               type="number"
               placeholder="Max Price"
-              value={filters.priceMax}
-              onChange={(e) => updateFilters({ priceMax: e.target.value })}
+              value={draftFilters.price_max}
+              onChange={(e) => updateDraftFilters({ price_max: e.target.value })}
               min={filterOptions?.priceRange?.min || 0}
               max={filterOptions?.priceRange?.max || 100000}
             />
@@ -351,12 +298,12 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
           {expandedSections.has("location") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
-          <Select value={filters.state} onValueChange={(value) => updateFilters({ state: value, city: "" })}>
+          <Select value={draftFilters.state} onValueChange={(value) => updateDraftFilters({ state: value === "all" ? "" : value, city: "" })}>
             <SelectTrigger>
               <SelectValue placeholder="Select State" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All States</SelectItem>
+              <SelectItem value="all">All States</SelectItem>
               {filterOptions?.availableStates.map((state) => (
                 <SelectItem key={state.name} value={state.name}>
                   {state.name}
@@ -365,12 +312,12 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             </SelectContent>
           </Select>
           
-          <Select value={filters.city} onValueChange={(value) => updateFilters({ city: value })}>
+          <Select value={draftFilters.city} onValueChange={(value) => updateDraftFilters({ city: value === "all" ? "" : value })}>
             <SelectTrigger>
               <SelectValue placeholder="Select City" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Cities</SelectItem>
+              <SelectItem value="all">All Cities</SelectItem>
               {filterOptions?.availableCities.map((city) => (
                 <SelectItem key={city.name} value={city.name}>
                   {city.name}
@@ -392,8 +339,8 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={filters.sampleAvailable === true}
-                onChange={(e) => updateFilters({ sampleAvailable: e.target.checked ? true : undefined })}
+                checked={draftFilters.sample_available === true}
+                onChange={(e) => updateDraftFilters({ sample_available: e.target.checked })}
                 className="rounded"
               />
               <span className="text-sm">Sample Available</span>
@@ -402,8 +349,8 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                checked={filters.dropshipAvailable === true}
-                onChange={(e) => updateFilters({ dropshipAvailable: e.target.checked ? true : undefined })}
+                checked={draftFilters.dropship_available === true}
+                onChange={(e) => updateDraftFilters({ dropship_available: e.target.checked })}
                 className="rounded"
               />
               <span className="text-sm">Dropship Available</span>
@@ -426,13 +373,13 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             {filterOptions?.availableTags.map((tag) => (
               <Badge
                 key={tag.name}
-                variant={filters.tags.includes(tag.name) ? "default" : "outline"}
+                variant={draftFilters.tags.includes(tag.name) ? "default" : "outline"}
                 className="cursor-pointer"
                 onClick={() => {
-                  const newTags = filters.tags.includes(tag.name)
-                    ? filters.tags.filter(t => t !== tag.name)
-                    : [...filters.tags, tag.name];
-                  updateFilters({ tags: newTags });
+                  const newTags = draftFilters.tags.includes(tag.name)
+                    ? draftFilters.tags.filter(t => t !== tag.name)
+                    : [...draftFilters.tags, tag.name];
+                  updateDraftFilters({ tags: newTags });
                 }}
               >
                 {tag.name}
@@ -456,13 +403,13 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             {filterOptions?.availableColors.map((color) => (
               <Badge
                 key={color.name}
-                variant={filters.colors.includes(color.name) ? "default" : "outline"}
+                variant={draftFilters.colors.includes(color.name) ? "default" : "outline"}
                 className="cursor-pointer"
                 onClick={() => {
-                  const newColors = filters.colors.includes(color.name)
-                    ? filters.colors.filter(c => c !== color.name)
-                    : [...filters.colors, color.name];
-                  updateFilters({ colors: newColors });
+                  const newColors = draftFilters.colors.includes(color.name)
+                    ? draftFilters.colors.filter(c => c !== color.name)
+                    : [...draftFilters.colors, color.name];
+                  updateDraftFilters({ colors: newColors });
                 }}
               >
                 {color.name}
@@ -486,13 +433,13 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
             {filterOptions?.availableSizes.map((size) => (
               <Badge
                 key={size.name}
-                variant={filters.sizes.includes(size.name) ? "default" : "outline"}
+                variant={draftFilters.sizes.includes(size.name) ? "default" : "outline"}
                 className="cursor-pointer"
                 onClick={() => {
-                  const newSizes = filters.sizes.includes(size.name)
-                    ? filters.sizes.filter(s => s !== size.name)
-                    : [...filters.sizes, size.name];
-                  updateFilters({ sizes: newSizes });
+                  const newSizes = draftFilters.sizes.includes(size.name)
+                    ? draftFilters.sizes.filter(s => s !== size.name)
+                    : [...draftFilters.sizes, size.name];
+                  updateDraftFilters({ sizes: newSizes });
                 }}
               >
                 {size.name}
@@ -504,8 +451,15 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
 
       {/* Action Buttons */}
       <div className="flex gap-2 pt-4 border-t">
-        <Button onClick={applyFilters} className="flex-1">
-          Apply Filters
+        <Button onClick={applyFilters} className="flex-1" disabled={isApplying}>
+          {isApplying ? (
+            <span className="inline-flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Applying
+            </span>
+          ) : (
+            "Apply Filters"
+          )}
         </Button>
         <Button variant="outline" onClick={clearFilters}>
           Clear All
@@ -518,7 +472,7 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
 
   if (isMobile) {
     return (
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer open={isOpen} onOpenChange={(open) => { if (open) { setDraftFilters(filters); } setIsOpen(open); }}>
         <DrawerTrigger asChild>
           <Button variant="outline" className="w-full justify-between">
             <div className="flex items-center gap-2">
@@ -545,7 +499,7 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
   }
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+    <Sheet open={isOpen} onOpenChange={(open) => { if (open) { setDraftFilters(filters); } setIsOpen(open); }}>
       <SheetTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <SlidersHorizontal className="w-4 h-4" />
