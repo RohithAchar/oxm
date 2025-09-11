@@ -5,18 +5,22 @@ import {
   Weight,
   CheckCircle,
   MessageCircle,
+  ArrowLeft,
+  Search,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ImageCarousel } from "@/components/product/image-carousel";
 import Description from "@/components/product/product-description";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import BuyPanel from "@/components/product/BuyPanel";
 import { Badge } from "@/components/ui/badge";
 import { getBusiness } from "@/lib/controller/business/businessOperations";
 import { getProductByIdCached } from "@/lib/controller/product/productOperations";
 import Link from "next/link";
 import RecentlyViewedTracker from "@/components/recent/RecentlyViewedTracker";
+// import MobileHeader from "@/components/product/mobile-header";
 
 export const ProductView = async ({ id }: { id: string }) => {
   const data = await getProductByIdCached(id);
@@ -39,7 +43,28 @@ export const ProductView = async ({ id }: { id: string }) => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* <MobileHeader /> */}
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Top Bar (Mobile) */}
+        <div className="flex md:hidden items-center gap-4 mb-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Link>
+          <form action="/search" className="flex-1 flex items-center gap-2">
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                name="q"
+                placeholder="Search products"
+                className="pl-9"
+              />
+            </div>
+            <Button type="submit" variant="default">
+              Search
+            </Button>
+          </form>
+        </div>
         <RecentlyViewedTracker
           product={{
             id: data.id,

@@ -65,35 +65,6 @@ const NewLandingPage = async () => {
 
       {/* Mobile-only layout */}
       <section className="md:hidden max-w-7xl mx-auto px-4 pt-2 space-y-4">
-        {/* Header: Logo, Search, Notification */}
-        <div className="flex items-center gap-2">
-          <Link href="/" className="font-semibold text-xl leading-none">
-            <span className="text-foreground">Open</span>
-            <span className="text-primary">X</span>
-            <span className="text-foreground">mart</span>
-          </Link>
-          <div className="flex-1">
-            <div className="flex items-center rounded border bg-background overflow-hidden h-10">
-              <div className="pl-3 pr-2 text-muted-foreground">
-                <Search className="h-4 w-4" />
-              </div>
-              <input
-                className="w-full h-full bg-transparent outline-none text-sm placeholder:text-muted-foreground px-1"
-                placeholder="Search products & suppliers"
-                disabled
-              />
-              <Link
-                href="/products"
-                className="pr-3 pl-2 text-sm text-primary font-medium"
-              >
-                Search
-              </Link>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" aria-label="Notifications">
-            <Bell className="h-5 w-5" />
-          </Button>
-        </div>
 
         {/* Custom Carousel */}
         <Suspense fallback={<CustomCarousalSkeleton />}>

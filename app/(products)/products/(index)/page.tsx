@@ -45,7 +45,7 @@ export default async function ProductsPage({
   return (
     <div className="space-y-6">
       {/* Fixed Search and Filter Bar */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="space-y-4 py-4">
           {/* Advanced Search Component */}
           <div>

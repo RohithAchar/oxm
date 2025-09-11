@@ -90,7 +90,7 @@ export default async function RootLayout({
             <Navbar />
             <MobileMenu />
             <main
-              className="font-playfair pt-2 md:pt-14 md:pb-0"
+              className="font-playfair pt-14 md:pt-14 md:pb-0"
               style={{
                 paddingLeft: "env(safe-area-inset-left)",
                 paddingRight: "env(safe-area-inset-right)",
