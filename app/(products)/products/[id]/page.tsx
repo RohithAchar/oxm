@@ -1,4 +1,4 @@
-import { ProductView } from "@/components/product/product-view";
+import ProductViewV2 from "@/components/product/product-view-v2";
 import { getProductByIdCached } from "@/lib/controller/product/productOperations";
 import type { Metadata } from "next";
 
@@ -40,5 +40,5 @@ export default async function ProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  return <ProductView id={id} />;
+  return <ProductViewV2 id={id} />;
 }

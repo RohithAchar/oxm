@@ -1,4 +1,4 @@
-import { ProductView } from "@/components/product/product-view";
+import ProductViewV2 from "@/components/product/product-view-v2";
 import { ProductForm } from "@/components/product/product-form";
 import { getBusiness } from "@/lib/controller/business/businessOperations";
 import { getCategories } from "@/lib/controller/categories/categoriesOperation";
@@ -60,5 +60,5 @@ export default async function ProductPage({
   }
 
   // Default mode: show product view
-  return <ProductView id={id} />;
+  return <ProductViewV2 id={id} />;
 }
