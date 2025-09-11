@@ -12,6 +12,7 @@ import {
   Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ProductSearch from "@/components/search/ProductSearch";
 import {
   Card,
   CardHeader,
@@ -118,30 +119,7 @@ const NewLandingPage = async () => {
               Source confidently from verified Indian suppliers. Samples to
               bulk, all in one place.
             </p>
-            <div className="relative">
-              <div className="flex items-center rounded border bg-background shadow-[0_8px_24px_rgba(239,68,68,0.06)] overflow-hidden">
-                <div className="pl-4 pr-2 text-muted-foreground">
-                  <Search className="h-5 w-5" />
-                </div>
-                <input
-                  className="w-full h-12 md:h-16 bg-transparent outline-none text-sm md:text-lg placeholder:text-muted-foreground px-2"
-                  placeholder="Search Winning Products & Verified Suppliers"
-                  disabled
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="mr-1 hidden sm:inline-flex"
-                  aria-label="Image Search (coming soon)"
-                >
-                  <Camera className="h-5 w-5" />
-                </Button>
-                <Button className="rounded-full mr-3">Search</Button>
-              </div>
-              <p className="text-[11px] md:text-sm text-muted-foreground mt-2">
-                Recently searched: liphone, laubub water bottel, smart watches
-              </p>
-            </div>
+            <ProductSearch placeholder="Search Winning Products & Verified Suppliers" size="lg" rounded="full" className="mx-auto max-w-3xl" />
           </div>
 
           {/* CTA buttons */}

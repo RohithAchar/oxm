@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Bell, MessageSquare, Truck, User, Search } from "lucide-react";
+import ProductSearch from "@/components/search/ProductSearch";
+import { Bell, MessageSquare, Truck, User } from "lucide-react";
 import { ModeToggle } from "./theme-toggle-button";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -24,34 +24,8 @@ export const Navbar = () => {
             <span className="text-muted-foreground text-xs">.com</span>
           </Link>
           {showSearch && (
-            <div className="hidden md:flex flex-1 max-w-2xl mx-4">
-              <form
-                className="w-full"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const formData = new FormData(e.currentTarget as HTMLFormElement);
-                  const q = String(formData.get("q") || "").trim();
-                  if (q.length > 0) {
-                    router.push(`/products?q=${encodeURIComponent(q)}`);
-                  } else {
-                    router.push("/products");
-                  }
-                }}
-              >
-                <div className="flex items-center h-10 w-full rounded-full border border-input bg-transparent focus-within:ring-2 focus-within:ring-ring/40 focus-within:border-ring transition-colors">
-                  <div className="pl-3 pr-1 text-muted-foreground">
-                    <Search className="h-4 w-4" />
-                  </div>
-                  <Input
-                    name="q"
-                    placeholder="Search products & suppliers"
-                    className="h-full w-full bg-transparent dark:bg-transparent border-0 shadow-none px-2 text-sm focus-visible:ring-0 focus-visible:outline-none focus-visible:border-0"
-                  />
-                  <Button type="submit" size="sm" className="mr-1 h-8 rounded-full px-4">
-                    Search
-                  </Button>
-                </div>
-              </form>
+            <div className="hidden md:flex flex-1 mx-4 justify-center">
+              <ProductSearch placeholder="Search products & suppliers" size="sm" rounded="full" className="w-full max-w-2xl" />
             </div>
           )}
           <div className="flex items-center gap-1 sm:gap-2">
@@ -85,33 +59,9 @@ export const Navbar = () => {
             <span className="text-foreground">mart</span>
           </Link>
           {showSearch && (
-            <form
-              className="flex-1"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const formData = new FormData(e.currentTarget as HTMLFormElement);
-                const q = String(formData.get("q") || "").trim();
-                if (q.length > 0) {
-                  router.push(`/products?q=${encodeURIComponent(q)}`);
-                } else {
-                  router.push("/products");
-                }
-              }}
-            >
-              <div className="flex items-center h-10 w-full rounded-full border border-input bg-transparent focus-within:ring-2 focus-within:ring-ring/40 focus-within:border-ring transition-colors">
-                <div className="pl-3 pr-1 text-muted-foreground">
-                  <Search className="h-4 w-4" />
-                </div>
-                <Input
-                  name="q"
-                  placeholder="Search products & suppliers"
-                  className="h-full w-full bg-transparent dark:bg-transparent border-0 shadow-none px-1.5 text-sm focus-visible:ring-0 focus-visible:outline-none focus-visible:border-0"
-                />
-                <Button type="submit" size="sm" className="mr-1 h-8 rounded-full px-3">
-                  Go
-                </Button>
-              </div>
-            </form>
+            <div className="flex-1">
+              <ProductSearch placeholder="Search products & suppliers" size="sm" rounded="full" />
+            </div>
           )}
         </div>
       </header>

@@ -1,4 +1,5 @@
 import { createClient, createAnonClient } from "@/utils/supabase/server";
+import Fuse from "fuse.js";
 
 // Constants
 const PRICE_MULTIPLIER = 100;
@@ -7,8 +8,48 @@ const PRICE_MULTIPLIER = 100;
 const toPaise = (price: number) => Math.round(price * PRICE_MULTIPLIER);
 const toRupee = (price: number) => (price / PRICE_MULTIPLIER).toFixed(2);
 
+// Basic edit distance (Levenshtein) for fuzzy matching
+const computeEditDistance = (a: string, b: string): number => {
+  const s = a.toLowerCase();
+  const t = b.toLowerCase();
+  const m = s.length;
+  const n = t.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  const dp: number[] = Array(n + 1)
+    .fill(0)
+    .map((_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    let prev = dp[0];
+    dp[0] = i;
+    for (let j = 1; j <= n; j++) {
+      const temp = dp[j];
+      const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+      dp[j] = Math.min(dp[j] + 1, dp[j - 1] + 1, prev + cost);
+      prev = temp;
+    }
+  }
+  return dp[n];
+};
+
+const tokenMatchesFuzzy = (query: string, text: string): boolean => {
+  if (!query || !text) return false;
+  const q = query.toLowerCase().trim();
+  const t = text.toLowerCase();
+  if (t.includes(q)) return true;
+  // If short query, allow small edit distance across text tokens
+  const tokens = t.split(/[^a-z0-9]+/i).filter(Boolean);
+  for (const tok of tokens) {
+    const dist = computeEditDistance(q, tok);
+    if (q.length <= 5 && dist <= 1) return true;
+    if (q.length > 5 && dist <= 2) return true;
+  }
+  return false;
+};
+
 // Enhanced filter interface
 export interface EnhancedProductFilters {
+  q?: string;
   category?: string;
   subcategory?: string;
   priceMin?: number;
@@ -187,6 +228,30 @@ const getProductSizes = async (productId: string) => {
   }
 };
 
+// Helper function to get product specifications
+const getProductSpecifications = async (productId: string): Promise<Array<{ spec_name: string; spec_value: string }>> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("product_specifications")
+      .select("spec_name, spec_value")
+      .eq("product_id", productId);
+
+    if (error) {
+      console.error("Error fetching product specifications:", error);
+      return [];
+    }
+
+    return (data || []).map((row) => ({
+      spec_name: row.spec_name,
+      spec_value: row.spec_value,
+    }));
+  } catch (error) {
+    console.error("Error fetching product specifications:", error);
+    return [];
+  }
+};
+
 // Simple products function (fallback for when no filters are applied)
 const getSimpleProducts = async (filters: EnhancedProductFilters): Promise<EnhancedProductsResponse> => {
   try {
@@ -287,6 +352,7 @@ export const getEnhancedProducts = async (
 
     const supabase = await createClient();
     const {
+      q,
       category,
       subcategory,
       priceMin,
@@ -313,6 +379,38 @@ export const getEnhancedProducts = async (
       .eq("is_active", true)
       .range(from, to);
 
+
+    // Apply keyword search (name, brand, description, hsn_code) and also match category/subcategory names
+    if (q && q.trim() !== "") {
+      const like = `%${q.trim()}%`;
+
+      // Find category and subcategory ids whose names match q
+      const [catRes, subcatRes] = await Promise.all([
+        supabase.from("categories").select("id").is("parent_id", null).ilike("name", like),
+        supabase.from("categories").select("id").not("parent_id", "is", null).ilike("name", like),
+      ]);
+
+      const matchedCategoryIds = (catRes.data || []).map((r: { id: string }) => r.id);
+      const matchedSubcategoryIds = (subcatRes.data || []).map((r: { id: string }) => r.id);
+
+      const orParts: string[] = [
+        `name.ilike.${like}`,
+        `brand.ilike.${like}`,
+        `description.ilike.${like}`,
+        `hsn_code.ilike.${like}`,
+      ];
+
+      if (matchedCategoryIds.length > 0) {
+        const list = matchedCategoryIds.join(",");
+        orParts.push(`category_id.in.(${list})`);
+      }
+      if (matchedSubcategoryIds.length > 0) {
+        const list = matchedSubcategoryIds.join(",");
+        orParts.push(`subcategory_id.in.(${list})`);
+      }
+
+      query = query.or(orParts.join(","));
+    }
 
     // Apply category filters
     if (category) {
@@ -361,7 +459,7 @@ export const getEnhancedProducts = async (
         break;
     }
 
-    const { data: products, count, error } = await query;
+    let { data: products, count, error } = await query;
 
     if (error) {
       console.error("Error fetching products:", error);
@@ -371,13 +469,14 @@ export const getEnhancedProducts = async (
     // Fetch additional data for each product
     const enrichedProducts = await Promise.all(
       products?.map(async (product) => {
-        const [imageUrl, priceAndQuantity, productTags, productColors, productSizes, business] = await Promise.all([
+        const [imageUrl, priceAndQuantity, productTags, productColors, productSizes, business, specifications] = await Promise.all([
           getProductMainImageUrl(product.id),
           getPricesAndQuantities(product.id),
           getProductTags(product.id),
           getProductColors(product.id),
           getProductSizes(product.id),
           getBusiness(product.supplier_id!),
+          getProductSpecifications(product.id),
         ]);
 
         // Return undefined for non-approved businesses (same as original function)
@@ -400,6 +499,7 @@ export const getEnhancedProducts = async (
           state: business.state || "",
           is_verified: business.is_verified || false,
           business_status: business.status,
+          specifications,
         };
       }) || []
     );
@@ -456,6 +556,85 @@ export const getEnhancedProducts = async (
       });
     }
 
+
+    // If no rows matched DB keyword search, widen result set and use fuzzy scoring on the client side
+    if ((products?.length || 0) === 0 && q && q.trim() !== "") {
+      const { data: fallbackProducts, count: fallbackCount, error: fbError } = await supabase
+        .from("products")
+        .select("*", { count: "exact" })
+        .eq("is_active", true)
+        .range(from, to)
+        .order("created_at", { ascending: false });
+      if (!fbError && fallbackProducts) {
+        products = fallbackProducts;
+        count = fallbackCount || count;
+        const fbEnriched = await Promise.all(
+          fallbackProducts.map(async (product) => {
+            const [imageUrl, priceAndQuantity, productTags, productColors, productSizes, business, specifications] = await Promise.all([
+              getProductMainImageUrl(product.id),
+              getPricesAndQuantities(product.id),
+              getProductTags(product.id),
+              getProductColors(product.id),
+              getProductSizes(product.id),
+              getBusiness(product.supplier_id!),
+              getProductSpecifications(product.id),
+            ]);
+            if (business.status !== "APPROVED") return undefined;
+            return {
+              ...product,
+              imageUrl,
+              price_per_unit: toRupee(product.price_per_unit || 0),
+              total_price: toRupee(product.total_price || 0),
+              priceAndQuantity: priceAndQuantity.map((tier) => ({
+                ...tier,
+                price: toRupee(tier.price),
+              })),
+              tags: productTags,
+              colors: productColors,
+              sizes: productSizes,
+              supplierName: business.business_name || "Unknown Supplier",
+              city: business.city || "",
+              state: business.state || "",
+              is_verified: business.is_verified || false,
+              business_status: business.status,
+              specifications,
+            };
+          })
+        );
+        filteredProducts = fbEnriched;
+      }
+    }
+
+    // Rank with Fuse.js when q is present (typo tolerant)
+    if (q && q.trim() !== "") {
+      const fuse = new Fuse((filteredProducts || []).filter(Boolean).map((p: any) => ({
+        ...p,
+        // Compute category/subcategory names lazily as plain strings for Fuse by
+        // piggybacking on the names present in filter options (best-effort):
+        category_name: p.category_name || "",
+        subcategory_name: p.subcategory_name || "",
+      })) as any[], {
+        includeScore: true,
+        threshold: 0.38,
+        ignoreLocation: true,
+        useExtendedSearch: false,
+        keys: [
+          { name: "name", weight: 0.45 },
+          { name: "brand", weight: 0.18 },
+          { name: "description", weight: 0.15 },
+          { name: "hsn_code", weight: 0.08 },
+          { name: "category_name", weight: 0.09 },
+          { name: "subcategory_name", weight: 0.08 },
+          { name: "supplierName", weight: 0.06 },
+          { name: "tags", weight: 0.03 },
+          { name: "colors", weight: 0.025 },
+          { name: "sizes", weight: 0.025 },
+          { name: "specifications.spec_name", weight: 0.02 },
+          { name: "specifications.spec_value", weight: 0.02 },
+        ],
+      });
+      filteredProducts = fuse.search(q.trim()).map(r => r.item);
+    }
 
     // Get filter options for the UI
     const filterOptions = await getFilterOptions(supabase, filters);

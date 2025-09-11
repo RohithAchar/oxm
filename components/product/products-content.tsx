@@ -13,6 +13,7 @@ export default async function ProductsContent({
   params: Record<string, string | undefined>;
 }) {
   const filters: EnhancedProductFilters = {
+    q: params.q,
     category: params.category,
     subcategory: params.subcategory,
     priceMin: params.price_min ? parseFloat(params.price_min) : undefined,

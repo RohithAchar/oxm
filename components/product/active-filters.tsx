@@ -8,6 +8,7 @@ import { useQueryStates, parseAsString, parseAsArrayOf } from "nuqs";
 
 export function ActiveFilters() {
   const [query, setQuery] = useQueryStates({
+    q: parseAsString,
     category: parseAsString,
     subcategory: parseAsString,
     price_min: parseAsString,
@@ -39,6 +40,7 @@ export function ActiveFilters() {
 
   const clearAllFilters = () => {
     setQuery({
+      q: null as any,
       category: null as any,
       subcategory: null as any,
       price_min: null as any,
@@ -58,7 +60,11 @@ export function ActiveFilters() {
   const getActiveFilters = () => {
     const filters: Array<{ key: string; label: string; value: string; type: 'single' | 'array' }> = [];
 
-
+    // Keyword
+    const q = query.q;
+    if (q) {
+      filters.push({ key: "q", label: "Search", value: q, type: 'single' });
+    }
     // Category
     const category = query.category;
     if (category) {
