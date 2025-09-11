@@ -26,7 +26,7 @@ export default async function ProductViewV2({ id }: { id: string }) {
       <ProductViewV2Client product={product} business={business} />
 
       {similar.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 pb-12">
+        <section className="max-w-7xl mx-auto px-4 pb-12">
           <div className="flex items-center justify-between mb-4 md:mb-6">
             <div className="w-full text-left">
               <h2 className="text-foreground text-xl md:text-2xl font-semibold mb-1">

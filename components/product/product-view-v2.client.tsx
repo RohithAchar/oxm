@@ -67,7 +67,7 @@ export default function ProductViewV2Client({
     <div className="min-h-screen bg-background">
       {/* Track this product as recently viewed (no UI) */}
       <RecentlyViewedTracker product={product} />
-      <div className="max-w-6xl mx-auto px-4 sm:px-5 py-5 sm:py-8 pb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-5 py-5 sm:py-8 pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* Left: Gallery */}
           <div>

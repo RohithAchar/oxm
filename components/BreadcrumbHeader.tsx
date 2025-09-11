@@ -51,7 +51,7 @@ export default function BreadcrumbHeader() {
   };
 
   return (
-    <div className="w-full bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
+    <div className="w-full">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
         <Button
           variant="ghost"
