@@ -3,10 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { BadgeCheck, MapPin, MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Description from "@/components/product/product-description";
+import RecentlyViewedTracker from "@/components/recent/RecentlyViewedTracker";
 
 type Color = { id: string; name: string; hex_code: string };
 type Size = { id: string; name: string };
@@ -63,6 +65,8 @@ export default function ProductViewV2Client({
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Track this product as recently viewed (no UI) */}
+      <RecentlyViewedTracker product={product} />
       <div className="max-w-6xl mx-auto px-4 sm:px-5 py-5 sm:py-8 pb-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* Left: Gallery */}
@@ -112,27 +116,67 @@ export default function ProductViewV2Client({
 
             {/* Details block below */}
             <div className="mt-6 sm:mt-8 bg-muted/50 rounded-lg p-4 sm:p-6 border">
-              <h1 className="text-xl sm:text-2xl font-semibold mb-2">{product.name}</h1>
+              <h1 className="text-lg sm:text-xl font-semibold mb-1 tracking-tight leading-snug">{product.name}</h1>
               <Description text={product.description} />
 
-              <div className="mt-4 sm:mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <h3 className="font-medium mb-3">Supplier</h3>
+              {/* Supplier container */}
+              <div className="mt-4 sm:mt-6">
+                <div className="border rounded-lg p-4 bg-card">
+                  <h3 className="text-sm font-medium mb-2">Supplier</h3>
                   <div className="flex items-start gap-3">
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={business?.profile_avatar_url || "/placeholder-profile.png"} />
                     </Avatar>
-                    <div>
-                      <p className="font-medium">{business?.business_name}</p>
-                      <p className="text-xs text-muted-foreground">{business?.city}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-semibold text-sm sm:text-base truncate">{business?.business_name}</p>
+                        {(business?.status === "APPROVED" || business?.is_verified) && (
+                          <span className="inline-flex items-center gap-1 text-xs text-primary font-medium">
+                            <BadgeCheck className="w-4 h-4 text-primary" />
+                            verified
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 text-xs sm:text-sm">
+                        {business?.gst_number && (
+                          <div className="truncate">
+                            <span className="text-muted-foreground">gst :</span>
+                            <span className="ml-1 font-medium">{business.gst_number}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          <span className="font-medium text-xs sm:text-sm">{business?.city}</span>
+                        </div>
+                        <div className="truncate">
+                          <span className="text-muted-foreground">Trust score</span>
+                          <span className="ml-1 font-medium">500</span>
+                        </div>
+                        <div className="truncate">
+                          <span className="text-muted-foreground">rating</span>
+                          <span className="ml-1 font-medium">4.5/ 5</span>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex items-center gap-3">
+                        <Link href={`/messages/${business?.profile_id}/chat`} className="inline-block">
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white inline-flex items-center gap-1 rounded-full px-4">
+                            <MessageCircle className="w-4 h-4" />
+                            CHAT NOW
+                          </Button>
+                        </Link>
+                        <Button size="sm" className="bg-red-600 hover:bg-red-700 text-white rounded-full px-4">
+                          Get Best price
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  <Link href={`/messages/${business?.profile_id}/chat`} className="inline-block mt-3">
-                    <Button variant="outline" size="sm">Chat with supplier</Button>
-                  </Link>
                 </div>
-                <div>
-                  <h3 className="font-medium mb-3">Key specifications</h3>
+              </div>
+
+              {/* Key specifications container */}
+              <div className="mt-4 sm:mt-6 grid grid-cols-1">
+                <div className="border rounded-lg p-4 bg-card">
+                  <h3 className="text-sm font-medium mb-3">Key specifications</h3>
                   <div className="space-y-1 text-sm">
                     {product.product_specifications?.slice(0, 6).map((s: any) => (
                       <div key={s.id} className="flex justify-between">
@@ -225,7 +269,7 @@ export default function ProductViewV2Client({
                 <div className="flex items-center justify-between">
                   <div>
                     <div className="text-xs text-muted-foreground">Price per unit</div>
-                    <div className="text-xl sm:text-2xl font-semibold">₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}</div>
+                    <div className="text-lg sm:text-xl font-semibold leading-tight">₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}</div>
                   </div>
                   <Badge variant="secondary">Free delivery</Badge>
                 </div>
@@ -236,7 +280,7 @@ export default function ProductViewV2Client({
                   </div>
                   <div className="ml-auto text-right">
                     <div className="text-xs text-muted-foreground">Total</div>
-                    <div className="text-lg sm:text-xl font-semibold">₹{totalPrice.toFixed(2)}</div>
+                    <div className="text-base sm:text-lg font-semibold">₹{totalPrice.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
@@ -265,7 +309,7 @@ export default function ProductViewV2Client({
         <div className="flex items-center gap-3 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 border rounded-full shadow-lg px-4 py-3 max-w-md w-full">
           <div className="flex-1">
             <div className="text-[11px] text-muted-foreground">Total • Qty {sampleQuantity}</div>
-            <div className="text-base font-semibold leading-none">₹{totalPrice.toFixed(2)}</div>
+            <div className="text-sm font-semibold leading-none">₹{totalPrice.toFixed(2)}</div>
           </div>
           <Button
             size="sm"

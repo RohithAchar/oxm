@@ -7,6 +7,7 @@ import { Open_Sans, Playfair_Display } from "next/font/google";
 import RegisterSW from "@/components/RegisterSW";
 import Footer from "@/components/footer";
 import { ErrorBoundary } from "@/components/error-boundary";
+import BreadcrumbHeader from "@/components/BreadcrumbHeader";
 
 export const metadata = {
   title:
@@ -96,7 +97,10 @@ export default async function RootLayout({
                 paddingRight: "env(safe-area-inset-right)",
               }}
             >
-              {children}
+              <div className="max-w-7xl mx-auto px-4">
+                <BreadcrumbHeader />
+                {children}
+              </div>
             </main>
             <RegisterSW />
             <Footer />
