@@ -26,6 +26,7 @@ import {
 import { Carousal } from "@/components/home/carousal";
 import { CustomCarousalSkeleton } from "./custom-carousal";
 import RecentlyViewedList from "@/components/recent/RecentlyViewedList";
+import FavoritesSection from "@/components/home/favorites-section";
 
 const NewLandingPage = async () => {
   return (
@@ -356,6 +357,9 @@ const NewLandingPage = async () => {
 
       {/* Recently viewed (bottom of page) */}
       <RecentlyViewedList />
+
+      {/* Favorites section */}
+      <FavoritesSection />
 
       {/* Footer is rendered globally via layout */}
     </main>

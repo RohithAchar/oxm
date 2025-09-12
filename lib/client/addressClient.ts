@@ -18,6 +18,8 @@ export async function fetchAddresses(): Promise<UserAddress[]> {
   return data.addresses;
 }
 
+export const getUserAddresses = fetchAddresses;
+
 export async function fetchAddressById(id: string): Promise<UserAddress> {
   const response = await fetch(`${API_BASE}/${id}`);
 

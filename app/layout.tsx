@@ -97,7 +97,7 @@ export default async function RootLayout({
                 paddingRight: "env(safe-area-inset-right)",
               }}
             >
-              <div className="max-w-7xl mx-auto px-4">
+              <div className="max-w-7xl mx-auto">
                 <BreadcrumbHeader />
                 {children}
               </div>
