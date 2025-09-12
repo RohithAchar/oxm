@@ -10,7 +10,8 @@ import { usePathname, useRouter } from "next/navigation";
 export const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const showThemeToggle = pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
+  const showThemeToggle =
+    pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
   const showSearch = !(pathname?.startsWith("/supplier") ?? false);
   return (
     <>
@@ -25,7 +26,12 @@ export const Navbar = () => {
           </Link>
           {showSearch && (
             <div className="hidden md:flex flex-1 mx-4 justify-center">
-              <ProductSearch placeholder="Search products & suppliers" size="sm" rounded="full" className="w-full max-w-2xl" />
+              <ProductSearch
+                placeholder="Search products & suppliers"
+                size="sm"
+                rounded="full"
+                className="w-full max-w-2xl"
+              />
             </div>
           )}
           <div className="flex items-center gap-1 sm:gap-2">
@@ -33,26 +39,30 @@ export const Navbar = () => {
             <Button variant="ghost" size="icon" aria-label="Notifications">
               <Bell className="h-5 w-5" />
             </Button>
-            <Button asChild variant="ghost" size="icon" aria-label="Messages">
-              <Link href="/messages">
+            <Link href="/messages">
+              <Button asChild variant="ghost" size="icon" aria-label="Messages">
                 <MessageSquare className="h-5 w-5" />
-              </Link>
-            </Button>
+              </Button>
+            </Link>
             <Button variant="ghost" size="icon" aria-label="Orders">
               <Truck className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Profile">
-              <Link href="/account">
+            <Link href="/account">
+              <Button variant="ghost" size="icon" aria-label="Profile">
                 <User className="h-5 w-5" />
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Mobile Topbar */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_2px_24px_rgba(0,0,0,0.06)]">
-        <div className={`max-w-7xl mx-auto px-3 ${showSearch ? "py-2" : "py-3"} flex items-center gap-2`}>
+        <div
+          className={`max-w-7xl mx-auto px-3 ${
+            showSearch ? "py-2" : "py-3"
+          } flex items-center gap-2`}
+        >
           <Link href="/" className="font-semibold text-lg leading-none">
             <span className="text-foreground">Open</span>
             <span className="text-primary">X</span>
@@ -60,7 +70,11 @@ export const Navbar = () => {
           </Link>
           {showSearch && (
             <div className="flex-1">
-              <ProductSearch placeholder="Search products & suppliers" size="sm" rounded="full" />
+              <ProductSearch
+                placeholder="Search products & suppliers"
+                size="sm"
+                rounded="full"
+              />
             </div>
           )}
         </div>

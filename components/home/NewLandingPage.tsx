@@ -67,7 +67,6 @@ const NewLandingPage = async () => {
 
       {/* Mobile-only layout */}
       <section className="md:hidden max-w-7xl mx-auto px-4 pt-2 space-y-4">
-
         {/* Custom Carousel */}
         <Suspense fallback={<CustomCarousalSkeleton />}>
           {/* Using existing carousal that renders CustomCarousal items */}
@@ -77,22 +76,22 @@ const NewLandingPage = async () => {
         {/* Horizontal pill nav */}
         <div className="flex justify-center gap-2 overflow-x-auto no-scrollbar py-1">
           <Link href="/products">
-            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
               Explore
             </div>
           </Link>
           <Link href="/intro">
-            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
               MyBox
             </div>
           </Link>
           <Link href="/learn">
-            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
               Learnx
             </div>
           </Link>
           <Link href="/products?dropship_available=true">
-            <div className="px-4 py-2 rounded border bg-background whitespace-nowrap text-sm">
+            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
               Dropship
             </div>
           </Link>
@@ -104,13 +103,11 @@ const NewLandingPage = async () => {
             <NewLaunchedItems />
           </Suspense>
         </div>
-
-        
       </section>
 
       {/* Desktop / large-screen content */}
       <section className="hidden md:block relative max-w-7xl mx-auto px-4 pt-4 lg:pt-10">
-        <div className="rounded border p-4 pt-8 md:p-12 shadow">
+        <div className="rounded-md border p-4 pt-8 md:p-12 shadow">
           {/* subtle accent removed for cleaner light mode */}
           <div className="relative mx-auto max-w-3xl text-center space-y-6">
             <h1 className="text-2xl md:text-6xl font-semibold tracking-tight leading-tight text-foreground">
@@ -120,14 +117,19 @@ const NewLandingPage = async () => {
               Source confidently from verified Indian suppliers. Samples to
               bulk, all in one place.
             </p>
-            <ProductSearch placeholder="Search Winning Products & Verified Suppliers" size="lg" rounded="full" className="mx-auto max-w-3xl" />
+            <ProductSearch
+              placeholder="Search Winning Products & Verified Suppliers"
+              size="lg"
+              rounded="full"
+              className="mx-auto max-w-3xl"
+            />
           </div>
 
           {/* CTA buttons */}
           <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto">
             {/* Explore - neutral card with emerald badge */}
             <Link href="/products">
-              <div className="group rounded border border-primary/40 bg-primary/5 ring-1 ring-primary/10 p-4 sm:p-6 hover:shadow-md transition">
+              <div className="group rounded-md border border-primary/40 bg-primary/5 ring-1 ring-primary/10 p-4 sm:p-6 hover:shadow-md transition">
                 <div className="flex items-center justify-start gap-3 text-foreground">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-800">
                     <Sparkles className="h-4 w-4" />
@@ -138,7 +140,7 @@ const NewLandingPage = async () => {
             </Link>
             {/* Learn & Grow - indigo badge */}
             <Link href="/learn">
-              <div className="group rounded border p-4 sm:p-6 hover:shadow-md transition">
+              <div className="group rounded-md border p-4 sm:p-6 hover:shadow-md transition">
                 <div className="flex items-center justify-start gap-3 text-foreground">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700">
                     <GraduationCap className="h-4 w-4" />
@@ -153,7 +155,7 @@ const NewLandingPage = async () => {
               aria-disabled
               className="pointer-events-none opacity-70"
             >
-              <div className="rounded border p-4 sm:p-6">
+              <div className="rounded-md border p-4 sm:p-6">
                 <div className="flex items-center justify-start gap-3 text-foreground">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700">
                     <BadgeDot className="bg-amber-600" />
@@ -164,7 +166,7 @@ const NewLandingPage = async () => {
             </Link>
             {/* Dropship - orange badge */}
             <Link href="/products?dropship_available=true">
-              <div className="group rounded border p-4 sm:p-6 hover:shadow-md transition">
+              <div className="group rounded-md border p-4 sm:p-6 hover:shadow-md transition">
                 <div className="flex items-center justify-start gap-3 text-foreground">
                   <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 text-orange-700">
                     <Truck className="h-4 w-4" />
@@ -349,7 +351,6 @@ const NewLandingPage = async () => {
       {/* Recently Viewed and New Arrivals already shown on mobile above.
           Show them here as well for desktop. */}
       <div className="hidden md:block">
-        
         <Suspense fallback={<NewLaunchedItemsSkeleton />}>
           <NewLaunchedItems />
         </Suspense>
