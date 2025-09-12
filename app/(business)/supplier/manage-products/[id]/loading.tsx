@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 const ProductPageLoading = () => {
   return (
-    <main className="mt-4 space-y-6 pb-24 md:pb-12 mx-auto max-w-7xl">
+    <main className="space-y-6 pb-20 md:pb-12 mx-auto max-w-7xl">
       <div>
         <Skeleton className="h-9 w-48" />
         <Skeleton className="h-5 w-80 mt-2" />

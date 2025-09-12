@@ -321,7 +321,7 @@ const OverviewPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background rounded-2xl pb-24 md:pb-12 lg:mt-4">
+    <div className="min-h-screen bg-background rounded-2xl pb-20 md:pb-12">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">

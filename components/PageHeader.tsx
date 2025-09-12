@@ -20,12 +20,12 @@ export function PageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-card rounded-xl p-6 shadow-sm border",
+        "flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-card rounded-xl p-4 sm:p-5 md:p-6 shadow-sm border",
         className
       )}
     >
       <div>
-        <h1 className="text-3xl font-semibold md:font-light tracking-tight text-foreground">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold md:font-light tracking-tight text-foreground">
           {title}
         </h1>
         {description ? (

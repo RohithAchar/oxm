@@ -20,10 +20,11 @@ const AddProductPage = async () => {
   ]);
 
   return (
-    <main className="mt-4 space-y-6 pb-24 md:pb-12 mx-auto max-w-7xl">
+    <main className="space-y-6 pb-20 md:pb-12 mx-auto max-w-7xl">
       <PageHeader
         title="Add Product"
         description="Add your product to the marketplace."
+        className="px-3 sm:px-4 md:px-6"
       />
       <ProductForm business={buisness!} categories={categories!} tags={tags!} />
     </main>

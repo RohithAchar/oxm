@@ -37,9 +37,11 @@ export default async function ProductPage({
       }
 
       return (
-        <main className="mt-4 space-y-6 pb-24 md:pb-12 mx-auto max-w-7xl">
+        <main className="space-y-6 pb-20 md:pb-12 mx-auto max-w-7xl">
           <div>
-            <h1 className="text-3xl font-light">Edit Product</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-light">
+              Edit Product
+            </h1>
             <p className="text-muted-foreground mt-1 font-light">
               Update your product information and settings.
             </p>

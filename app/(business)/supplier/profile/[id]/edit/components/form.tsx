@@ -61,7 +61,9 @@ export const ProfileForm = ({ business }: { business: BusinessSchema }) => {
   return (
     <div className="flex flex-col gap-6 mb-24">
       <div>
-        <h1 className="text-2xl font-light">Edit Profile</h1>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-light">
+          Edit Profile
+        </h1>
         <p className="text-muted-foreground text-sm">
           Update your business profile information.
         </p>

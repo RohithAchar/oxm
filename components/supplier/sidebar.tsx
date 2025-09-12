@@ -88,13 +88,16 @@ export function Sidebar({
   return (
     <>
       {/* Mobile Top Navigation */}
-      <div className="lg:hidden sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div
+        className="lg:hidden sticky top-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         {/* Segmented, scrollable tab chips */}
         <div
-          className="overflow-x-auto px-4 [scrollbar-width:none] [-ms-overflow-style:none] max-w-full"
+          className="overflow-x-auto px-3 [scrollbar-width:none] [-ms-overflow-style:none] max-w-full"
           style={{ WebkitOverflowScrolling: "touch" }}
         >
-          <div className="my-2 rounded-2xl border bg-muted/30 px-2 py-2 w-max inline-flex gap-2 snap-x snap-mandatory">
+          <div className="my-2 rounded-full border bg-muted/30 px-1.5 py-1.5 w-max inline-flex gap-1.5 snap-x snap-mandatory">
             {sidebarGroups
               .flatMap((group) => group.items)
               .map(({ name, href, icon: Icon }) => {
@@ -104,14 +107,14 @@ export function Sidebar({
                     key={name}
                     href={href}
                     className={cn(
-                      "snap-start inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-medium transition-colors whitespace-nowrap",
+                      "snap-start inline-flex items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-medium transition-colors whitespace-nowrap active:scale-[0.98]",
                       isActive
-                        ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                        ? "bg-primary/15 text-primary ring-1 ring-primary/20 shadow-sm"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                     )}
                   >
                     <Icon className="h-4 w-4" />
-                    <span>{name}</span>
+                    <span className="tracking-wide">{name}</span>
                   </Link>
                 );
               })}
