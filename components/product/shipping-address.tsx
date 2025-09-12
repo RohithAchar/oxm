@@ -9,6 +9,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  DrawerOverlay,
 } from "@/components/ui/drawer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -173,8 +174,9 @@ export default function ShippingAddress({ onAddressSelect, selectedAddressId }: 
         <span className="text-sm font-medium">Shipping to</span>
       </div>
       
-      <Drawer open={isOpen} onOpenChange={setIsOpen}>
-        <DrawerTrigger asChild>
+        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+          <DrawerOverlay className="!z-[60]" />
+          <DrawerTrigger asChild>
           <Button
             variant="outline"
             className="w-full justify-start text-left h-auto p-3 hover:bg-muted/50 transition-colors"
@@ -206,7 +208,7 @@ export default function ShippingAddress({ onAddressSelect, selectedAddressId }: 
           </Button>
         </DrawerTrigger>
         
-        <DrawerContent className="pb-20 !mt-20" style={{ paddingBottom: "calc(4rem + env(safe-area-inset-bottom) + 1rem)" }}>
+        <DrawerContent className="pb-20 !mt-20 !z-[60]" style={{ paddingBottom: "calc(4rem + env(safe-area-inset-bottom) + 1rem)" }}>
           <DrawerHeader>
             <DrawerTitle>Shipping Address</DrawerTitle>
           </DrawerHeader>
