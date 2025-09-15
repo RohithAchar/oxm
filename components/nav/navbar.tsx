@@ -34,22 +34,22 @@ export const Navbar = () => {
               />
             </div>
           )}
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1 sm:gap-4">
             {showThemeToggle && <ModeToggle />}
-            <Button variant="ghost" size="icon" aria-label="Notifications">
+            {/* <Button variant="ghost" size="icon" aria-label="Notifications">
               <Bell className="h-5 w-5" />
-            </Button>
+            </Button> */}
             <Link href="/messages">
               <Button asChild variant="ghost" size="icon" aria-label="Messages">
-                <MessageSquare className="h-5 w-5" />
+                <MessageSquare className="h-[1.2rem] w-[1.2rem]" />
               </Button>
             </Link>
-            <Button variant="ghost" size="icon" aria-label="Orders">
+            {/* <Button variant="ghost" size="icon" aria-label="Orders">
               <Truck className="h-5 w-5" />
-            </Button>
+            </Button> */}
             <Link href="/account">
-              <Button variant="ghost" size="icon" aria-label="Profile">
-                <User className="h-5 w-5" />
+              <Button asChild variant="ghost" size="icon" aria-label="Profile">
+                <User className="h-[1.2rem] w-[1.2rem]" />
               </Button>
             </Link>
           </div>

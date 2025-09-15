@@ -64,12 +64,16 @@ export const ProductCard = ({
         <div className="relative aspect-square w-full overflow-hidden rounded-md">
           <Image
             fill
-            src={imageError ? "/product-placeholder.png" : (imageUrl || "/product-placeholder.png")}
+            src={
+              imageError
+                ? "/product-placeholder.png"
+                : imageUrl || "/product-placeholder.png"
+            }
             alt="Product Image"
             onError={() => setImageError(true)}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             unoptimized
-            className="object-cover rounded-sm brightness-100 dark:brightness-75"
+            className="object-cover rounded-sm"
           />
         </div>
 
@@ -79,11 +83,9 @@ export const ProductCard = ({
           <h1 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
             {name}
           </h1>
-          
+
           {/* Brand */}
-          <p className="text-sm text-muted-foreground truncate">
-            {brand}
-          </p>
+          <p className="text-sm text-muted-foreground truncate">{brand}</p>
 
           {/* City */}
           {city && (

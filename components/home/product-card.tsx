@@ -32,7 +32,9 @@ export const ProductCard = ({
   verificationYears,
   hasSample,
 }: ProductCardProps) => {
-  const [imgSrc, setImgSrc] = useState<string>(imageUrl || "/product-placeholder.png");
+  const [imgSrc, setImgSrc] = useState<string>(
+    imageUrl || "/product-placeholder.png"
+  );
   const [imageError, setImageError] = useState(false);
   return (
     <Link href={`/products/${id}`}>
@@ -40,70 +42,70 @@ export const ProductCard = ({
         key={id}
         className="relative bg-white dark:bg-card h-fit overflow-hidden cursor-pointer"
       >
-      {/* Badges */}
-      <div className="absolute top-1 right-1 z-20 flex flex-col gap-0.5">
-        {is_verified && (
-          <Badge
-            variant="secondary"
-            className="bg-blue-500 text-white dark:bg-blue-600 text-xs px-1.5 py-0.5"
-          >
-            <BadgeCheckIcon className="h-2.5 w-2.5 mr-0.5" />
-            Verified {verificationYears && `${verificationYears} yrs`}
-          </Badge>
-        )}
-        {hasSample && (
-          <Badge
-            variant="secondary"
-            className="bg-green-500 text-white dark:bg-green-600 text-xs px-1.5 py-0.5"
-          >
-            Sample
-          </Badge>
-        )}
-      </div>
+        {/* Badges */}
+        <div className="absolute top-1 right-1 z-20 flex flex-col gap-0.5">
+          {is_verified && (
+            <Badge
+              variant="secondary"
+              className="bg-blue-500 text-white dark:bg-blue-600 text-xs px-1.5 py-0.5"
+            >
+              <BadgeCheckIcon className="h-2.5 w-2.5 mr-0.5" />
+              Verified {verificationYears && `${verificationYears} yrs`}
+            </Badge>
+          )}
+          {hasSample && (
+            <Badge
+              variant="secondary"
+              className="bg-green-500 text-white dark:bg-green-600 text-xs px-1.5 py-0.5"
+            >
+              Sample
+            </Badge>
+          )}
+        </div>
 
-      {/* Product Image */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-md">
-        <Image
-          fill
-          src={imageError ? "/product-placeholder.png" : imgSrc}
-          alt="Product Image"
-          onError={() => setImageError(true)}
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          unoptimized
-          className="object-cover rounded-sm transition duration-300 hover:brightness-100 brightness-100 dark:brightness-75"
-        />
-      </div>
+        {/* Product Image */}
+        <div className="relative aspect-square w-full overflow-hidden rounded-md">
+          <Image
+            fill
+            src={imageError ? "/product-placeholder.png" : imgSrc}
+            alt="Product Image"
+            onError={() => setImageError(true)}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            unoptimized
+            className="object-cover rounded-sm"
+          />
+        </div>
 
-      {/* Product Details */}
-      <div className="px-3 py-2 space-y-1.5">
-        {/* Product Title */}
-        <h1 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
-          {name}
-        </h1>
-        
-        {/* Supplier Name */}
-        <p className="text-sm text-muted-foreground truncate">
-          {supplierName}
-        </p>
+        {/* Product Details */}
+        <div className="px-3 py-2 space-y-1.5">
+          {/* Product Title */}
+          <h1 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
+            {name}
+          </h1>
 
-        {/* Price and MOQ */}
-        {priceAndQuantity && priceAndQuantity?.length > 0 && (
-          <div className="space-y-1">
-            <div className="text-sm font-medium text-foreground">
-              ₹{priceAndQuantity[0].price}
-              {priceAndQuantity.length > 1 && (
-                <span className="text-sm text-muted-foreground ml-1">
-                  -{priceAndQuantity[priceAndQuantity.length - 1].price}
-                </span>
-              )}
+          {/* Supplier Name */}
+          <p className="text-sm text-muted-foreground truncate">
+            {supplierName}
+          </p>
+
+          {/* Price and MOQ */}
+          {priceAndQuantity && priceAndQuantity?.length > 0 && (
+            <div className="space-y-1">
+              <div className="text-sm font-medium text-foreground">
+                ₹{priceAndQuantity[0].price}
+                {priceAndQuantity.length > 1 && (
+                  <span className="text-sm text-muted-foreground ml-1">
+                    -{priceAndQuantity[priceAndQuantity.length - 1].price}
+                  </span>
+                )}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Min. order: {priceAndQuantity[0].quantity} pieces
+              </div>
             </div>
-            <div className="text-sm text-muted-foreground">
-              Min. order: {priceAndQuantity[0].quantity} pieces
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
     </Link>
   );
 };

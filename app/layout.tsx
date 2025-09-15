@@ -83,8 +83,7 @@ export default async function RootLayout({
         <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" />
       </head>
       <body
-        className={`${openSans.className} antialiased overflow-x-hidden`}
-        style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+        className={`${openSans.className} antialiased overflow-x-hidden pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0`}
       >
         <Providers>
           <ErrorBoundary>

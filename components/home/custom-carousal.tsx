@@ -29,7 +29,7 @@ export const CustomCarousal = ({
             alt="Banner Image"
             src={image_url}
             fill
-            className="object-cover transition duration-300 hover:brightness-100 brightness-100 dark:brightness-75"
+            className="object-cover"
           />
           <p className="absolute z-10 text-2xl md:text-3xl lg:text-4xl bottom-6 left-6 md:bottom-8 md:left-10 lg:bottom-10 lg:left-10 font-semibold mix-blend-difference text-white">
             {title}
