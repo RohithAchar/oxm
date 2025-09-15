@@ -24,7 +24,7 @@ import { Button } from "../ui/button";
 
 const LandingPage = async () => {
   return (
-    <main className="space-y-12 lg:space-y-24 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+    <main className="space-y-12 lg:space-y-24 overflow-hidden bg-gradient-to-br from-background via-background to-muted/20 mt-4">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -313,8 +313,6 @@ const LandingPage = async () => {
       <Suspense fallback={<NewLaunchedItemsSkeleton />}>
         <NewLaunchedItems />
       </Suspense>
-
-      
     </main>
   );
 };

@@ -743,3 +743,44 @@ export const updateProduct = async (
     );
   }
 };
+
+// Get products by supplier ID
+export const getProductsBySupplier = cache(async (supplierId: string) => {
+  try {
+    const supabase = await createAnonClient();
+
+    const { data: products, error } = await supabase
+      .from("products")
+      .select(
+        `
+        *,
+        product_images!inner(image_url),
+        categories!products_category_id_fkey(name, slug)
+      `
+      )
+      .eq("supplier_id", supplierId)
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    // Enrich products with metadata
+    const { imageUrls, priceAndQuantityData, isVerifiedData } =
+      await fetchProductsWithMetadata(products || []);
+
+    return products.map((product, idx) => ({
+      ...product,
+      is_verified: isVerifiedData[idx]!,
+      price_per_unit: toRupee(product.price_per_unit || 0),
+      total_price: toRupee(product.total_price || 0),
+      imageUrl: imageUrls[idx]!,
+      priceAndQuantity: priceAndQuantityData[idx]!.map((tier) => ({
+        ...tier,
+        price: toRupee(tier.price),
+      })),
+    }));
+  } catch (error) {
+    console.error("Error fetching products by supplier:", error);
+    return [];
+  }
+});

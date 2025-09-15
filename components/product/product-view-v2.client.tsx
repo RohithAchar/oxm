@@ -22,6 +22,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Description from "@/components/product/product-description";
 import RecentlyViewedTracker from "@/components/recent/RecentlyViewedTracker";
 import { useFavorites } from "@/lib/contexts/favorites-context";
+import { useFavoriteSuppliers } from "@/lib/contexts/favorite-suppliers-context";
 import { shareProduct, getShareUrl, getShareText } from "@/lib/utils/share";
 import ShippingAddress from "@/components/product/shipping-address";
 
@@ -36,6 +37,11 @@ export default function ProductViewV2Client({
   business: any;
 }) {
   const { isFavorite, toggleFavorite } = useFavorites();
+  const {
+    addToFavoriteSuppliers,
+    removeFromFavoriteSuppliers,
+    isFavoriteSupplier,
+  } = useFavoriteSuppliers();
   const images = (
     product.product_images?.length
       ? product.product_images
@@ -345,6 +351,15 @@ export default function ProductViewV2Client({
                     <div>Trust Score: 500 • Rating: 4.5/5</div>
                   </div>
                   <div className="flex gap-2">
+                    <Link href={`/${business?.id}`} className="flex-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full rounded-full transition-all duration-200 active:scale-95"
+                      >
+                        View Profile
+                      </Button>
+                    </Link>
                     <Link
                       href={`/messages/${business?.profile_id}/chat`}
                       className="flex-1"
@@ -359,15 +374,33 @@ export default function ProductViewV2Client({
                     </Link>
                     <Button
                       size="sm"
-                      className="flex-1 bg-red-600 hover:bg-red-700 active:bg-red-800 text-white rounded-full transition-all duration-200 active:scale-95"
+                      className={`flex-1 rounded-full transition-all duration-200 active:scale-95 ${
+                        isFavoriteSupplier(business?.id)
+                          ? "bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white"
+                          : "bg-gray-500 hover:bg-gray-600 active:bg-gray-700 text-white"
+                      }`}
                       onClick={() => {
                         if (navigator.vibrate) navigator.vibrate(100);
-                        // Add call functionality here
-                        console.log("Call supplier");
+                        if (business) {
+                          if (isFavoriteSupplier(business.id)) {
+                            removeFromFavoriteSuppliers(business.id);
+                          } else {
+                            addToFavoriteSuppliers({
+                              id: business.id,
+                              business_name: business.business_name,
+                              profile_avatar_url: business.profile_avatar_url,
+                              city: business.city,
+                              is_verified: business.is_verified,
+                              profile_id: business.profile_id,
+                            });
+                          }
+                        }
                       }}
                     >
-                      <Phone className="w-4 h-4 mr-1" />
-                      Call
+                      <Heart className="w-4 h-4 mr-1" />
+                      {isFavoriteSupplier(business?.id)
+                        ? "Favorited"
+                        : "Favorite"}
                     </Button>
                   </div>
                 </div>
@@ -622,6 +655,18 @@ export default function ProductViewV2Client({
                         </div>
                         <div className="mt-3 flex items-center gap-3">
                           <Link
+                            href={`/${business?.id}`}
+                            className="inline-block"
+                          >
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="inline-flex items-center gap-1 rounded-full px-4"
+                            >
+                              View Profile
+                            </Button>
+                          </Link>
+                          <Link
                             href={`/messages/${business?.profile_id}/chat`}
                             className="inline-block"
                           >
@@ -635,9 +680,34 @@ export default function ProductViewV2Client({
                           </Link>
                           <Button
                             size="sm"
-                            className="bg-red-600 hover:bg-red-700 text-white rounded-full px-4"
+                            className={`rounded-full px-4 ${
+                              isFavoriteSupplier(business?.id)
+                                ? "bg-pink-500 hover:bg-pink-600 text-white"
+                                : "bg-gray-500 hover:bg-gray-600 text-white"
+                            }`}
+                            onClick={() => {
+                              if (navigator.vibrate) navigator.vibrate(100);
+                              if (business) {
+                                if (isFavoriteSupplier(business.id)) {
+                                  removeFromFavoriteSuppliers(business.id);
+                                } else {
+                                  addToFavoriteSuppliers({
+                                    id: business.id,
+                                    business_name: business.business_name,
+                                    profile_avatar_url:
+                                      business.profile_avatar_url,
+                                    city: business.city,
+                                    is_verified: business.is_verified,
+                                    profile_id: business.profile_id,
+                                  });
+                                }
+                              }
+                            }}
                           >
-                            Get Best price
+                            <Heart className="w-4 h-4 mr-1" />
+                            {isFavoriteSupplier(business?.id)
+                              ? "Favorited"
+                              : "Favorite"}
                           </Button>
                         </div>
                       </div>

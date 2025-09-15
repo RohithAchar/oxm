@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { FavoritesProvider } from "@/lib/contexts/favorites-context";
+import { FavoriteSuppliersProvider } from "@/lib/contexts/favorite-suppliers-context";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   function ThemeEnforcer({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,8 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     const { setTheme } = useTheme();
 
     useEffect(() => {
-      const onAdminOrSupplier = pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
+      const onAdminOrSupplier =
+        pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
       if (!onAdminOrSupplier) {
         setTheme("light");
       }
@@ -32,8 +34,10 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     >
       <NuqsAdapter>
         <FavoritesProvider>
-          <Toaster />
-          <ThemeEnforcer>{children}</ThemeEnforcer>
+          <FavoriteSuppliersProvider>
+            <Toaster />
+            <ThemeEnforcer>{children}</ThemeEnforcer>
+          </FavoriteSuppliersProvider>
         </FavoritesProvider>
       </NuqsAdapter>
     </NextThemesProvider>

@@ -202,7 +202,7 @@ export const createBusiness = async (
     if (data.gst_certificate) {
       const timestamp = Date.now();
       const randomString = Math.random().toString(36).substring(2, 15);
-      const fileExtension = data.gst_certificate.name.split('.').pop();
+      const fileExtension = data.gst_certificate.name.split(".").pop();
       const fileName = `gst-certificate-${timestamp}-${randomString}.${fileExtension}`;
 
       const { data: gstData, error: gstError } = await supabase.storage
@@ -324,5 +324,68 @@ export const isBusinessVerified = async (
     console.error("Error checking business verification status:", error);
     // Return false as fallback instead of throwing
     return false;
+  }
+};
+
+// Get featured suppliers for home page
+export const getFeaturedSuppliers = async () => {
+  try {
+    const supabase = await createAnonClient();
+
+    const { data: suppliers, error } = await supabase
+      .from("supplier_businesses")
+      .select(
+        `
+        id,
+        business_name,
+        profile_avatar_url,
+        city,
+        state,
+        is_verified,
+        profile_id,
+        created_at,
+        type,
+        status
+      `
+      )
+      .eq("status", "APPROVED")
+      .eq("is_verified", true)
+      .order("created_at", { ascending: false })
+      .limit(8);
+
+    if (error) throw error;
+
+    // Get product counts for each supplier
+    const suppliersWithCounts = await Promise.all(
+      (suppliers || []).map(async (supplier) => {
+        if (!supplier.profile_id) {
+          return {
+            ...supplier,
+            total_products: 0,
+            business_type: supplier.type,
+          };
+        }
+
+        const { count } = await supabase
+          .from("products")
+          .select("*", { count: "exact", head: true })
+          .eq("supplier_id", supplier.profile_id)
+          .eq("is_active", true);
+
+        return {
+          ...supplier,
+          total_products: count || 0,
+          business_type: supplier.type,
+        };
+      })
+    );
+
+    // Filter out suppliers with no products
+    return suppliersWithCounts.filter(
+      (supplier) => supplier.total_products > 0
+    );
+  } catch (error) {
+    console.error("Error fetching featured suppliers:", error);
+    return [];
   }
 };

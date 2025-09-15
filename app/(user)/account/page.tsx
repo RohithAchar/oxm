@@ -17,6 +17,7 @@ import {
   HelpCircle,
   FileText,
   LogOut,
+  Heart,
 } from "lucide-react";
 
 const AccountPage = async () => {
@@ -192,6 +193,23 @@ const AccountPage = async () => {
                     <div className="font-medium">Notifications</div>
                     <div className="text-sm text-muted-foreground">
                       Manage your notification preferences
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="ghost"
+              className="w-full justify-start h-auto p-3"
+            >
+              <Link href="/account/favorite-suppliers">
+                <div className="flex items-center gap-3">
+                  <Heart className="h-4 w-4" />
+                  <div className="text-left">
+                    <div className="font-medium">Favorite Suppliers</div>
+                    <div className="text-sm text-muted-foreground">
+                      Manage your saved suppliers
                     </div>
                   </div>
                 </div>
