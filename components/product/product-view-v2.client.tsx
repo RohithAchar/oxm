@@ -914,26 +914,7 @@ export default function ProductViewV2Client({
                   </div>
                 </div>
 
-                {/* Buy button */}
-                <div className="border rounded-lg p-3 sm:p-4 bg-card">
-                  <Button
-                    className="w-full"
-                    size="lg"
-                    onClick={() => {
-                      // Just log for now as requested
-                      console.log("Buy clicked", {
-                        productId: product.id,
-                        colorId,
-                        sizeId,
-                        quantity: sampleQuantity,
-                        unitPrice,
-                        totalPrice,
-                      });
-                    }}
-                  >
-                    Buy now
-                  </Button>
-                </div>
+                {/* Buy button removed for large screens to avoid duplication */}
               </div>
             </div>
           </div>
