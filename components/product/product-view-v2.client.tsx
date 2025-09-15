@@ -15,6 +15,7 @@ import {
   Package,
   Check,
   Truck,
+  ChevronRight,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -322,6 +323,19 @@ export default function ProductViewV2Client({
               </div>
             )}
 
+            {/* RFQ Section (mobile) */}
+            <div className="bg-muted/50 rounded-lg p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium">Get Best Price</span>
+                <div className="flex items-center gap-2">
+                  <span className="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                    RFQ
+                  </span>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </div>
+              </div>
+            </div>
+
             {/* Supplier Info */}
             <div className="bg-muted/50 rounded-lg p-4">
               <h3 className="font-medium mb-3">Supplier</h3>
@@ -597,8 +611,21 @@ export default function ProductViewV2Client({
                 </h1>
                 <Description text={product.description} />
 
-                {/* Supplier container */}
+                {/* RFQ section (desktop) */}
                 <div className="mt-4 sm:mt-6">
+                  <div className="border rounded-lg p-4 bg-card mb-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm sm:text-base">
+                        Get Best Price
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                          RFQ
+                        </span>
+                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                    </div>
+                  </div>
                   <div className="border rounded-lg p-4 bg-card">
                     <h3 className="text-sm font-medium mb-2">Supplier</h3>
                     <div className="flex items-start gap-3">
