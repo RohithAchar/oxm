@@ -16,6 +16,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import BuyPanel from "@/components/product/BuyPanel";
+import RFQButton from "@/components/product/RFQButton";
 import { Badge } from "@/components/ui/badge";
 import { getBusiness } from "@/lib/controller/business/businessOperations";
 import { getProductByIdCached } from "@/lib/controller/product/productOperations";
@@ -105,6 +106,17 @@ export const ProductView = async ({ id }: { id: string }) => {
 
             {/* Buy Panel */}
             <BuyPanel data={data} />
+
+            {/* RFQ Button */}
+            <div>
+              <RFQButton
+                productId={data.id}
+                productName={data.name}
+                supplierId={data.supplier_id!}
+                supplierName={business?.business_name || "Supplier"}
+                tierPricingSnapshot={null}
+              />
+            </div>
 
             {/* Sample Availability */}
             {data.is_sample_available && (

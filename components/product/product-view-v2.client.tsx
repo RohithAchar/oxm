@@ -26,6 +26,7 @@ import { useFavorites } from "@/lib/contexts/favorites-context";
 import { useFavoriteSuppliers } from "@/lib/contexts/favorite-suppliers-context";
 import { shareProduct, getShareUrl, getShareText } from "@/lib/utils/share";
 import ShippingAddress from "@/components/product/shipping-address";
+import RFQButton from "@/components/product/RFQButton";
 
 type Color = { id: string; name: string; hex_code: string };
 type Size = { id: string; name: string };
@@ -324,17 +325,14 @@ export default function ProductViewV2Client({
             )}
 
             {/* RFQ Section (mobile) */}
-            <div className="bg-muted/50 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">Get Best Price</span>
-                <div className="flex items-center gap-2">
-                  <span className="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    RFQ
-                  </span>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </div>
-              </div>
-            </div>
+            <RFQButton
+              productId={product.id}
+              productName={product.name}
+              supplierId={business?.profile_id}
+              supplierName={business?.business_name}
+              tierPricingSnapshot={product.product_tier_pricing || null}
+              variant="row"
+            />
 
             {/* Supplier Info */}
             <div className="bg-muted/50 rounded-lg p-4">
@@ -613,19 +611,14 @@ export default function ProductViewV2Client({
 
                 {/* RFQ section (desktop) */}
                 <div className="mt-4 sm:mt-6">
-                  <div className="border rounded-lg p-4 bg-card mb-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm sm:text-base">
-                        Get Best Price
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <span className="bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                          RFQ
-                        </span>
-                        <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                      </div>
-                    </div>
-                  </div>
+                  <RFQButton
+                    productId={product.id}
+                    productName={product.name}
+                    supplierId={business?.profile_id}
+                    supplierName={business?.business_name}
+                    tierPricingSnapshot={product.product_tier_pricing || null}
+                    variant="row"
+                  />
                   <div className="border rounded-lg p-4 bg-card">
                     <h3 className="text-sm font-medium mb-2">Supplier</h3>
                     <div className="flex items-start gap-3">

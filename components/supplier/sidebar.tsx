@@ -53,6 +53,7 @@ const sidebarGroups: SidebarGroup[] = [
     label: "Communication",
     items: [
       { name: "Enquiry", href: "/supplier/enquiry", icon: MessageCircle },
+      { name: "Buy Lead", href: "/supplier/buy-lead", icon: MessageCircle },
     ],
   },
   {

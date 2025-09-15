@@ -215,6 +215,23 @@ const AccountPage = async () => {
                 </div>
               </Link>
             </Button>
+            <Button
+              asChild
+              variant="ghost"
+              className="w-full justify-start h-auto p-3"
+            >
+              <Link href="/account/buy-leads">
+                <div className="flex items-center gap-3">
+                  <MessageSquare className="h-4 w-4" />
+                  <div className="text-left">
+                    <div className="font-medium">My Buy Leads</div>
+                    <div className="text-sm text-muted-foreground">
+                      View your RFQs and supplier responses
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            </Button>
           </CardContent>
         </Card>
 
