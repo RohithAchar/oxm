@@ -12,6 +12,9 @@ import {
   Phone,
   ChevronDown,
   ChevronUp,
+  Package,
+  Check,
+  Truck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -371,22 +374,46 @@ export default function ProductViewV2Client({
               </div>
             </div>
 
-            {/* Buy section (mobile) */}
-            <div className="bg-muted/50 rounded-lg p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs text-muted-foreground">
-                    Total • Qty {sampleQuantity}
+            {/* Perfect UI Price Section (mobile) */}
+            <div className="bg-white rounded-lg border shadow-sm">
+              {/* Top Row - Sample Available, Bulk Adjustment, Price */}
+              <div className="flex items-center justify-between p-3 border-b">
+                <div className="flex items-center gap-1.5">
+                  <Package className="w-4 h-4 text-red-500" />
+                  <span className="text-xs font-medium text-gray-900">
+                    Sample Available
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-full">
+                  <span className="text-xs font-medium text-green-800">
+                    Adjust in Bulk
+                  </span>
+                  <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                    <Check className="w-2.5 h-2.5 text-white" />
                   </div>
-                  <div className="text-lg font-semibold">
-                    ₹{totalPrice.toFixed(2)}
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-bold text-gray-900">
+                    ₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}
+                  </div>
+                </div>
+              </div>
+
+              {/* Middle Row - Minimum Order and Order Sample Button */}
+              <div className="flex items-center justify-between p-3">
+                <div>
+                  <div className="text-xs text-gray-500 mb-0.5">
+                    Minimum Order
+                  </div>
+                  <div className="text-sm font-medium text-gray-900">
+                    3 units
                   </div>
                 </div>
                 <Button
-                  className="rounded-full px-6 py-2 text-base font-semibold"
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
                   onClick={() => {
                     if (navigator.vibrate) navigator.vibrate(200);
-                    console.log("Buy clicked (mobile)", {
+                    console.log("Order Sample clicked", {
                       productId: product.id,
                       colorId,
                       sizeId,
@@ -396,8 +423,23 @@ export default function ProductViewV2Client({
                     });
                   }}
                 >
-                  Buy Now
+                  Order Sample
                 </Button>
+              </div>
+
+              {/* Free Delivery Banner */}
+              <div className="bg-gradient-to-r from-red-50 to-pink-50 px-3 py-2 rounded-b-lg">
+                <div className="flex items-center gap-2">
+                  <Truck className="w-5 h-5 text-amber-600" />
+                  <div>
+                    <span className="text-red-600 font-bold text-xs">
+                      Free Delivery
+                    </span>
+                    <span className="text-gray-700 text-xs ml-1">
+                      on all orders
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -733,28 +775,70 @@ export default function ProductViewV2Client({
                   </div>
                 )}
 
-                {/* Price with fixed sample quantity and free delivery */}
-                <div className="border rounded-lg p-4 bg-card space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-xs text-muted-foreground">
-                        Price per unit
+                {/* Perfect UI Price Section (desktop) */}
+                <div className="bg-white rounded-lg border shadow-sm">
+                  {/* Top Row - Sample Available, Bulk Adjustment, Price */}
+                  <div className="flex items-center justify-between p-6 border-b">
+                    <div className="flex items-center gap-3">
+                      <Package className="w-6 h-6 text-red-500" />
+                      <span className="text-base font-medium text-gray-900">
+                        Sample Available
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 bg-green-50 px-4 py-2 rounded-full">
+                      <span className="text-base font-medium text-green-800">
+                        Adjust in Bulk
+                      </span>
+                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                        <Check className="w-4 h-4 text-white" />
                       </div>
-                      <div className="text-lg sm:text-xl font-semibold leading-tight">
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-gray-900">
                         ₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}
                       </div>
                     </div>
-                    <Badge variant="secondary">Free delivery</Badge>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-sm text-muted-foreground">Qty</div>
-                    <div className="px-3 py-1.5 border rounded-md bg-background text-sm font-medium select-none">
-                      {sampleQuantity}
+
+                  {/* Middle Row - Minimum Order and Order Sample Button */}
+                  <div className="flex items-center justify-between p-6">
+                    <div>
+                      <div className="text-sm text-gray-500 mb-1">
+                        Minimum Order
+                      </div>
+                      <div className="text-base font-medium text-gray-900">
+                        3 units
+                      </div>
                     </div>
-                    <div className="ml-auto text-right">
-                      <div className="text-xs text-muted-foreground">Total</div>
-                      <div className="text-base sm:text-lg font-semibold">
-                        ₹{totalPrice.toFixed(2)}
+                    <Button
+                      className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-medium text-base transition-colors duration-200"
+                      onClick={() => {
+                        if (navigator.vibrate) navigator.vibrate(200);
+                        console.log("Order Sample clicked", {
+                          productId: product.id,
+                          colorId,
+                          sizeId,
+                          quantity: sampleQuantity,
+                          unitPrice,
+                          totalPrice,
+                        });
+                      }}
+                    >
+                      Order Sample
+                    </Button>
+                  </div>
+
+                  {/* Free Delivery Banner */}
+                  <div className="bg-gradient-to-r from-red-50 to-pink-50 px-6 py-4 rounded-b-lg">
+                    <div className="flex items-center gap-4">
+                      <Truck className="w-7 h-7 text-amber-600" />
+                      <div>
+                        <span className="text-red-600 font-bold text-base">
+                          Free Delivery
+                        </span>
+                        <span className="text-gray-700 text-base ml-2">
+                          on all orders
+                        </span>
                       </div>
                     </div>
                   </div>
