@@ -92,13 +92,13 @@ export function EnhancedBuyLeadCard({
   const getStatusColor = (status: string) => {
     switch (status) {
       case "responded":
-        return "bg-emerald-100 text-emerald-700";
+        return "bg-primary/10 text-primary";
       case "closed":
-        return "bg-zinc-200 text-zinc-700";
+        return "bg-muted text-muted-foreground";
       case "cancelled":
-        return "bg-red-100 text-red-700";
+        return "bg-destructive/10 text-destructive";
       default:
-        return "bg-amber-100 text-amber-700";
+        return "bg-secondary text-secondary-foreground";
     }
   };
 
@@ -115,17 +115,17 @@ export function EnhancedBuyLeadCard({
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "responded":
-        return <MessageSquare className="h-4 w-4 text-emerald-600" />;
+        return <MessageSquare className="h-4 w-4 text-primary" />;
       case "viewed":
-        return <Eye className="h-4 w-4 text-slate-600" />;
+        return <Eye className="h-4 w-4 text-muted-foreground" />;
       case "submitted":
-        return <Package className="h-4 w-4 text-amber-600" />;
+        return <Package className="h-4 w-4 text-primary" />;
       case "closed":
-        return <CheckCircle className="h-4 w-4 text-gray-600" />;
+        return <CheckCircle className="h-4 w-4 text-muted-foreground" />;
       case "cancelled":
-        return <Package className="h-4 w-4 text-red-600" />;
+        return <Package className="h-4 w-4 text-destructive" />;
       default:
-        return <Package className="h-4 w-4 text-amber-600" />;
+        return <Package className="h-4 w-4 text-primary" />;
     }
   };
 
@@ -147,7 +147,7 @@ export function EnhancedBuyLeadCard({
   };
 
   return (
-    <Card className="w-full border-0 shadow-sm bg-gradient-to-br from-white to-slate-50/30 hover:shadow-lg transition-all duration-300 rounded-2xl overflow-hidden">
+    <Card className="w-full border shadow-sm bg-card hover:shadow-md transition-all duration-300 rounded-2xl overflow-hidden">
       <CardHeader className="p-0">
         {/* Mobile-First Header */}
         <div className="p-4 pb-3">
@@ -183,7 +183,7 @@ export function EnhancedBuyLeadCard({
 
           {/* Product Title */}
           <div className="mb-4">
-            <H4Component className="text-lg font-semibold text-slate-900 mb-2 leading-tight">
+            <H4Component className="text-lg font-semibold text-foreground mb-2 leading-tight">
               {productSnapshot?.name || lead.product_name || "Product Request"}
             </H4Component>
 
@@ -195,11 +195,11 @@ export function EnhancedBuyLeadCard({
                     key={index}
                     src={image}
                     alt={`Product ${index + 1}`}
-                    className="h-16 w-16 object-cover rounded-xl border-2 border-white shadow-sm flex-shrink-0"
+                    className="h-16 w-16 object-cover rounded-xl border shadow-sm flex-shrink-0 bg-card"
                   />
                 ))}
                 {productSnapshot.images.length > 4 && (
-                  <div className="h-16 w-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl border-2 border-white flex items-center justify-center text-xs font-medium text-slate-600 flex-shrink-0">
+                  <div className="h-16 w-16 rounded-xl border flex items-center justify-center text-xs font-medium text-muted-foreground bg-muted flex-shrink-0">
                     +{productSnapshot.images.length - 4}
                   </div>
                 )}
@@ -211,14 +211,14 @@ export function EnhancedBuyLeadCard({
           <div className="grid grid-cols-2 gap-3 mb-4">
             {/* Quantity */}
             {lead.quantity_required && (
-              <div className="bg-slate-50 rounded-xl p-3 border border-slate-200">
+              <div className="bg-muted rounded-xl p-3 border">
                 <div className="flex items-center gap-2 mb-1">
-                  <ShoppingCart className="h-4 w-4 text-slate-600" />
-                  <span className="text-xs font-medium text-slate-700">
+                  <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">
                     Quantity
                   </span>
                 </div>
-                <div className="text-lg font-bold text-slate-900">
+                <div className="text-lg font-bold text-foreground">
                   {lead.quantity_required}
                 </div>
               </div>
@@ -226,14 +226,14 @@ export function EnhancedBuyLeadCard({
 
             {/* Target Price */}
             {lead.target_price && (
-              <div className="bg-emerald-50 rounded-xl p-3 border border-emerald-100">
+              <div className="rounded-xl p-3 border bg-primary/5 border-primary/20">
                 <div className="flex items-center gap-2 mb-1">
-                  <IndianRupee className="h-4 w-4 text-emerald-600" />
-                  <span className="text-xs font-medium text-emerald-700">
+                  <IndianRupee className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-medium text-primary">
                     Target Price
                   </span>
                 </div>
-                <div className="text-lg font-bold text-emerald-900">
+                <div className="text-lg font-bold text-primary">
                   ₹{lead.target_price}
                 </div>
               </div>
@@ -241,14 +241,14 @@ export function EnhancedBuyLeadCard({
 
             {/* Delivery Location */}
             {lead.delivery_city && (
-              <div className="bg-amber-50 rounded-xl p-3 border border-amber-100 col-span-2">
+              <div className="bg-muted rounded-xl p-3 border col-span-2">
                 <div className="flex items-center gap-2 mb-1">
-                  <MapPin className="h-4 w-4 text-amber-600" />
-                  <span className="text-xs font-medium text-amber-700">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-xs font-medium text-muted-foreground">
                     Delivery to
                   </span>
                 </div>
-                <div className="text-sm font-semibold text-amber-900">
+                <div className="text-sm font-semibold text-foreground">
                   {lead.delivery_city}
                 </div>
               </div>
@@ -257,21 +257,21 @@ export function EnhancedBuyLeadCard({
 
           {/* Buyer Information */}
           <div className="flex items-center gap-3 mb-4">
-            <Avatar className="h-10 w-10 border-2 border-white shadow-sm">
+            <Avatar className="h-10 w-10 border shadow-sm">
               <AvatarImage
                 src={buyerSnapshot?.avatar_url || "/placeholder-profile.png"}
                 alt="buyer"
               />
-              <AvatarFallback className="bg-slate-200 text-slate-700 font-semibold text-sm">
+              <AvatarFallback className="bg-muted text-foreground font-semibold text-sm">
                 {buyerSnapshot?.full_name?.charAt(0) || "B"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <div className="font-semibold text-slate-900 text-sm truncate">
+              <div className="font-semibold text-foreground text-sm truncate">
                 {buyerSnapshot?.full_name || "Unknown Buyer"}
               </div>
               {buyerSnapshot?.business_type && (
-                <div className="text-xs text-slate-500 mt-0.5">
+                <div className="text-xs text-muted-foreground mt-0.5">
                   {buyerSnapshot.business_type}
                 </div>
               )}
@@ -280,11 +280,11 @@ export function EnhancedBuyLeadCard({
 
           {/* Product Details for Suppliers */}
           {variant === "supplier" && productSnapshot && (
-            <div className="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-200">
+            <div className="bg-muted rounded-xl p-3 mb-4 border">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <Package className="h-4 w-4 text-slate-600" />
-                  <span className="text-sm font-semibold text-slate-700">
+                  <Package className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-semibold text-foreground">
                     Your Product
                   </span>
                 </div>
@@ -312,24 +312,24 @@ export function EnhancedBuyLeadCard({
               <div className="space-y-2">
                 {productSnapshot.brand && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Brand:</span>
-                    <span className="font-semibold text-slate-900">
+                    <span className="text-muted-foreground">Brand:</span>
+                    <span className="font-semibold text-foreground">
                       {productSnapshot.brand}
                     </span>
                   </div>
                 )}
                 {productSnapshot.price_per_unit && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Your Price:</span>
-                    <span className="font-semibold text-green-600">
+                    <span className="text-muted-foreground">Your Price:</span>
+                    <span className="font-semibold text-primary">
                       ₹{(productSnapshot.price_per_unit / 100).toFixed(2)}/unit
                     </span>
                   </div>
                 )}
                 {productSnapshot.quantity && (
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-slate-600">Stock:</span>
-                    <span className="font-semibold text-slate-900">
+                    <span className="text-muted-foreground">Stock:</span>
+                    <span className="font-semibold text-foreground">
                       {productSnapshot.quantity} units
                     </span>
                   </div>
@@ -340,14 +340,14 @@ export function EnhancedBuyLeadCard({
 
           {/* Request Notes Preview */}
           {lead.notes && (
-            <div className="bg-amber-50 rounded-xl p-3 mb-4 border border-amber-200">
+            <div className="bg-muted rounded-xl p-3 mb-4 border">
               <div className="flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-amber-600" />
-                <span className="text-sm font-semibold text-amber-800">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-semibold text-foreground">
                   Request Notes
                 </span>
               </div>
-              <PComponent className="text-sm text-amber-700 leading-relaxed line-clamp-2">
+              <PComponent className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
                 {lead.notes}
               </PComponent>
             </div>
@@ -374,14 +374,14 @@ export function EnhancedBuyLeadCard({
 
       {isExpanded && (
         <CardContent className="p-4 pt-0">
-          <div className="border-t border-slate-200 pt-4">
+          <div className="border-t pt-4">
             {/* Enhanced Product Information */}
             {productSnapshot && (
               <div className="mb-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Package className="h-5 w-5 text-slate-600" />
-                    <H4Component className="text-base font-semibold text-slate-900">
+                    <Package className="h-5 w-5 text-muted-foreground" />
+                    <H4Component className="text-base font-semibold text-foreground">
                       Product Details
                     </H4Component>
                     {variant === "supplier" && (
@@ -427,7 +427,7 @@ export function EnhancedBuyLeadCard({
                             key={index}
                             src={image}
                             alt={`Product ${index + 1}`}
-                            className="h-20 w-20 object-cover rounded-xl border-2 border-white shadow-sm flex-shrink-0 hover:scale-105 transition-transform cursor-pointer"
+                            className="h-20 w-20 object-cover rounded-xl border shadow-sm flex-shrink-0 hover:scale-105 transition-transform cursor-pointer bg-card"
                           />
                         ))}
                       </div>
@@ -438,51 +438,51 @@ export function EnhancedBuyLeadCard({
                 <div className="grid grid-cols-1 gap-4 mb-4">
                   <div className="space-y-3">
                     {productSnapshot.brand && (
-                      <div className="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl">
-                        <span className="text-sm font-medium text-slate-600">
+                      <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-xl">
+                        <span className="text-sm font-medium text-muted-foreground">
                           Brand
                         </span>
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-semibold text-foreground">
                           {productSnapshot.brand}
                         </span>
                       </div>
                     )}
                     {productSnapshot.category && (
-                      <div className="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl">
-                        <span className="text-sm font-medium text-slate-600">
+                      <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-xl">
+                        <span className="text-sm font-medium text-muted-foreground">
                           Category
                         </span>
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-semibold text-foreground">
                           {productSnapshot.category}
                         </span>
                       </div>
                     )}
                     {productSnapshot.subcategory && (
-                      <div className="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl">
-                        <span className="text-sm font-medium text-slate-600">
+                      <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-xl">
+                        <span className="text-sm font-medium text-muted-foreground">
                           Subcategory
                         </span>
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-semibold text-foreground">
                           {productSnapshot.subcategory}
                         </span>
                       </div>
                     )}
                     {productSnapshot.price_per_unit && (
-                      <div className="flex justify-between items-center py-2 px-3 bg-green-50 rounded-xl border border-green-200">
-                        <span className="text-sm font-medium text-green-700">
+                      <div className="flex justify-between items-center py-2 px-3 rounded-xl border bg-primary/5 border-primary/20">
+                        <span className="text-sm font-medium text-primary">
                           Price per unit
                         </span>
-                        <span className="font-semibold text-green-900">
+                        <span className="font-semibold text-primary">
                           ₹{(productSnapshot.price_per_unit / 100).toFixed(2)}
                         </span>
                       </div>
                     )}
                     {lead.quantity_required && (
-                      <div className="flex justify-between items-center py-2 px-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span className="text-sm font-medium text-slate-700">
+                      <div className="flex justify-between items-center py-2 px-3 bg-muted rounded-xl border">
+                        <span className="text-sm font-medium text-foreground">
                           Order quantity
                         </span>
-                        <span className="font-semibold text-slate-900">
+                        <span className="font-semibold text-foreground">
                           {lead.quantity_required} units
                         </span>
                       </div>
@@ -493,10 +493,10 @@ export function EnhancedBuyLeadCard({
                 {/* Product Description */}
                 {productSnapshot.description && (
                   <div className="mb-4">
-                    <div className="text-sm font-semibold text-slate-700 mb-2">
+                    <div className="text-sm font-semibold text-foreground mb-2">
                       Description
                     </div>
-                    <PComponent className="text-sm text-slate-600 leading-relaxed">
+                    <PComponent className="text-sm text-muted-foreground leading-relaxed">
                       {productSnapshot.description}
                     </PComponent>
                   </div>
@@ -513,12 +513,12 @@ export function EnhancedBuyLeadCard({
                         {productSnapshot.specifications.map((spec, index) => (
                           <div
                             key={index}
-                            className="flex justify-between items-center py-2.5 px-3 bg-slate-50 rounded-xl"
+                            className="flex justify-between items-center py-2.5 px-3 bg-muted rounded-xl"
                           >
-                            <span className="font-medium text-sm text-slate-700">
+                            <span className="font-medium text-sm text-foreground">
                               {spec.name}
                             </span>
-                            <span className="text-sm text-slate-600">
+                            <span className="text-sm text-muted-foreground">
                               {spec.value} {spec.unit || ""}
                             </span>
                           </div>
@@ -533,44 +533,44 @@ export function EnhancedBuyLeadCard({
             {productSnapshot && (
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <FileText className="h-5 w-5 text-slate-600" />
-                  <H4Component className="text-base font-semibold text-slate-900">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                  <H4Component className="text-base font-semibold text-foreground">
                     Requirements Comparison
                   </H4Component>
                 </div>
 
                 {/* Buyer Requirements */}
                 <div className="mb-4">
-                  <div className="text-sm font-semibold text-slate-700 mb-3">
+                  <div className="text-sm font-semibold text-foreground mb-3">
                     Buyer Requirements
                   </div>
                   <div className="space-y-2">
                     {lead.quantity_required && (
-                      <div className="flex justify-between items-center py-2.5 px-3 bg-amber-50 rounded-xl border border-amber-200">
-                        <span className="text-sm font-medium text-amber-700">
+                      <div className="flex justify-between items-center py-2.5 px-3 bg-muted rounded-xl border">
+                        <span className="text-sm font-medium text-muted-foreground">
                           Quantity
                         </span>
-                        <span className="text-sm font-semibold text-amber-900">
+                        <span className="text-sm font-semibold text-foreground">
                           {lead.quantity_required}
                         </span>
                       </div>
                     )}
                     {lead.target_price && (
-                      <div className="flex justify-between items-center py-2.5 px-3 bg-amber-50 rounded-xl border border-amber-200">
-                        <span className="text-sm font-medium text-amber-700">
+                      <div className="flex justify-between items-center py-2.5 px-3 rounded-xl border bg-primary/5 border-primary/20">
+                        <span className="text-sm font-medium text-primary">
                           Target Price
                         </span>
-                        <span className="text-sm font-semibold text-amber-900">
+                        <span className="text-sm font-semibold text-primary">
                           ₹{lead.target_price}
                         </span>
                       </div>
                     )}
                     {lead.delivery_city && (
-                      <div className="flex justify-between items-center py-2.5 px-3 bg-amber-50 rounded-xl border border-amber-200">
-                        <span className="text-sm font-medium text-amber-700">
+                      <div className="flex justify-between items-center py-2.5 px-3 bg-muted rounded-xl border">
+                        <span className="text-sm font-medium text-muted-foreground">
                           Delivery to
                         </span>
-                        <span className="text-sm font-semibold text-amber-900">
+                        <span className="text-sm font-semibold text-foreground">
                           {lead.delivery_city}
                         </span>
                       </div>
@@ -580,40 +580,40 @@ export function EnhancedBuyLeadCard({
 
                 {/* Product Details */}
                 <div>
-                  <div className="text-sm font-semibold text-slate-700 mb-3">
+                  <div className="text-sm font-semibold text-foreground mb-3">
                     {variant === "supplier"
                       ? "Your Product"
                       : "Product Details"}
                   </div>
                   <div className="space-y-2">
                     {productSnapshot.quantity && (
-                      <div className="flex justify-between items-center py-2.5 px-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span className="text-sm font-medium text-slate-700">
+                      <div className="flex justify-between items-center py-2.5 px-3 bg-muted rounded-xl border">
+                        <span className="text-sm font-medium text-foreground">
                           {variant === "supplier" ? "Available Stock" : "Stock"}
                         </span>
-                        <span className="text-sm font-semibold text-slate-900">
+                        <span className="text-sm font-semibold text-foreground">
                           {productSnapshot.quantity}
                         </span>
                       </div>
                     )}
                     {productSnapshot.price_per_unit && (
-                      <div className="flex justify-between items-center py-2.5 px-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span className="text-sm font-medium text-slate-700">
+                      <div className="flex justify-between items-center py-2.5 px-3 bg-muted rounded-xl border">
+                        <span className="text-sm font-medium text-foreground">
                           {variant === "supplier"
                             ? "Your Price"
                             : "Product Price"}
                         </span>
-                        <span className="text-sm font-semibold text-slate-900">
+                        <span className="text-sm font-semibold text-foreground">
                           ₹{(productSnapshot.price_per_unit / 100).toFixed(2)}
                         </span>
                       </div>
                     )}
                     {productSnapshot.brand && (
-                      <div className="flex justify-between items-center py-2.5 px-3 bg-slate-50 rounded-xl border border-slate-200">
-                        <span className="text-sm font-medium text-slate-700">
+                      <div className="flex justify-between items-center py-2.5 px-3 bg-muted rounded-xl border">
+                        <span className="text-sm font-medium text-foreground">
                           Brand
                         </span>
-                        <span className="text-sm font-semibold text-slate-900">
+                        <span className="text-sm font-semibold text-foreground">
                           {productSnapshot.brand}
                         </span>
                       </div>
@@ -626,21 +626,21 @@ export function EnhancedBuyLeadCard({
             {/* Additional Details */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-slate-600" />
-                <H4Component className="text-base font-semibold text-slate-900">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <H4Component className="text-base font-semibold text-foreground">
                   Additional Details
                 </H4Component>
               </div>
 
               {/* Delivery Information */}
               {(lead.delivery_city || lead.delivery_pincode) && (
-                <div className="flex items-center gap-3 py-2 px-3 bg-slate-50 rounded-xl">
-                  <MapPin className="h-4 w-4 text-slate-500" />
+                <div className="flex items-center gap-3 py-2 px-3 bg-muted rounded-xl">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-muted-foreground">
                       Delivery Address
                     </div>
-                    <div className="text-sm font-medium text-slate-900">
+                    <div className="text-sm font-medium text-foreground">
                       {lead.delivery_city || ""} {lead.delivery_pincode || ""}
                     </div>
                   </div>
@@ -649,8 +649,8 @@ export function EnhancedBuyLeadCard({
 
               {/* Customization */}
               {lead.customization && (
-                <div className="bg-slate-50 rounded-xl p-3">
-                  <div className="text-sm font-semibold text-slate-700 mb-2">
+                <div className="bg-muted rounded-xl p-3">
+                  <div className="text-sm font-semibold text-foreground mb-2">
                     Customization
                   </div>
                   <div className="space-y-2">
@@ -661,10 +661,10 @@ export function EnhancedBuyLeadCard({
                         key={key}
                         className="flex justify-between items-center"
                       >
-                        <span className="text-sm font-medium text-slate-600 capitalize">
+                        <span className="text-sm font-medium text-muted-foreground capitalize">
                           {key}
                         </span>
-                        <span className="text-sm text-slate-900">{value}</span>
+                        <span className="text-sm text-foreground">{value}</span>
                       </div>
                     ))}
                   </div>
@@ -673,23 +673,23 @@ export function EnhancedBuyLeadCard({
 
               {/* Contact Information */}
               {(lead.contact_email || lead.contact_phone) && (
-                <div className="bg-slate-50 rounded-xl p-3">
-                  <div className="text-sm font-semibold text-slate-700 mb-2">
+                <div className="bg-muted rounded-xl p-3">
+                  <div className="text-sm font-semibold text-foreground mb-2">
                     Contact Information
                   </div>
                   <div className="space-y-2">
                     {lead.contact_email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-slate-500" />
-                        <span className="text-sm text-slate-900">
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-foreground">
                           {lead.contact_email}
                         </span>
                       </div>
                     )}
                     {lead.contact_phone && (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-slate-500" />
-                        <span className="text-sm text-slate-900">
+                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm text-foreground">
                           {lead.contact_phone}
                         </span>
                       </div>
@@ -699,7 +699,7 @@ export function EnhancedBuyLeadCard({
               )}
 
               {/* Timestamp */}
-              <div className="flex items-center gap-2 text-sm text-slate-500 pt-2 border-t border-slate-200">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
                 <Calendar className="h-4 w-4" />
                 <span>Submitted on {formatDate(lead.created_at)}</span>
               </div>

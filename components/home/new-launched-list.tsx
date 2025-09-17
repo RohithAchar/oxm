@@ -20,7 +20,7 @@ export const NewLaunchedItems = async () => {
       <div>
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <div className="w-full text-center">
-            <h2 className="text-center text-3xl sm:text-4xl md:text-5xl font-medium tracking-wide text-foreground mb-2">
+            <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold tracking-wide text-foreground mb-2">
               Latest Launches
             </h2>
             <p className="text-center text-sm sm:text-base text-muted-foreground">

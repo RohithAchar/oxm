@@ -89,7 +89,7 @@ export default function SupplierBuyLeadPage() {
   }, [items, status]);
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4">
         {/* Header */}
         <RFQHeader
@@ -101,16 +101,16 @@ export default function SupplierBuyLeadPage() {
 
         {/* Status Filter */}
         <div className="mb-6">
-          <div className="flex space-x-1 bg-slate-100 p-1 rounded-2xl">
+          <div className="flex space-x-1 bg-muted p-1 rounded-lg">
             {TABS.map((tab) => (
               <Button
                 key={tab}
                 variant="ghost"
                 onClick={() => setStatus(tab)}
-                className={`flex-1 rounded-xl font-medium transition-all duration-200 ${
+                className={`flex-1 rounded-md font-medium transition-all duration-200 ${
                   status === tab
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                 }`}
               >
                 {tab === "all"
@@ -127,33 +127,33 @@ export default function SupplierBuyLeadPage() {
         <div className="space-y-4">
           {loading ? (
             <div className="space-y-4">
-              <div className="bg-white rounded-2xl p-6 border border-slate-200">
+              <div className="rounded-lg p-6 border bg-card">
                 <Skeleton className="h-6 w-1/3 mb-4" />
                 <Skeleton className="h-4 w-full mb-2" />
                 <Skeleton className="h-4 w-2/3" />
               </div>
-              <div className="bg-white rounded-2xl p-6 border border-slate-200">
+              <div className="bg-card rounded-lg p-6 border">
                 <Skeleton className="h-6 w-1/3 mb-4" />
                 <Skeleton className="h-4 w-full mb-2" />
                 <Skeleton className="h-4 w-2/3" />
               </div>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-              <div className="text-red-600 font-medium mb-2">
+            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
+              <div className="text-destructive font-medium mb-2">
                 Error Loading Buy Leads
               </div>
-              <div className="text-sm text-red-500">{error}</div>
+              <div className="text-sm text-destructive/70">{error}</div>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
-              <div className="text-slate-400 mb-4">
+            <div className="bg-card rounded-lg p-12 text-center border">
+              <div className="text-muted-foreground mb-4">
                 <MessageCircle className="h-12 w-12 mx-auto" />
               </div>
-              <div className="text-lg font-semibold text-slate-900 mb-2">
+              <div className="text-lg font-semibold text-foreground mb-2">
                 No Buy Leads Found
               </div>
-              <div className="text-slate-600">
+              <div className="text-muted-foreground">
                 {status === "all"
                   ? "You don't have any buy leads yet."
                   : status === "awaiting"
@@ -199,7 +199,7 @@ export default function SupplierBuyLeadPage() {
                           <div>
                             <Label
                               htmlFor="quoted_price"
-                              className="text-sm font-medium text-slate-700"
+                              className="text-sm font-medium text-foreground"
                             >
                               Quoted price (₹)
                             </Label>
@@ -216,7 +216,7 @@ export default function SupplierBuyLeadPage() {
                           <div>
                             <Label
                               htmlFor="min_qty"
-                              className="text-sm font-medium text-slate-700"
+                              className="text-sm font-medium text-foreground"
                             >
                               Minimum qty
                             </Label>
@@ -234,7 +234,7 @@ export default function SupplierBuyLeadPage() {
                         <div>
                           <Label
                             htmlFor="message"
-                            className="text-sm font-medium text-slate-700"
+                            className="text-sm font-medium text-foreground"
                           >
                             Message
                           </Label>

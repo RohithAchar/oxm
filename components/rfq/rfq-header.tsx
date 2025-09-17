@@ -33,11 +33,11 @@ export function RFQHeader({
   variant = "buyer",
 }: RFQHeaderProps) {
   return (
-    <div className="bg-gradient-to-br from-slate-50 to-white rounded-2xl p-6 mb-6 border border-slate-200">
+    <div className="rounded-lg p-6 mb-6 border bg-card">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="space-y-3">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-slate-900 text-white">
+            <div className="p-3 rounded-xl bg-primary text-primary-foreground">
               {variant === "buyer" ? (
                 <Package className="h-6 w-6" />
               ) : (
@@ -45,15 +45,12 @@ export function RFQHeader({
               )}
             </div>
             <div>
-              <H2Component className="text-2xl font-bold text-slate-900 mb-1">
+              <H2Component className="text-2xl font-bold mb-1 text-foreground">
                 {title}
               </H2Component>
               {totalCount !== undefined && (
                 <div className="flex items-center gap-2">
-                  <Badge
-                    variant="secondary"
-                    className="text-sm font-medium bg-slate-200 text-slate-800"
-                  >
+                  <Badge variant="secondary" className="text-sm font-medium">
                     <Users className="h-3 w-3 mr-1" />
                     {totalCount} {totalCount === 1 ? "request" : "requests"}
                   </Badge>
@@ -62,7 +59,7 @@ export function RFQHeader({
             </div>
           </div>
           {subtitle && (
-            <PComponent className="text-slate-600 text-base leading-relaxed max-w-2xl">
+            <PComponent className="text-base leading-relaxed max-w-2xl">
               {subtitle}
             </PComponent>
           )}
