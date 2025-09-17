@@ -58,11 +58,7 @@ export const Navbar = () => {
 
       {/* Mobile Topbar */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_2px_24px_rgba(0,0,0,0.06)]">
-        <div
-          className={`max-w-7xl mx-auto px-3 ${
-            showSearch ? "py-2" : "py-3"
-          } flex items-center gap-2`}
-        >
+        <div className={`max-w-7xl mx-auto px-3 h-14 flex items-center gap-2`}>
           <Link href="/" className="font-semibold text-lg leading-none">
             <span className="text-foreground">Open</span>
             <span className="text-primary">X</span>
