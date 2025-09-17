@@ -36,40 +36,39 @@ export const ProductCard = ({
     imageUrl || "/product-placeholder.png"
   );
   const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+
+  const formatPriceRange = (values: any[]) => {
+    if (!values || values.length === 0) return null;
+    const prices = values
+      .map((v) =>
+        typeof v?.price === "number" ? v.price : parseFloat(v?.price)
+      )
+      .filter((n) => Number.isFinite(n)) as number[];
+    if (prices.length === 0) return null;
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const fmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+    if (min === max) return `₹${fmt.format(min)}`;
+    return `₹${fmt.format(min)} – ₹${fmt.format(max)}`;
+  };
   return (
-    <Link href={`/products/${id}`}>
+    <Link href={`/products/${id}`} className="block h-full">
       <div
         key={id}
-        className="relative bg-white dark:bg-card h-fit overflow-hidden cursor-pointer"
+        className="relative isolate bg-white dark:bg-card h-full overflow-hidden cursor-pointer flex flex-col"
       >
-        {/* Badges */}
-        <div className="absolute top-1 right-1 z-20 flex flex-col gap-0.5">
-          {is_verified && (
-            <Badge
-              variant="secondary"
-              className="bg-blue-500 text-white dark:bg-blue-600 text-xs px-1.5 py-0.5"
-            >
-              <BadgeCheckIcon className="h-2.5 w-2.5 mr-0.5" />
-              Verified {verificationYears && `${verificationYears} yrs`}
-            </Badge>
-          )}
-          {hasSample && (
-            <Badge
-              variant="secondary"
-              className="bg-green-500 text-white dark:bg-green-600 text-xs px-1.5 py-0.5"
-            >
-              Sample
-            </Badge>
-          )}
-        </div>
-
         {/* Product Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-md">
+          {imageLoading && (
+            <div className="absolute inset-0 animate-pulse bg-muted/50" />
+          )}
           <Image
             fill
             src={imageError ? "/product-placeholder.png" : imgSrc}
             alt="Product Image"
             onError={() => setImageError(true)}
+            onLoadingComplete={() => setImageLoading(false)}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             unoptimized
             className="object-cover rounded-sm"
@@ -77,27 +76,46 @@ export const ProductCard = ({
         </div>
 
         {/* Product Details */}
-        <div className="px-3 py-2 space-y-1.5">
+        <div className="p-3 md:p-4 space-y-2 flex-1 flex flex-col">
           {/* Product Title */}
-          <h1 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
+          <h1 className="font-semibold text-foreground text-base leading-tight line-clamp-2 break-words">
             {name}
           </h1>
 
-          {/* Supplier Name */}
           <p className="text-sm text-muted-foreground truncate">
-            {supplierName}
+            {/demo/i.test(supplierName || "") || /demo/i.test(brand || "")
+              ? "OpenXmart Supplier"
+              : supplierName}
           </p>
+
+          {/* Unified badge row */}
+          {(is_verified || hasSample) && (
+            <div className="flex items-center gap-2">
+              {is_verified && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0.5 leading-none"
+                >
+                  <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
+                  Verified{verificationYears ? ` · ${verificationYears}y` : ""}
+                </Badge>
+              )}
+              {hasSample && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0.5 leading-none"
+                >
+                  Sample
+                </Badge>
+              )}
+            </div>
+          )}
 
           {/* Price and MOQ */}
           {priceAndQuantity && priceAndQuantity?.length > 0 && (
-            <div className="space-y-1">
-              <div className="text-sm font-medium text-foreground">
-                ₹{priceAndQuantity[0].price}
-                {priceAndQuantity.length > 1 && (
-                  <span className="text-sm text-muted-foreground ml-1">
-                    -{priceAndQuantity[priceAndQuantity.length - 1].price}
-                  </span>
-                )}
+            <div className="space-y-1 mt-auto">
+              <div className="text-base font-bold text-foreground">
+                {formatPriceRange(priceAndQuantity)}
               </div>
               <div className="text-sm text-muted-foreground">
                 Min. order: {priceAndQuantity[0].quantity} pieces

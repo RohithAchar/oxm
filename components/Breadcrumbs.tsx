@@ -13,7 +13,7 @@ export default function Breadcrumbs({
   breadcrumbs: Breadcrumb[];
 }) {
   return (
-    <nav aria-label="Breadcrumb" className="mb-6 block">
+    <nav aria-label="Breadcrumb" className="mb-6 block py-3">
       <ol className={"flex text-sm"}>
         {breadcrumbs.map((breadcrumb, index) => (
           <li
@@ -23,7 +23,12 @@ export default function Breadcrumbs({
               breadcrumb.active ? "text-foreground" : "text-muted-foreground"
             )}
           >
-            <Link href={breadcrumb.href}>{breadcrumb.label}</Link>
+            <Link
+              href={breadcrumb.href}
+              className={breadcrumb.active ? "font-semibold" : "font-light"}
+            >
+              {breadcrumb.label}
+            </Link>
             {index < breadcrumbs.length - 1 ? (
               <span className="mx-3 inline-block">/</span>
             ) : null}

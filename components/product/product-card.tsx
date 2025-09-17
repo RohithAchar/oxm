@@ -35,30 +35,25 @@ export const ProductCard = ({
   is_sample_available,
 }: ProductCardProps) => {
   const [imageError, setImageError] = useState(false);
+  const isDemoBrand = /demo/i.test(brand || "");
+
+  const formatPriceRange = (tiers?: TierPricingProps[]) => {
+    if (!tiers || tiers.length === 0) return null;
+    const prices = tiers
+      .map((t) => (typeof t.price === "number" ? t.price : parseFloat(t.price)))
+      .filter((n) => Number.isFinite(n)) as number[];
+    if (prices.length === 0) return null;
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const fmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+    if (min === max) return `₹${fmt.format(min)}`;
+    return `₹${fmt.format(min)} – ₹${fmt.format(max)}`;
+  };
 
   return (
-    <Link href={`/products/${id}`}>
-      <div className="relative bg-white dark:bg-card h-fit overflow-hidden">
-        {/* Badges */}
-        <div className="absolute top-1 right-1 z-20 flex flex-col gap-0.5">
-          {is_verified && (
-            <Badge
-              variant="secondary"
-              className="bg-blue-500 text-white dark:bg-blue-600 text-xs px-1.5 py-0.5"
-            >
-              <BadgeCheckIcon className="h-2.5 w-2.5 mr-0.5" />
-              Verified
-            </Badge>
-          )}
-          {is_sample_available && (
-            <Badge
-              variant="secondary"
-              className="bg-green-500 text-white dark:bg-green-600 text-xs px-1.5 py-0.5"
-            >
-              Sample
-            </Badge>
-          )}
-        </div>
+    <Link href={`/products/${id}`} className="block h-full">
+      <div className="relative isolate bg-white dark:bg-card h-full overflow-hidden flex flex-col">
+        {/* No floating badges; inline below title for consistency */}
 
         {/* Product Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-md">
@@ -78,14 +73,39 @@ export const ProductCard = ({
         </div>
 
         {/* Product Details */}
-        <div className="px-3 py-2 space-y-1.5">
+        <div className="p-3 md:p-4 space-y-2 flex-1 flex flex-col">
           {/* Product Title */}
-          <h1 className="font-medium text-foreground text-sm leading-tight line-clamp-2">
+          <h1 className="font-semibold text-foreground text-base leading-tight line-clamp-2 break-words">
             {name}
           </h1>
 
-          {/* Brand */}
-          <p className="text-sm text-muted-foreground truncate">{brand}</p>
+          {/* Unified badge row */}
+          {(is_verified || is_sample_available) && (
+            <div className="flex items-center gap-2">
+              {is_verified && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0.5 leading-none"
+                >
+                  <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
+                  Verified
+                </Badge>
+              )}
+              {is_sample_available && (
+                <Badge
+                  variant="secondary"
+                  className="text-[10px] px-1.5 py-0.5 leading-none"
+                >
+                  Sample
+                </Badge>
+              )}
+            </div>
+          )}
+
+          {/* Brand (hide obvious demo values) */}
+          {!isDemoBrand && (
+            <p className="text-sm text-muted-foreground truncate">{brand}</p>
+          )}
 
           {/* City */}
           {city && (
@@ -97,14 +117,9 @@ export const ProductCard = ({
 
           {/* Price and MOQ */}
           {tierPricing && tierPricing.length > 0 && (
-            <div className="space-y-1">
-              <div className="text-sm font-medium text-foreground">
-                ₹{tierPricing[0].price}
-                {tierPricing.length > 1 && (
-                  <span className="text-sm text-muted-foreground ml-1">
-                    -{tierPricing[tierPricing.length - 1].price}
-                  </span>
-                )}
+            <div className="space-y-1 mt-auto">
+              <div className="text-base font-bold text-foreground">
+                {formatPriceRange(tierPricing)}
               </div>
               <div className="text-sm text-muted-foreground">
                 Min. order: {tierPricing[0].quantity} pieces

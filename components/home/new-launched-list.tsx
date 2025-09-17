@@ -24,26 +24,43 @@ export const NewLaunchedItems = async () => {
               Latest Launches
             </h2>
             <p className="text-center text-sm sm:text-base text-muted-foreground">
-              Unveiling fresh finds, inspired designs, and unique creations to
-              spark curiosity and style.
+              <span className="md:hidden">
+                Fresh arrivals and trending products.
+              </span>
+              <span className="hidden md:inline">
+                Unveiling fresh finds, inspired designs, and unique creations to
+                spark curiosity and style.
+              </span>
             </p>
-            <Button variant="link">View all</Button>
+            <div className="md:hidden mt-2">
+              <Button size="sm" variant="outline">
+                View all
+              </Button>
+            </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
-          {products.map((products) => (
-            <ProductCard
-              key={products.id}
-              id={products.id}
-              name={products.name}
-              brand={products.brand || ""}
-              supplierName={products.brand || "Supplier"}
-              imageUrl={products.imageUrl || "/product-placeholder.png"}
-              priceAndQuantity={products.priceAndQuantity}
-              is_verified={products.is_verified || false}
-              hasSample={products.is_sample_available || false}
-            />
-          ))}
+        <div className="grid items-stretch auto-rows-fr grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
+          {products
+            .filter(
+              (p) =>
+                p &&
+                p.id &&
+                p.name &&
+                !/footer/i.test((p.name || "").toString())
+            )
+            .map((products) => (
+              <ProductCard
+                key={products.id}
+                id={products.id}
+                name={products.name}
+                brand={products.brand || ""}
+                supplierName={products.brand || "Supplier"}
+                imageUrl={products.imageUrl || "/product-placeholder.png"}
+                priceAndQuantity={products.priceAndQuantity}
+                is_verified={products.is_verified || false}
+                hasSample={products.is_sample_available || false}
+              />
+            ))}
         </div>
       </div>
     </section>

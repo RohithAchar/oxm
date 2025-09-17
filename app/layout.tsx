@@ -3,7 +3,6 @@ import Providers from "@/lib/Providers";
 
 import { Navbar } from "@/components/nav/navbar";
 import MobileMenu from "@/components/nav/mobile-menu";
-import { Open_Sans, Playfair_Display } from "next/font/google";
 import RegisterSW from "@/components/RegisterSW";
 import Footer from "@/components/footer";
 import { ErrorBoundary } from "@/components/error-boundary";
@@ -48,17 +47,7 @@ export const metadata = {
   manifest: "/manifest.webmanifest",
 };
 
-const openSans = Open_Sans({
-  subsets: ["latin"],
-  display: "swap", // Optional: improves loading performance
-  variable: "--font-open-sans", // Optional: creates a CSS variable
-});
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  display: "swap", // Optional: improves loading performance
-  variable: "--font-playfair-display", // Optional: creates a CSS variable
-});
+// Removed Google font imports; using SF Pro system stack via globals.css
 
 export default async function RootLayout({
   children,
@@ -83,14 +72,14 @@ export default async function RootLayout({
         <link rel="icon" href="/android-chrome-192x192.png" sizes="192x192" />
       </head>
       <body
-        className={`${openSans.className} antialiased overflow-x-hidden pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0`}
+        className={`antialiased overflow-x-hidden pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0`}
       >
         <Providers>
           <ErrorBoundary>
             <Navbar />
             <MobileMenu />
             <main
-              className="font-playfair pt-14 md:pt-14 md:pb-0"
+              className="pt-14 md:pt-14 md:pb-0"
               style={{
                 paddingLeft: "env(safe-area-inset-left)",
                 paddingRight: "env(safe-area-inset-right)",

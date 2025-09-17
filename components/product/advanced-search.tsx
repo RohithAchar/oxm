@@ -51,7 +51,12 @@ import {
 } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { useQueryStates, parseAsString, parseAsArrayOf, parseAsBoolean } from "nuqs";
+import {
+  useQueryStates,
+  parseAsString,
+  parseAsArrayOf,
+  parseAsBoolean,
+} from "nuqs";
 
 // Types for filters
 interface FilterState {
@@ -73,7 +78,12 @@ interface FilterState {
 // Types for filter options
 interface FilterOptions {
   availableCategories: Array<{ id: string; name: string; count: number }>;
-  availableSubcategories: Array<{ id: string; name: string; parent_id: string; count: number }>;
+  availableSubcategories: Array<{
+    id: string;
+    name: string;
+    parent_id: string;
+    count: number;
+  }>;
   availableCities: Array<{ name: string; count: number }>;
   availableStates: Array<{ name: string; count: number }>;
   availableTags: Array<{ name: string; count: number }>;
@@ -104,43 +114,71 @@ const initialFilters: FilterState = {
 
 // Sort options
 const sortOptions = [
-  { value: "created_at_desc", label: "Newest First", icon: <SortDesc className="w-4 h-4" /> },
-  { value: "created_at_asc", label: "Oldest First", icon: <SortAsc className="w-4 h-4" /> },
-  { value: "price_asc", label: "Price: Low to High", icon: <SortAsc className="w-4 h-4" /> },
-  { value: "price_desc", label: "Price: High to Low", icon: <SortDesc className="w-4 h-4" /> },
-  { value: "name_asc", label: "Name: A to Z", icon: <SortAsc className="w-4 h-4" /> },
-  { value: "name_desc", label: "Name: Z to A", icon: <SortDesc className="w-4 h-4" /> },
+  {
+    value: "created_at_desc",
+    label: "Newest First",
+    icon: <SortDesc className="w-4 h-4" />,
+  },
+  {
+    value: "created_at_asc",
+    label: "Oldest First",
+    icon: <SortAsc className="w-4 h-4" />,
+  },
+  {
+    value: "price_asc",
+    label: "Price: Low to High",
+    icon: <SortAsc className="w-4 h-4" />,
+  },
+  {
+    value: "price_desc",
+    label: "Price: High to Low",
+    icon: <SortDesc className="w-4 h-4" />,
+  },
+  {
+    value: "name_asc",
+    label: "Name: A to Z",
+    icon: <SortAsc className="w-4 h-4" />,
+  },
+  {
+    value: "name_desc",
+    label: "Name: Z to A",
+    icon: <SortDesc className="w-4 h-4" />,
+  },
 ];
-
 
 export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  
-  const [filters, setFilters] = useQueryStates({
-    q: parseAsString.withDefault(""),
-    category: parseAsString.withDefault(""),
-    subcategory: parseAsString.withDefault(""),
-    price_min: parseAsString.withDefault(""),
-    price_max: parseAsString.withDefault(""),
-    city: parseAsString.withDefault(""),
-    state: parseAsString.withDefault(""),
-    sample_available: parseAsBoolean.withDefault(false),
-    dropship_available: parseAsBoolean.withDefault(false),
-    tags: parseAsArrayOf(parseAsString).withDefault([]),
-    colors: parseAsArrayOf(parseAsString).withDefault([]),
-    sizes: parseAsArrayOf(parseAsString).withDefault([]),
-    sort: parseAsString.withDefault("created_at_desc"),
-  }, { shallow: false, clearOnDefault: true });
+
+  const [filters, setFilters] = useQueryStates(
+    {
+      q: parseAsString.withDefault(""),
+      category: parseAsString.withDefault(""),
+      subcategory: parseAsString.withDefault(""),
+      price_min: parseAsString.withDefault(""),
+      price_max: parseAsString.withDefault(""),
+      city: parseAsString.withDefault(""),
+      state: parseAsString.withDefault(""),
+      sample_available: parseAsBoolean.withDefault(false),
+      dropship_available: parseAsBoolean.withDefault(false),
+      tags: parseAsArrayOf(parseAsString).withDefault([]),
+      colors: parseAsArrayOf(parseAsString).withDefault([]),
+      sizes: parseAsArrayOf(parseAsString).withDefault([]),
+      sort: parseAsString.withDefault("created_at_desc"),
+    },
+    { shallow: false, clearOnDefault: true }
+  );
 
   const [isOpen, setIsOpen] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
   // Local draft state; UI edits go here without updating URL until applied
   const [draftFilters, setDraftFilters] = useState<FilterState>(initialFilters);
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set()
+  );
 
   const updateDraftFilters = (updates: Partial<FilterState>) => {
-    setDraftFilters(prev => ({ ...prev, ...updates }));
+    setDraftFilters((prev) => ({ ...prev, ...updates }));
   };
 
   const applyFilters = () => {
@@ -154,7 +192,7 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
     const next = { ...draftFilters };
     setFilters(next);
     // Clear only local input after navigating so the field resets visually
-    setDraftFilters(prev => ({ ...prev, q: "" }));
+    setDraftFilters((prev) => ({ ...prev, q: "" }));
   };
 
   const clearFilters = () => {
@@ -181,7 +219,7 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
   }, [filters]);
 
   const toggleSection = (section: string) => {
-    setExpandedSections(prev => {
+    setExpandedSections((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(section)) {
         newSet.delete(section);
@@ -223,13 +261,17 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
               value={draftFilters.q}
               onChange={(e) => updateDraftFilters({ q: e.target.value })}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   applySearch();
                 }
               }}
             />
           </div>
-          <Button className="cursor-pointer" onClick={applySearch} aria-label="Search">
+          <Button
+            className="cursor-pointer"
+            onClick={applySearch}
+            aria-label="Search"
+          >
             Search
           </Button>
         </div>
@@ -237,7 +279,10 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       {/* Sort */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Sort By</label>
-        <Select value={draftFilters.sort} onValueChange={(value) => updateDraftFilters({ sort: value })}>
+        <Select
+          value={draftFilters.sort}
+          onValueChange={(value) => updateDraftFilters({ sort: value })}
+        >
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
@@ -255,13 +300,28 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </div>
 
       {/* Categories */}
-      <Collapsible open={expandedSections.has("categories")} onOpenChange={() => toggleSection("categories")}>
+      <Collapsible
+        open={expandedSections.has("categories")}
+        onOpenChange={() => toggleSection("categories")}
+      >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <span>Categories</span>
-          {expandedSections.has("categories") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandedSections.has("categories") ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
-          <Select value={draftFilters.category} onValueChange={(value) => updateDraftFilters({ category: value === "all" ? "" : value, subcategory: "" })}>
+          <Select
+            value={draftFilters.category}
+            onValueChange={(value) =>
+              updateDraftFilters({
+                category: value === "all" ? "" : value,
+                subcategory: "",
+              })
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select Category" />
             </SelectTrigger>
@@ -274,16 +334,23 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
               ))}
             </SelectContent>
           </Select>
-          
+
           {draftFilters.category && (
-            <Select value={draftFilters.subcategory} onValueChange={(value) => updateDraftFilters({ subcategory: value === "all" ? "" : value })}>
+            <Select
+              value={draftFilters.subcategory}
+              onValueChange={(value) =>
+                updateDraftFilters({
+                  subcategory: value === "all" ? "" : value,
+                })
+              }
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select Subcategory" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Subcategories</SelectItem>
                 {filterOptions?.availableSubcategories
-                  .filter(sub => sub.parent_id === filters.category)
+                  .filter((sub) => sub.parent_id === filters.category)
                   .map((subcategory) => (
                     <SelectItem key={subcategory.id} value={subcategory.id}>
                       {subcategory.name}
@@ -296,10 +363,17 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </Collapsible>
 
       {/* Price Range */}
-      <Collapsible open={expandedSections.has("price")} onOpenChange={() => toggleSection("price")}>
+      <Collapsible
+        open={expandedSections.has("price")}
+        onOpenChange={() => toggleSection("price")}
+      >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <span>Price Range</span>
-          {expandedSections.has("price") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandedSections.has("price") ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
           <div className="grid grid-cols-2 gap-2">
@@ -307,7 +381,9 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
               type="number"
               placeholder="Min Price"
               value={draftFilters.price_min}
-              onChange={(e) => updateDraftFilters({ price_min: e.target.value })}
+              onChange={(e) =>
+                updateDraftFilters({ price_min: e.target.value })
+              }
               min={filterOptions?.priceRange?.min || 0}
               max={filterOptions?.priceRange?.max || 100000}
             />
@@ -315,7 +391,9 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
               type="number"
               placeholder="Max Price"
               value={draftFilters.price_max}
-              onChange={(e) => updateDraftFilters({ price_max: e.target.value })}
+              onChange={(e) =>
+                updateDraftFilters({ price_max: e.target.value })
+              }
               min={filterOptions?.priceRange?.min || 0}
               max={filterOptions?.priceRange?.max || 100000}
             />
@@ -324,16 +402,31 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </Collapsible>
 
       {/* Location */}
-      <Collapsible open={expandedSections.has("location")} onOpenChange={() => toggleSection("location")}>
+      <Collapsible
+        open={expandedSections.has("location")}
+        onOpenChange={() => toggleSection("location")}
+      >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
             <MapPin className="w-4 h-4" />
             <span>Location</span>
           </div>
-          {expandedSections.has("location") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandedSections.has("location") ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
-          <Select value={draftFilters.state} onValueChange={(value) => updateDraftFilters({ state: value === "all" ? "" : value, city: "" })}>
+          <Select
+            value={draftFilters.state}
+            onValueChange={(value) =>
+              updateDraftFilters({
+                state: value === "all" ? "" : value,
+                city: "",
+              })
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select State" />
             </SelectTrigger>
@@ -346,8 +439,13 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
               ))}
             </SelectContent>
           </Select>
-          
-          <Select value={draftFilters.city} onValueChange={(value) => updateDraftFilters({ city: value === "all" ? "" : value })}>
+
+          <Select
+            value={draftFilters.city}
+            onValueChange={(value) =>
+              updateDraftFilters({ city: value === "all" ? "" : value })
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select City" />
             </SelectTrigger>
@@ -364,10 +462,17 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </Collapsible>
 
       {/* Quick Filters */}
-      <Collapsible open={expandedSections.has("quick")} onOpenChange={() => toggleSection("quick")}>
+      <Collapsible
+        open={expandedSections.has("quick")}
+        onOpenChange={() => toggleSection("quick")}
+      >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <span>Quick Filters</span>
-          {expandedSections.has("quick") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandedSections.has("quick") ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
           <div className="space-y-2">
@@ -375,17 +480,21 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
               <input
                 type="checkbox"
                 checked={draftFilters.sample_available === true}
-                onChange={(e) => updateDraftFilters({ sample_available: e.target.checked })}
+                onChange={(e) =>
+                  updateDraftFilters({ sample_available: e.target.checked })
+                }
                 className="rounded"
               />
               <span className="text-sm">Sample Available</span>
             </label>
-            
+
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
                 checked={draftFilters.dropship_available === true}
-                onChange={(e) => updateDraftFilters({ dropship_available: e.target.checked })}
+                onChange={(e) =>
+                  updateDraftFilters({ dropship_available: e.target.checked })
+                }
                 className="rounded"
               />
               <span className="text-sm">Dropship Available</span>
@@ -395,24 +504,33 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </Collapsible>
 
       {/* Tags */}
-      <Collapsible open={expandedSections.has("tags")} onOpenChange={() => toggleSection("tags")}>
+      <Collapsible
+        open={expandedSections.has("tags")}
+        onOpenChange={() => toggleSection("tags")}
+      >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
             <Tag className="w-4 h-4" />
             <span>Tags</span>
           </div>
-          {expandedSections.has("tags") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandedSections.has("tags") ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
           <div className="flex flex-wrap gap-2">
             {filterOptions?.availableTags.map((tag) => (
               <Badge
                 key={tag.name}
-                variant={draftFilters.tags.includes(tag.name) ? "default" : "outline"}
+                variant={
+                  draftFilters.tags.includes(tag.name) ? "default" : "outline"
+                }
                 className="cursor-pointer"
                 onClick={() => {
                   const newTags = draftFilters.tags.includes(tag.name)
-                    ? draftFilters.tags.filter(t => t !== tag.name)
+                    ? draftFilters.tags.filter((t) => t !== tag.name)
                     : [...draftFilters.tags, tag.name];
                   updateDraftFilters({ tags: newTags });
                 }}
@@ -425,24 +543,35 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </Collapsible>
 
       {/* Colors */}
-      <Collapsible open={expandedSections.has("colors")} onOpenChange={() => toggleSection("colors")}>
+      <Collapsible
+        open={expandedSections.has("colors")}
+        onOpenChange={() => toggleSection("colors")}
+      >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
             <Palette className="w-4 h-4" />
             <span>Colors</span>
           </div>
-          {expandedSections.has("colors") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandedSections.has("colors") ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
           <div className="flex flex-wrap gap-2">
             {filterOptions?.availableColors.map((color) => (
               <Badge
                 key={color.name}
-                variant={draftFilters.colors.includes(color.name) ? "default" : "outline"}
+                variant={
+                  draftFilters.colors.includes(color.name)
+                    ? "default"
+                    : "outline"
+                }
                 className="cursor-pointer"
                 onClick={() => {
                   const newColors = draftFilters.colors.includes(color.name)
-                    ? draftFilters.colors.filter(c => c !== color.name)
+                    ? draftFilters.colors.filter((c) => c !== color.name)
                     : [...draftFilters.colors, color.name];
                   updateDraftFilters({ colors: newColors });
                 }}
@@ -455,24 +584,33 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </Collapsible>
 
       {/* Sizes */}
-      <Collapsible open={expandedSections.has("sizes")} onOpenChange={() => toggleSection("sizes")}>
+      <Collapsible
+        open={expandedSections.has("sizes")}
+        onOpenChange={() => toggleSection("sizes")}
+      >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
             <Ruler className="w-4 h-4" />
             <span>Sizes</span>
           </div>
-          {expandedSections.has("sizes") ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {expandedSections.has("sizes") ? (
+            <ChevronUp className="w-4 h-4" />
+          ) : (
+            <ChevronDown className="w-4 h-4" />
+          )}
         </CollapsibleTrigger>
         <CollapsibleContent className="space-y-3 mt-3">
           <div className="flex flex-wrap gap-2">
             {filterOptions?.availableSizes.map((size) => (
               <Badge
                 key={size.name}
-                variant={draftFilters.sizes.includes(size.name) ? "default" : "outline"}
+                variant={
+                  draftFilters.sizes.includes(size.name) ? "default" : "outline"
+                }
                 className="cursor-pointer"
                 onClick={() => {
                   const newSizes = draftFilters.sizes.includes(size.name)
-                    ? draftFilters.sizes.filter(s => s !== size.name)
+                    ? draftFilters.sizes.filter((s) => s !== size.name)
                     : [...draftFilters.sizes, size.name];
                   updateDraftFilters({ sizes: newSizes });
                 }}
@@ -507,9 +645,20 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
 
   if (isMobile) {
     return (
-      <Drawer open={isOpen} onOpenChange={(open) => { if (open) { setDraftFilters(filters); } setIsOpen(open); }}>
+      <Drawer
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (open) {
+            setDraftFilters(filters);
+          }
+          setIsOpen(open);
+        }}
+      >
         <DrawerTrigger asChild>
-          <Button variant="outline" className="w-full justify-between">
+          <Button
+            variant="outline"
+            className="w-full justify-between rounded-full px-4 py-2 border-muted-foreground/30 shadow-sm hover:shadow focus-visible:ring-2"
+          >
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-4 h-4" />
               <span>Filters</span>
@@ -534,9 +683,20 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
   }
 
   return (
-    <Sheet open={isOpen} onOpenChange={(open) => { if (open) { setDraftFilters(filters); } setIsOpen(open); }}>
+    <Sheet
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (open) {
+          setDraftFilters(filters);
+        }
+        setIsOpen(open);
+      }}
+    >
       <SheetTrigger asChild>
-        <Button variant="outline" className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          className="flex items-center gap-2 rounded-full px-4 py-2 border-muted-foreground/30 shadow-sm hover:shadow focus-visible:ring-2"
+        >
           <SlidersHorizontal className="w-4 h-4" />
           Filters
           {activeFiltersCount > 0 && (
@@ -555,4 +715,3 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
     </Sheet>
   );
 }
-

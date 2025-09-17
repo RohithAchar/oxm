@@ -17,24 +17,25 @@ export const Navbar = () => {
     <>
       {/* Desktop Topbar */}
       <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/" className="font-semibold text-xl">
+        <div className="max-w-7xl mx-auto px-4 h-14 grid grid-cols-[auto_1fr_auto] items-center">
+          <Link href="/" className="font-semibold text-xl mr-4 md:mr-5 lg:mr-6">
             <span className="text-foreground">Open</span>
             <span className="text-primary">X</span>
             <span className="text-foreground">mart</span>
             <span className="text-muted-foreground text-xs">.com</span>
           </Link>
           {showSearch && (
-            <div className="hidden md:flex flex-1 mx-4 justify-center">
+            <div className="hidden md:block justify-self-center w-full">
               <ProductSearch
-                placeholder="Search products & suppliers"
+                placeholder="Search products"
                 size="sm"
                 rounded="full"
-                className="w-full max-w-2xl"
+                className="w-full max-w-2xl mx-auto"
+                buttonMode="icon"
               />
             </div>
           )}
-          <div className="flex items-center gap-1 sm:gap-4">
+          <div className="ml-3 md:ml-4 flex items-center gap-1 sm:gap-4">
             {showThemeToggle && <ModeToggle />}
             {/* <Button variant="ghost" size="icon" aria-label="Notifications">
               <Bell className="h-5 w-5" />
@@ -58,8 +59,8 @@ export const Navbar = () => {
 
       {/* Mobile Topbar */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_2px_24px_rgba(0,0,0,0.06)]">
-        <div className={`max-w-7xl mx-auto px-3 h-14 flex items-center gap-2`}>
-          <Link href="/" className="font-semibold text-lg leading-none">
+        <div className={`max-w-7xl mx-auto px-3 h-14 flex items-center gap-3`}>
+          <Link href="/" className="font-semibold text-lg leading-none mr-2">
             <span className="text-foreground">Open</span>
             <span className="text-primary">X</span>
             <span className="text-foreground">mart</span>
@@ -67,9 +68,10 @@ export const Navbar = () => {
           {showSearch && (
             <div className="flex-1">
               <ProductSearch
-                placeholder="Search products & suppliers"
+                placeholder="Search products"
                 size="sm"
                 rounded="full"
+                buttonMode="icon"
               />
             </div>
           )}

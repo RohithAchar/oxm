@@ -29,7 +29,7 @@ import { P } from "@/components/ui/p";
 
 const NewLandingPage = async () => {
   return (
-    <main className="space-y-10 lg:space-y-16 overflow-hidden pb-16">
+    <main className="space-y-8 lg:space-y-12 overflow-hidden pb-14">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -72,26 +72,30 @@ const NewLandingPage = async () => {
           <Carousal />
         </Suspense>
 
-        {/* Horizontal pill nav */}
-        <div className="flex justify-center gap-2 overflow-x-auto no-scrollbar py-1">
+        {/* Horizontal pill nav (icons + text) */}
+        <div className=" pl-4 pr-4 flex justify-start gap-2 overflow-x-auto no-scrollbar py-1 snap-x snap-mandatory">
           <Link href="/products">
-            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
-              Explore
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
+              <Sparkles className="h-4 w-4" />
+              <span>Explore</span>
             </div>
           </Link>
           <Link href="/intro">
-            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
-              MyBox
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
+              <Package className="h-4 w-4" />
+              <span>MyBox</span>
             </div>
           </Link>
           <Link href="/learn">
-            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
-              Learnx
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
+              <GraduationCap className="h-4 w-4" />
+              <span>Learn</span>
             </div>
           </Link>
           <Link href="/products?dropship_available=true">
-            <div className="px-4 py-2 rounded-md border bg-background whitespace-nowrap text-sm">
-              Dropship
+            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
+              <Truck className="h-4 w-4" />
+              <span>Dropship</span>
             </div>
           </Link>
         </div>
@@ -105,14 +109,13 @@ const NewLandingPage = async () => {
       </section>
 
       {/* Desktop / large-screen content */}
-      <section className="hidden md:block relative max-w-7xl mx-auto px-4 pt-4 lg:pt-10">
+      <section className="hidden md:block relative max-w-7xl mx-auto px-4 pt-4 lg:pt-8">
         <div className="rounded-md border p-4 pt-8 md:p-12 shadow">
-          {/* subtle accent removed for cleaner light mode */}
-          <div className="relative mx-auto max-w-3xl text-center space-y-6">
-            <H1 className="text-2xl md:text-6xl font-semibold tracking-tight leading-tight text-foreground">
+          <div className="relative mx-auto max-w-4xl text-center space-y-4 md:space-y-5">
+            <H1 className="text-3xl md:text-6xl font-bold tracking-tight leading-tight text-foreground">
               Find Winning Products & Verified Suppliers
             </H1>
-            <P className="text-sm md:text-lg text-foreground/80">
+            <P className="text-sm md:text-base lg:text-lg text-muted-foreground">
               Source confidently from verified Indian suppliers. Samples to
               bulk, all in one place.
             </P>
@@ -120,66 +123,58 @@ const NewLandingPage = async () => {
               placeholder="Search Winning Products & Verified Suppliers"
               size="lg"
               rounded="full"
-              className="mx-auto max-w-3xl"
+              className="mx-auto w-full max-w-4xl"
             />
-          </div>
-
-          {/* CTA buttons */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 max-w-5xl mx-auto">
-            {/* Explore - neutral card with emerald badge */}
-            <Link href="/products">
-              <div className="group rounded-md border border-primary/40 bg-primary/5 ring-1 ring-primary/10 p-4 sm:p-6 hover:shadow-md transition">
-                <div className="flex items-center justify-start gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 text-emerald-800">
-                    <Sparkles className="h-4 w-4" />
-                  </span>
-                  <span className="font-semibold">Explore Products</span>
+            {/* Secondary actions in a single pill bar */}
+            <div className="mx-auto w-full max-w-4xl">
+              <div className="rounded-full bg-muted/50 px-2 py-2">
+                <div className="grid grid-cols-2 md:flex md:justify-between md:gap-2">
+                  <Link
+                    href="/products"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm hover:bg-background transition"
+                  >
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
+                      <Sparkles className="h-4 w-4" />
+                    </span>
+                    <span>Explore Products</span>
+                  </Link>
+                  <Link
+                    href="/learn"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm hover:bg-background transition"
+                  >
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
+                      <GraduationCap className="h-4 w-4" />
+                    </span>
+                    <span>Learn & Grow</span>
+                  </Link>
+                  <Link
+                    href="#"
+                    aria-disabled
+                    className="pointer-events-none opacity-70 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm"
+                  >
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-amber-100 text-amber-700">
+                      <BadgeDot className="bg-amber-600" />
+                    </span>
+                    <span>Markdown</span>
+                  </Link>
+                  <Link
+                    href="/products?dropship_available=true"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm hover:bg-background transition"
+                  >
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-orange-100 text-orange-700">
+                      <Truck className="h-4 w-4" />
+                    </span>
+                    <span>Dropship Ready</span>
+                  </Link>
                 </div>
               </div>
-            </Link>
-            {/* Learn & Grow - indigo badge */}
-            <Link href="/learn">
-              <div className="group rounded-md border p-4 sm:p-6 hover:shadow-md transition">
-                <div className="flex items-center justify-start gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-indigo-100 text-indigo-700">
-                    <GraduationCap className="h-4 w-4" />
-                  </span>
-                  <span className="font-semibold">Learn & Grow</span>
-                </div>
-              </div>
-            </Link>
-            {/* Markdown - amber badge */}
-            <Link
-              href="#"
-              aria-disabled
-              className="pointer-events-none opacity-70"
-            >
-              <div className="rounded-md border p-4 sm:p-6">
-                <div className="flex items-center justify-start gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 text-amber-700">
-                    <BadgeDot className="bg-amber-600" />
-                  </span>
-                  <span className="font-semibold">Markdown</span>
-                </div>
-              </div>
-            </Link>
-            {/* Dropship - orange badge */}
-            <Link href="/products?dropship_available=true">
-              <div className="group rounded-md border p-4 sm:p-6 hover:shadow-md transition">
-                <div className="flex items-center justify-start gap-3 text-foreground">
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 text-orange-700">
-                    <Truck className="h-4 w-4" />
-                  </span>
-                  <span className="font-semibold">Dropship Ready</span>
-                </div>
-              </div>
-            </Link>
+            </div>
           </div>
         </div>
       </section>
 
       {/* How it works (desktop only) */}
-      <section className="hidden md:block max-w-7xl mx-auto px-4">
+      <section className="hidden md:block max-w-7xl mx-auto px-4 mt-16 lg:mt-24">
         <div className="w-full text-center mb-8">
           <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
             How OpenXmart works for you
@@ -196,77 +191,61 @@ const NewLandingPage = async () => {
         >
           <div className="flex gap-3 snap-x snap-mandatory">
             <div className="min-w-[80%] snap-start">
-              <Card className="hover:shadow-md transition">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                      <Package className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base md:text-lg">
-                        Browse Products
-                      </CardTitle>
-                      <CardDescription className="text-xs md:text-sm">
-                        Explore products from verified Indian suppliers.
-                      </CardDescription>
-                    </div>
+              <Card className="group hover:shadow-md transition">
+                <CardHeader className="p-3 sm:p-4">
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <Sparkles className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                    <CardTitle className="text-base md:text-lg line-clamp-2">
+                      Browse Products
+                    </CardTitle>
+                    <CardDescription className="text-xs md:text-sm line-clamp-2">
+                      Explore products from verified Indian suppliers.
+                    </CardDescription>
                   </div>
                 </CardHeader>
               </Card>
             </div>
             <div className="min-w-[80%] snap-start">
-              <Card className="hover:shadow-md transition">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                      <Package className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base md:text-lg">
-                        Order Samples
-                      </CardTitle>
-                      <CardDescription className="text-xs md:text-sm">
-                        Test product quality before bulk buying.
-                      </CardDescription>
-                    </div>
+              <Card className="group hover:shadow-md transition">
+                <CardHeader className="p-3 sm:p-4">
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <Package className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                    <CardTitle className="text-base md:text-lg line-clamp-2">
+                      Order Samples
+                    </CardTitle>
+                    <CardDescription className="text-xs md:text-sm line-clamp-2">
+                      Test product quality before bulk buying.
+                    </CardDescription>
                   </div>
                 </CardHeader>
               </Card>
             </div>
             <div className="min-w-[80%] snap-start">
-              <Card className="hover:shadow-md transition">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                      <Handshake className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base md:text-lg">
-                        Contact Suppliers
-                      </CardTitle>
-                      <CardDescription className="text-xs md:text-sm">
-                        Buy directly and build long-term partnerships.
-                      </CardDescription>
-                    </div>
+              <Card className="group hover:shadow-md transition">
+                <CardHeader className="p-3 sm:p-4">
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <Handshake className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                    <CardTitle className="text-base md:text-lg line-clamp-2">
+                      Contact Suppliers
+                    </CardTitle>
+                    <CardDescription className="text-xs md:text-sm line-clamp-2">
+                      Buy directly and build long-term partnerships.
+                    </CardDescription>
                   </div>
                 </CardHeader>
               </Card>
             </div>
             <div className="min-w-[80%] snap-start">
-              <Card className="hover:shadow-md transition">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                      <ShieldCheck className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-base md:text-lg">
-                        Buyer Protection
-                      </CardTitle>
-                      <CardDescription className="text-xs md:text-sm">
-                        Your money is safe until delivery is verified.
-                      </CardDescription>
-                    </div>
+              <Card className="group hover:shadow-md transition">
+                <CardHeader className="p-3 sm:p-4">
+                  <div className="flex flex-col items-center text-center gap-2">
+                    <ShieldCheck className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                    <CardTitle className="text-base md:text-lg line-clamp-2">
+                      Buyer Protection
+                    </CardTitle>
+                    <CardDescription className="text-xs md:text-sm line-clamp-2">
+                      Your money is safe until delivery is verified.
+                    </CardDescription>
                   </div>
                 </CardHeader>
               </Card>
@@ -276,71 +255,55 @@ const NewLandingPage = async () => {
 
         {/* Desktop/grid */}
         <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
-          <Card className="hover:shadow-md transition">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <Package className="h-5 w-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-base md:text-lg">
-                    Browse Products
-                  </CardTitle>
-                  <CardDescription className="text-xs md:text-sm">
-                    Explore products from verified Indian suppliers.
-                  </CardDescription>
-                </div>
+          <Card className="group hover:shadow-md transition">
+            <CardHeader className="p-3 sm:p-4">
+              <div className="flex flex-col items-center text-center gap-2">
+                <Sparkles className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                <CardTitle className="text-base md:text-lg line-clamp-2">
+                  Browse Products
+                </CardTitle>
+                <CardDescription className="text-xs md:text-sm line-clamp-2">
+                  Explore products from verified Indian suppliers.
+                </CardDescription>
               </div>
             </CardHeader>
           </Card>
-          <Card className="hover:shadow-md transition">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <Package className="h-5 w-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-base md:text-lg">
-                    Order Samples
-                  </CardTitle>
-                  <CardDescription className="text-xs md:text-sm">
-                    Test product quality before bulk buying.
-                  </CardDescription>
-                </div>
+          <Card className="group hover:shadow-md transition">
+            <CardHeader className="p-3 sm:p-4">
+              <div className="flex flex-col items-center text-center gap-2">
+                <Package className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                <CardTitle className="text-base md:text-lg line-clamp-2">
+                  Order Samples
+                </CardTitle>
+                <CardDescription className="text-xs md:text-sm line-clamp-2">
+                  Test product quality before bulk buying.
+                </CardDescription>
               </div>
             </CardHeader>
           </Card>
-          <Card className="hover:shadow-md transition">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <Handshake className="h-5 w-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-base md:text-lg">
-                    Contact Suppliers
-                  </CardTitle>
-                  <CardDescription className="text-xs md:text-sm">
-                    Buy directly and build long-term partnerships.
-                  </CardDescription>
-                </div>
+          <Card className="group hover:shadow-md transition">
+            <CardHeader className="p-3 sm:p-4">
+              <div className="flex flex-col items-center text-center gap-2">
+                <Handshake className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                <CardTitle className="text-base md:text-lg line-clamp-2">
+                  Contact Suppliers
+                </CardTitle>
+                <CardDescription className="text-xs md:text-sm line-clamp-2">
+                  Buy directly and build long-term partnerships.
+                </CardDescription>
               </div>
             </CardHeader>
           </Card>
-          <Card className="hover:shadow-md transition">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                  <ShieldCheck className="h-5 w-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-base md:text-lg">
-                    Buyer Protection
-                  </CardTitle>
-                  <CardDescription className="text-xs md:text-sm">
-                    Your money is safe until delivery is verified.
-                  </CardDescription>
-                </div>
+          <Card className="group hover:shadow-md transition">
+            <CardHeader className="p-3 sm:p-4">
+              <div className="flex flex-col items-center text-center gap-2">
+                <ShieldCheck className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
+                <CardTitle className="text-base md:text-lg line-clamp-2">
+                  Buyer Protection
+                </CardTitle>
+                <CardDescription className="text-xs md:text-sm line-clamp-2">
+                  Your money is safe until delivery is verified.
+                </CardDescription>
               </div>
             </CardHeader>
           </Card>

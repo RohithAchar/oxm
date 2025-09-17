@@ -6,7 +6,9 @@ export function P({
   className?: string;
 }) {
   return (
-    <p className={`leading-7 [&:not(:first-child)]:mt-6 ${className}`}>
+    <p
+      className={`text-sm sm:text-base leading-6 sm:leading-7 [&:not(:first-child)]:mt-4 sm:[&:not(:first-child)]:mt-6 ${className}`}
+    >
       {children}
     </p>
   );

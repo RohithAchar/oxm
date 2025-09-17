@@ -2,10 +2,19 @@ import { ProductCard } from "@/components/home/product-card";
 import { AdvancedSearch } from "@/components/product/advanced-search";
 import { ActiveFilters } from "@/components/product/active-filters";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { PackageOpen } from "lucide-react";
 import Link from "next/link";
-import { getEnhancedProducts, EnhancedProductFilters } from "@/lib/controller/product/enhancedProductOperations";
+import {
+  getEnhancedProducts,
+  EnhancedProductFilters,
+} from "@/lib/controller/product/enhancedProductOperations";
 
 export default async function ProductsContent({
   params,
@@ -23,7 +32,9 @@ export default async function ProductsContent({
     sampleAvailable: params.sample_available === "true" ? true : undefined,
     dropshipAvailable: params.dropship_available === "true" ? true : undefined,
     tags: params.tags ? params.tags.split(",").filter(Boolean) : undefined,
-    colors: params.colors ? params.colors.split(",").filter(Boolean) : undefined,
+    colors: params.colors
+      ? params.colors.split(",").filter(Boolean)
+      : undefined,
     sizes: params.sizes ? params.sizes.split(",").filter(Boolean) : undefined,
     sortBy: params.sort || "created_at_desc",
     page: parseInt(params.page ?? "1", 10),
@@ -47,9 +58,12 @@ export default async function ProductsContent({
           <ActiveFilters />
 
           {/* Results Summary */}
-          <div className="text-sm text-muted-foreground">
-            Showing {data.products.length} of {data.total} products
-            {data.totalPages > 1 && ` (Page ${data.page} of ${data.totalPages})`}
+          <div className="text-sm text-muted-foreground text-left">
+            {data.products.length === data.total
+              ? `Showing all ${data.total} products`
+              : `${data.total} products found`}
+            {data.totalPages > 1 &&
+              ` (Page ${data.page} of ${data.totalPages})`}
           </div>
         </div>
       </div>
@@ -82,23 +96,25 @@ export default async function ProductsContent({
       ) : (
         <>
           {/* Products Grid */}
-          <div className="grid gap-4 md:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {data.products.map((p) => {
-              if (!p) return null;
-              return (
-                <ProductCard
-                  key={p.id}
-                  id={p.id}
-                  imageUrl={p.imageUrl}
-                  name={p.name}
-                  brand={p.brand || ""}
-                  supplierName={p.supplierName}
-                  priceAndQuantity={p.priceAndQuantity || []}
-                  is_verified={p.is_verified || false}
-                  hasSample={p.is_sample_available || false}
-                />
-              );
-            })}
+          <div className="grid items-stretch auto-rows-fr gap-4 md:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {data.products
+              .filter((p) => p && !/footer/i.test((p.name || "").toString()))
+              .map((p) => {
+                if (!p) return null;
+                return (
+                  <ProductCard
+                    key={p.id}
+                    id={p.id}
+                    imageUrl={p.imageUrl}
+                    name={p.name}
+                    brand={p.brand || ""}
+                    supplierName={p.supplierName}
+                    priceAndQuantity={p.priceAndQuantity || []}
+                    is_verified={p.is_verified || false}
+                    hasSample={p.is_sample_available || false}
+                  />
+                );
+              })}
           </div>
 
           {/* Pagination */}
@@ -139,5 +155,3 @@ export default async function ProductsContent({
     </div>
   );
 }
-
-

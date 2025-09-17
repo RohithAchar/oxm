@@ -30,7 +30,8 @@ const menuItems = [
 
 const MobileMenu = () => {
   const pathname = usePathname();
-  const showThemeToggle = pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
+  const showThemeToggle =
+    pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
 
   return (
     <div
@@ -38,7 +39,11 @@ const MobileMenu = () => {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <nav className="max-w-7xl mx-auto px-3 h-16 flex items-stretch">
-        <ul className={`grid ${showThemeToggle ? "grid-cols-5" : "grid-cols-4"} w-full`}>
+        <ul
+          className={`grid ${
+            showThemeToggle ? "grid-cols-5" : "grid-cols-4"
+          } w-full`}
+        >
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
@@ -47,24 +52,23 @@ const MobileMenu = () => {
                 <Link
                   href={item.href}
                   aria-current={isActive ? "page" : undefined}
-                  className={`group flex-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-colors mx-1
+                  className={`group flex-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-colors mx-1 py-1
                     ${
                       isActive
                         ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground"
+                        : "text-foreground/80 hover:text-foreground"
                     }`}
                 >
                   <span
-                    className={`inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors
-                    ${
-                      isActive
-                        ? "bg-primary/10"
-                        : "bg-transparent group-hover:bg-muted/60"
-                    }`}
+                    className={`inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors bg-transparent group-hover:bg-muted/60`}
                   >
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="text-[11px] font-medium leading-none">
+                  <span
+                    className={`text-[11px] leading-none ${
+                      isActive ? "text-foreground" : "text-foreground/90"
+                    }`}
+                  >
                     {item.name}
                   </span>
                 </Link>

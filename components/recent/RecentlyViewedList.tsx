@@ -7,14 +7,23 @@ import { ProductCard } from "@/components/home/product-card";
 export default function RecentlyViewedList() {
   const items = useRecentlyViewedStore((s) => s.items);
 
-  const products = useMemo(() => items.slice(0, 12), [items]);
+  const products = useMemo(
+    () =>
+      items
+        .filter(
+          (p) =>
+            p && p.id && p.name && !/footer/i.test((p.name || "").toString())
+        )
+        .slice(0, 12),
+    [items]
+  );
 
   if (!products || products.length === 0) return null;
 
   return (
     <section className="max-w-7xl mx-auto mt-6 md:mt-10 px-4">
-      <div>
-        <div className="flex items-center justify-between mb-4 md:mb-6">
+      <div className="rounded-2xl border bg-muted/30 p-4 md:p-6">
+        <div className="flex items-center justify-between mb-6 md:mb-8">
           <div className="w-full text-left">
             <h2 className="text-foreground text-xl md:text-2xl font-semibold mb-1">
               Recently viewed
@@ -24,7 +33,7 @@ export default function RecentlyViewedList() {
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
+        <div className="grid items-stretch auto-rows-fr grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
           {products.map((p) => (
             <ProductCard
               key={p.id}
@@ -43,5 +52,3 @@ export default function RecentlyViewedList() {
     </section>
   );
 }
-
-
