@@ -58,6 +58,27 @@ export const ProductCard = ({
         key={id}
         className="relative isolate bg-white dark:bg-card h-full overflow-hidden cursor-pointer flex flex-col"
       >
+        {(is_verified || hasSample) && (
+          <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
+            {is_verified && (
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-2 py-0.5 leading-none"
+              >
+                <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
+                Verified{verificationYears ? ` · ${verificationYears}y` : ""}
+              </Badge>
+            )}
+            {hasSample && (
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-2 py-0.5 leading-none"
+              >
+                Sample
+              </Badge>
+            )}
+          </div>
+        )}
         {/* Product Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-md">
           {imageLoading && (
@@ -88,32 +109,11 @@ export const ProductCard = ({
               : supplierName}
           </p>
 
-          {/* Unified badge row */}
-          {(is_verified || hasSample) && (
-            <div className="flex items-center gap-2">
-              {is_verified && (
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] px-1.5 py-0.5 leading-none"
-                >
-                  <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
-                  Verified{verificationYears ? ` · ${verificationYears}y` : ""}
-                </Badge>
-              )}
-              {hasSample && (
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] px-1.5 py-0.5 leading-none"
-                >
-                  Sample
-                </Badge>
-              )}
-            </div>
-          )}
+          {/* Badges moved to top-right for unified placement */}
 
           {/* Price and MOQ */}
           {priceAndQuantity && priceAndQuantity?.length > 0 && (
-            <div className="space-y-1 mt-auto">
+            <div className="space-y-1.5 mt-auto">
               <div className="text-base font-bold text-foreground">
                 {formatPriceRange(priceAndQuantity)}
               </div>

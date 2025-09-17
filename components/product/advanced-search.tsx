@@ -187,13 +187,7 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
     setIsOpen(false);
   };
 
-  const applySearch = () => {
-    setIsApplying(true);
-    const next = { ...draftFilters };
-    setFilters(next);
-    // Clear only local input after navigating so the field resets visually
-    setDraftFilters((prev) => ({ ...prev, q: "" }));
-  };
+  const applySearch = () => {};
 
   const clearFilters = () => {
     setDraftFilters(initialFilters);
@@ -249,33 +243,7 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
 
   const FilterContent = () => (
     <div className="space-y-6 p-4">
-      {/* Keyword */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Search</label>
-        <div className="relative flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              className="pl-8"
-              placeholder="Search by name or brand"
-              value={draftFilters.q}
-              onChange={(e) => updateDraftFilters({ q: e.target.value })}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  applySearch();
-                }
-              }}
-            />
-          </div>
-          <Button
-            className="cursor-pointer"
-            onClick={applySearch}
-            aria-label="Search"
-          >
-            Search
-          </Button>
-        </div>
-      </div>
+      {/* Search removed from filter panel */}
       {/* Sort */}
       <div className="space-y-2">
         <label className="text-sm font-medium">Sort By</label>

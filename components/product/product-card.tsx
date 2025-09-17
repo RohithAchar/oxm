@@ -53,7 +53,28 @@ export const ProductCard = ({
   return (
     <Link href={`/products/${id}`} className="block h-full">
       <div className="relative isolate bg-white dark:bg-card h-full overflow-hidden flex flex-col">
-        {/* No floating badges; inline below title for consistency */}
+        {/* Top-right unified badges */}
+        {(is_verified || is_sample_available) && (
+          <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
+            {is_verified && (
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-2 py-0.5 leading-none"
+              >
+                <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
+                Verified
+              </Badge>
+            )}
+            {is_sample_available && (
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-2 py-0.5 leading-none"
+              >
+                Sample
+              </Badge>
+            )}
+          </div>
+        )}
 
         {/* Product Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-md">
@@ -79,28 +100,7 @@ export const ProductCard = ({
             {name}
           </h1>
 
-          {/* Unified badge row */}
-          {(is_verified || is_sample_available) && (
-            <div className="flex items-center gap-2">
-              {is_verified && (
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] px-1.5 py-0.5 leading-none"
-                >
-                  <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
-                  Verified
-                </Badge>
-              )}
-              {is_sample_available && (
-                <Badge
-                  variant="secondary"
-                  className="text-[10px] px-1.5 py-0.5 leading-none"
-                >
-                  Sample
-                </Badge>
-              )}
-            </div>
-          )}
+          {/* Badges moved to top-right for unified placement */}
 
           {/* Brand (hide obvious demo values) */}
           {!isDemoBrand && (
@@ -117,7 +117,7 @@ export const ProductCard = ({
 
           {/* Price and MOQ */}
           {tierPricing && tierPricing.length > 0 && (
-            <div className="space-y-1 mt-auto">
+            <div className="space-y-1.5 mt-auto">
               <div className="text-base font-bold text-foreground">
                 {formatPriceRange(tierPricing)}
               </div>

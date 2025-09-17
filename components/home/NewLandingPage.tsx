@@ -113,7 +113,10 @@ const NewLandingPage = async () => {
         <div className="rounded-md border p-4 pt-8 md:p-12 shadow">
           <div className="relative mx-auto max-w-4xl text-center space-y-4 md:space-y-5">
             <H1 className="text-3xl md:text-6xl font-bold tracking-tight leading-tight text-foreground">
-              Find Winning Products & Verified Suppliers
+              Find Winning Products{" "}
+              <span className="text-foreground/60 font-medium">
+                &amp; Verified Suppliers
+              </span>
             </H1>
             <P className="text-sm md:text-base lg:text-lg text-muted-foreground">
               Source confidently from verified Indian suppliers. Samples to
@@ -127,43 +130,35 @@ const NewLandingPage = async () => {
             />
             {/* Secondary actions in a single pill bar */}
             <div className="mx-auto w-full max-w-4xl">
-              <div className="rounded-full bg-muted/50 px-2 py-2">
-                <div className="grid grid-cols-2 md:flex md:justify-between md:gap-2">
+              <div className="rounded-full bg-muted/60 border border-muted/60 px-2 md:px-3 py-2">
+                <div className="flex items-center justify-between gap-1">
                   <Link
                     href="/products"
-                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm hover:bg-background transition"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm text-foreground hover:bg-transparent"
                   >
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-emerald-800">
-                      <Sparkles className="h-4 w-4" />
-                    </span>
+                    <Sparkles className="h-4 w-4 text-foreground/70" />
                     <span>Explore Products</span>
                   </Link>
                   <Link
                     href="/learn"
-                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm hover:bg-background transition"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm text-foreground hover:bg-transparent"
                   >
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-indigo-700">
-                      <GraduationCap className="h-4 w-4" />
-                    </span>
+                    <GraduationCap className="h-4 w-4 text-foreground/70" />
                     <span>Learn & Grow</span>
                   </Link>
                   <Link
                     href="#"
                     aria-disabled
-                    className="pointer-events-none opacity-70 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm"
+                    className="pointer-events-none opacity-70 inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm text-foreground"
                   >
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-amber-100 text-amber-700">
-                      <BadgeDot className="bg-amber-600" />
-                    </span>
+                    <BadgeDot className="h-2.5 w-2.5 bg-amber-600 rounded-full" />
                     <span>Markdown</span>
                   </Link>
                   <Link
                     href="/products?dropship_available=true"
-                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm hover:bg-background transition"
+                    className="inline-flex items-center justify-center gap-2 rounded-full px-4 py-2 text-sm text-foreground hover:bg-transparent"
                   >
-                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-orange-100 text-orange-700">
-                      <Truck className="h-4 w-4" />
-                    </span>
+                    <Truck className="h-4 w-4 text-foreground/70" />
                     <span>Dropship Ready</span>
                   </Link>
                 </div>

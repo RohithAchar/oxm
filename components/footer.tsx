@@ -65,7 +65,7 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white mt-24 lg:mt-48">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12">
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
               <H3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
@@ -79,7 +79,14 @@ const Footer = () => {
                       className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors duration-200 group"
                     >
                       <link.icon className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
-                      <span className="text-sm hover:underline">
+                      <span
+                        className={`text-sm hover:underline ${
+                          link.name.toLowerCase().includes("policy") ||
+                          link.name.toLowerCase().includes("terms")
+                            ? "text-gray-400/80 group-hover:text-white"
+                            : "text-gray-200"
+                        }`}
+                      >
                         {link.name}
                       </span>
                     </Link>
@@ -123,28 +130,28 @@ const Footer = () => {
               <div className="flex items-center space-x-4 text-xs text-gray-500">
                 <Link
                   href="/privacy-policy"
-                  className="hover:text-gray-300 transition-colors"
+                  className="text-gray-500/80 hover:text-gray-300 transition-colors"
                 >
                   Privacy
                 </Link>
                 <span>•</span>
                 <Link
                   href="/terms-and-conditions"
-                  className="hover:text-gray-300 transition-colors"
+                  className="text-gray-500/80 hover:text-gray-300 transition-colors"
                 >
                   Terms
                 </Link>
                 <span>•</span>
                 <Link
                   href="/refund-policy"
-                  className="hover:text-gray-300 transition-colors"
+                  className="text-gray-500/80 hover:text-gray-300 transition-colors"
                 >
                   Refunds
                 </Link>
                 <span>•</span>
                 <Link
                   href="/shipping-policy"
-                  className="hover:text-gray-300 transition-colors"
+                  className="text-gray-500/80 hover:text-gray-300 transition-colors"
                 >
                   Shipping
                 </Link>

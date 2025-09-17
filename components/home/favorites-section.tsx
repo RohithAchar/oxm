@@ -111,12 +111,12 @@ export default function FavoritesSection() {
             </div>
           </div>
           <div className="text-center py-12">
-            <h3 className="text-lg font-medium text-foreground mb-2">
-              Start your collection
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/50 text-muted-foreground">
+              <Heart className="h-7 w-7" />
+            </div>
+            <h3 className="text-lg font-semibold text-foreground">
+              Your collection starts here.
             </h3>
-            <p className="text-sm text-muted-foreground">
-              Tap ♥ to save products you love.
-            </p>
           </div>
         </div>
       </section>

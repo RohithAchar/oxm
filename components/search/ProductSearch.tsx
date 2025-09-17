@@ -97,30 +97,30 @@ export default function ProductSearch({
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       <div
-        className={`flex items-center gap-2 ${radiusClass} border border-muted bg-card/60 backdrop-blur ${paddingX} ${paddingY} shadow-sm hover:shadow transition focus-within:ring-2 focus-within:ring-primary/30`}
+        className={`flex items-stretch gap-0 ${radiusClass} border border-muted bg-card/60 backdrop-blur overflow-hidden`}
       >
-        <div className="pl-0.5 pr-1 text-muted-foreground">
+        <div className="relative flex-1">
           <Search
-            className={`md:h-5 md:w-5 ${
+            className={`absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground md:h-5 md:w-5 ${
               size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"
             }`}
           />
+          <Input
+            className={`w-full ${heightClass} bg-transparent outline-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${
+              size === "sm" ? "text-xs" : "text-sm md:text-base"
+            } placeholder:text-muted-foreground pl-8 md:pl-9 pr-2 md:pr-3 rounded-none`}
+            placeholder={placeholder}
+            value={value}
+            onChange={(e) => {
+              setValue(e.target.value);
+              setOpen(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") submit();
+            }}
+            onFocus={() => setOpen(true)}
+          />
         </div>
-        <Input
-          className={`w-full ${heightClass} bg-transparent outline-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${
-            size === "sm" ? "text-xs" : "text-sm md:text-base"
-          } placeholder:text-muted-foreground px-2 md:px-3`}
-          placeholder={placeholder}
-          value={value}
-          onChange={(e) => {
-            setValue(e.target.value);
-            setOpen(true);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") submit();
-          }}
-          onFocus={() => setOpen(true)}
-        />
         {showCamera && (
           <Button
             variant="ghost"
@@ -142,7 +142,7 @@ export default function ProductSearch({
           </Button>
         ) : (
           <Button
-            className={`rounded-full cursor-pointer ${btnHeightClass}`}
+            className={`rounded-none rounded-r-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-4 md:px-5 border-0 shadow-none bg-primary text-primary-foreground hover:bg-primary/90 -ml-px`}
             onClick={submit}
           >
             Search
