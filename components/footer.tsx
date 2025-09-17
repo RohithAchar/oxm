@@ -13,6 +13,8 @@ import {
   Shield,
   FileText,
 } from "lucide-react";
+import { H3 } from "@/components/ui/h3";
+import { P } from "@/components/ui/p";
 
 // Usage example in your LandingPage component:
 // import Footer from './Footer';
@@ -66,9 +68,9 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
-              <h3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+              <H3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
                 {section.title}
-              </h3>
+              </H3>
               <ul className="space-y-3">
                 {section.links.map((link, linkIndex) => (
                   <li key={linkIndex}>
@@ -88,9 +90,9 @@ const Footer = () => {
           ))}
           {/* Social Column */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
+            <H3 className="text-lg font-semibold text-white border-b border-gray-700 pb-2">
               Social
-            </h3>
+            </H3>
             <div className="flex items-center gap-3 pt-1">
               {socialLinks.map((social, index) => (
                 <a
@@ -107,26 +109,6 @@ const Footer = () => {
             </div>
           </div>
         </div>
-
-        {/* Newsletter Signup */}
-        <div className="mt-16 pt-8 border-t border-gray-700">
-          <div className="max-w-3xl">
-            <h3 className="text-2xl font-bold text-white mb-4">
-              Get Weekly Winning Products
-            </h3>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <input
-                type="text"
-                placeholder="Enter Email/WhatsApp"
-                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-              <button className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-200 whitespace-nowrap">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Quick Links removed as per updated footer content */}
       </div>
 
@@ -135,9 +117,9 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-6 md:px-12 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
-              <p className="text-gray-400 text-sm">
+              <P className="text-gray-400 text-sm">
                 © {currentYear} OpenXmart Technologies. All rights reserved.
-              </p>
+              </P>
               <div className="flex items-center space-x-4 text-xs text-gray-500">
                 <Link
                   href="/privacy-policy"

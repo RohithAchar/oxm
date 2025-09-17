@@ -5,8 +5,7 @@ import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/utils/supabase/database.types";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle, ChevronRight } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { EnhancedBuyLeadCard } from "@/components/rfq/enhanced-buy-lead-card";
+import { RFQHeader } from "@/components/rfq/rfq-header";
 
 type BuyLead = Database["public"]["Tables"]["buy_leads"]["Row"];
 
@@ -55,7 +56,13 @@ export default function SupplierBuyLeadPage() {
 
         const { data, error } = await supabase
           .from("buy_leads")
-          .select("*")
+          .select(
+            `
+            *,
+            product_snapshot,
+            buyer_snapshot
+          `
+          )
           .eq("supplier_id", user.id)
           .order("created_at", { ascending: false });
 
@@ -82,249 +89,233 @@ export default function SupplierBuyLeadPage() {
   }, [items, status]);
 
   return (
-    <div className="max-w-3xl mx-auto">
-      {/* Sticky Mobile Header */}
-      <div className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <MessageCircle className="h-5 w-5 text-primary" />
-          <div>
-            <div className="text-base font-semibold leading-tight">
-              Buy Leads
-            </div>
-            <div className="text-xs text-muted-foreground">
-              Incoming RFQs • {items.length}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Header */}
+        <RFQHeader
+          title="Buy Leads"
+          subtitle="Manage incoming product requests from buyers and respond with competitive quotes"
+          totalCount={items.length}
+          variant="supplier"
+        />
 
-      {/* Status chips */}
-      <div className="px-4 py-2 border-b">
-        <Tabs value={status} onValueChange={(v) => setStatus(v as TabKey)}>
-          <TabsList className="w-full flex flex-wrap gap-2 bg-muted/50 p-1 rounded-lg">
-            {TABS.map((s) => (
-              <TabsTrigger
-                key={s}
-                value={s}
-                className="text-xs py-2 px-3 shrink-0"
-              >
-                {s === "all"
-                  ? "All"
-                  : s === "awaiting"
-                  ? "Awaiting"
-                  : "Responded"}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-      </div>
-
-      {/* Content list */}
-      <div className="px-4 py-3 mt-2">
-        {loading ? (
-          <div className="space-y-3">
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-16 w-full" />
-          </div>
-        ) : error ? (
-          <div className="text-sm text-destructive">{error}</div>
-        ) : filtered.length === 0 ? (
-          <div className="text-sm text-muted-foreground">No buy leads.</div>
-        ) : (
-          <div className="space-y-2">
-            {filtered.map((lead) => (
-              <div
-                key={lead.id}
-                className={`w-full rounded-xl border bg-card px-3 py-3 shadow-sm ${
-                  lead.status === "submitted" || lead.status === "viewed"
-                    ? "border-primary/30"
-                    : ""
+        {/* Status Filter */}
+        <div className="mb-6">
+          <div className="flex space-x-1 bg-slate-100 p-1 rounded-2xl">
+            {TABS.map((tab) => (
+              <Button
+                key={tab}
+                variant="ghost"
+                onClick={() => setStatus(tab)}
+                className={`flex-1 rounded-xl font-medium transition-all duration-200 ${
+                  status === tab
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
                 }`}
               >
-                <div className="flex items-start gap-3">
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage src="/placeholder-profile.png" alt="buyer" />
-                    <AvatarFallback>BL</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="font-semibold truncate text-sm">
-                        {lead.product_name || "Product"}
-                      </div>
-                      <Badge
-                        className={
-                          lead.status === "responded"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : lead.status === "closed"
-                            ? "bg-zinc-200 text-zinc-700"
-                            : lead.status === "cancelled"
-                            ? "bg-red-100 text-red-700"
-                            : "bg-amber-100 text-amber-700"
-                        }
-                      >
-                        {lead.status}
-                      </Badge>
-                    </div>
-
-                    {/* High-signal row */}
-                    <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <Badge className="bg-primary/10 text-primary border border-primary/20">
-                        Qty {lead.quantity_required ?? "-"}
-                      </Badge>
-                      <Badge className="bg-emerald-600 text-white">
-                        Target ₹{lead.target_price ?? "-"}
-                      </Badge>
-                    </div>
-
-                    {/* Low-signal row */}
-                    {(lead.delivery_city || lead.delivery_pincode) && (
-                      <div className="text-xs text-muted-foreground truncate mt-1">
-                        {lead.delivery_city || ""} {lead.delivery_pincode || ""}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {(status === "all" || status === "awaiting") && (
-                      <Dialog
-                        open={Boolean(activeLeadId === lead.id && respondOpen)}
-                        onOpenChange={(o) => {
-                          if (!o) setActiveLeadId(null);
-                          setRespondOpen(o);
-                        }}
-                      >
-                        <DialogTrigger asChild>
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              setActiveLeadId(lead.id);
-                              setRespPrice("");
-                              setRespMinQty("");
-                              setRespMessage("");
-                            }}
-                          >
-                            Respond
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-w-md">
-                          <DialogHeader>
-                            <DialogTitle>Respond to RFQ</DialogTitle>
-                          </DialogHeader>
-                          <div className="space-y-3">
-                            <div className="grid grid-cols-2 gap-3">
-                              <div>
-                                <Label
-                                  htmlFor="quoted_price"
-                                  className="text-xs"
-                                >
-                                  Quoted price (₹)
-                                </Label>
-                                <Input
-                                  id="quoted_price"
-                                  inputMode="decimal"
-                                  type="number"
-                                  value={respPrice}
-                                  onChange={(e) => setRespPrice(e.target.value)}
-                                />
-                              </div>
-                              <div>
-                                <Label htmlFor="min_qty" className="text-xs">
-                                  Minimum qty
-                                </Label>
-                                <Input
-                                  id="min_qty"
-                                  inputMode="numeric"
-                                  type="number"
-                                  value={respMinQty}
-                                  onChange={(e) =>
-                                    setRespMinQty(e.target.value)
-                                  }
-                                />
-                              </div>
-                            </div>
-                            <div>
-                              <Label htmlFor="message" className="text-xs">
-                                Message
-                              </Label>
-                              <Textarea
-                                id="message"
-                                placeholder="Notes for buyer"
-                                value={respMessage}
-                                onChange={(e) => setRespMessage(e.target.value)}
-                              />
-                            </div>
-                            <div className="flex justify-end gap-2 pt-1">
-                              <Button
-                                variant="outline"
-                                onClick={() => setRespondOpen(false)}
-                                disabled={submitting}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                disabled={submitting}
-                                onClick={async () => {
-                                  if (!activeLeadId) return;
-                                  try {
-                                    setSubmitting(true);
-                                    const supabase = createClient();
-                                    const {
-                                      data: { user },
-                                    } = await supabase.auth.getUser();
-                                    if (!user)
-                                      throw new Error("Not authenticated");
-                                    const { error } = await supabase
-                                      .from("buy_lead_responses")
-                                      .insert({
-                                        buy_lead_id: activeLeadId,
-                                        supplier_id: user.id,
-                                        quoted_price: respPrice
-                                          ? Number(respPrice)
-                                          : null,
-                                        min_qty: respMinQty
-                                          ? Number(respMinQty)
-                                          : null,
-                                        message: respMessage || null,
-                                        currency: "INR",
-                                      });
-                                    if (error) throw error;
-                                    setItems((prev) =>
-                                      prev.map((i) =>
-                                        i.id === activeLeadId
-                                          ? ({
-                                              ...i,
-                                              status: "responded",
-                                            } as BuyLead)
-                                          : i
-                                      )
-                                    );
-                                    toast.success("Response sent");
-                                    setRespondOpen(false);
-                                    setActiveLeadId(null);
-                                  } catch (e: any) {
-                                    toast.error("Failed to respond", {
-                                      description: e.message,
-                                    });
-                                  } finally {
-                                    setSubmitting(false);
-                                  }
-                                }}
-                              >
-                                Send
-                              </Button>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    )}
-                    <ChevronRight className="h-4 w-4 text-muted-foreground mt-1" />
-                  </div>
-                </div>
-              </div>
+                {tab === "all"
+                  ? "All"
+                  : tab === "awaiting"
+                  ? "New"
+                  : "Responded"}
+              </Button>
             ))}
           </div>
-        )}
+        </div>
+
+        {/* Content list */}
+        <div className="space-y-4">
+          {loading ? (
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl p-6 border border-slate-200">
+                <Skeleton className="h-6 w-1/3 mb-4" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-slate-200">
+                <Skeleton className="h-6 w-1/3 mb-4" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+              <div className="text-red-600 font-medium mb-2">
+                Error Loading Buy Leads
+              </div>
+              <div className="text-sm text-red-500">{error}</div>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
+              <div className="text-slate-400 mb-4">
+                <MessageCircle className="h-12 w-12 mx-auto" />
+              </div>
+              <div className="text-lg font-semibold text-slate-900 mb-2">
+                No Buy Leads Found
+              </div>
+              <div className="text-slate-600">
+                {status === "all"
+                  ? "You don't have any buy leads yet."
+                  : status === "awaiting"
+                  ? "No new requests at the moment."
+                  : "No responded requests yet."}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filtered.map((lead) => (
+                <div key={lead.id}>
+                  <EnhancedBuyLeadCard
+                    lead={lead}
+                    variant="supplier"
+                    showRespondButton={
+                      status === "all" || status === "awaiting"
+                    }
+                    onRespond={(leadId) => {
+                      setActiveLeadId(leadId);
+                      setRespPrice("");
+                      setRespMinQty("");
+                      setRespMessage("");
+                      setRespondOpen(true);
+                    }}
+                  />
+
+                  {/* Response Dialog */}
+                  <Dialog
+                    open={Boolean(activeLeadId === lead.id && respondOpen)}
+                    onOpenChange={(o) => {
+                      if (!o) setActiveLeadId(null);
+                      setRespondOpen(o);
+                    }}
+                  >
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="text-xl font-semibold">
+                          Respond to RFQ
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <Label
+                              htmlFor="quoted_price"
+                              className="text-sm font-medium text-slate-700"
+                            >
+                              Quoted price (₹)
+                            </Label>
+                            <Input
+                              id="quoted_price"
+                              inputMode="decimal"
+                              type="number"
+                              value={respPrice}
+                              onChange={(e) => setRespPrice(e.target.value)}
+                              className="mt-1"
+                              placeholder="Enter price"
+                            />
+                          </div>
+                          <div>
+                            <Label
+                              htmlFor="min_qty"
+                              className="text-sm font-medium text-slate-700"
+                            >
+                              Minimum qty
+                            </Label>
+                            <Input
+                              id="min_qty"
+                              inputMode="numeric"
+                              type="number"
+                              value={respMinQty}
+                              onChange={(e) => setRespMinQty(e.target.value)}
+                              className="mt-1"
+                              placeholder="Enter quantity"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <Label
+                            htmlFor="message"
+                            className="text-sm font-medium text-slate-700"
+                          >
+                            Message
+                          </Label>
+                          <Textarea
+                            id="message"
+                            placeholder="Add a message for the buyer..."
+                            value={respMessage}
+                            onChange={(e) => setRespMessage(e.target.value)}
+                            className="mt-1"
+                            rows={3}
+                          />
+                        </div>
+                        <div className="flex justify-end gap-3 pt-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => setRespondOpen(false)}
+                            disabled={submitting}
+                            className="px-6"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            disabled={submitting}
+                            onClick={async () => {
+                              if (!activeLeadId) return;
+                              try {
+                                setSubmitting(true);
+                                const supabase = createClient();
+                                const {
+                                  data: { user },
+                                } = await supabase.auth.getUser();
+                                if (!user) throw new Error("Not authenticated");
+                                const { error } = await supabase
+                                  .from("buy_lead_responses")
+                                  .insert({
+                                    buy_lead_id: activeLeadId,
+                                    supplier_id: user.id,
+                                    quoted_price: respPrice
+                                      ? Number(respPrice)
+                                      : null,
+                                    min_qty: respMinQty
+                                      ? Number(respMinQty)
+                                      : null,
+                                    message: respMessage || null,
+                                    currency: "INR",
+                                  });
+                                if (error) throw error;
+                                setItems((prev) =>
+                                  prev.map((i) =>
+                                    i.id === activeLeadId
+                                      ? ({
+                                          ...i,
+                                          status: "responded",
+                                        } as BuyLead)
+                                      : i
+                                  )
+                                );
+                                toast.success("Response sent successfully!");
+                                setRespondOpen(false);
+                                setActiveLeadId(null);
+                              } catch (e: any) {
+                                toast.error("Failed to respond", {
+                                  description: e.message,
+                                });
+                              } finally {
+                                setSubmitting(false);
+                              }
+                            }}
+                            className="px-6"
+                          >
+                            {submitting ? "Sending..." : "Send Response"}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

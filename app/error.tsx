@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useEffect } from "react";
+import { H2 } from "@/components/ui/h2";
 
 export default function Error({
   error,
@@ -17,7 +18,7 @@ export default function Error({
 
   return (
     <main className="flex h-full flex-col items-center justify-center gap-2">
-      <h2 className="text-center">Something went wrong!</h2>
+      <H2 className="text-center">Something went wrong!</H2>
       <Button
         onClick={
           // Attempt to recover by trying to re-render the invoices route

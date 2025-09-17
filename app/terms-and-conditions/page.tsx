@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { H1 } from "@/components/ui/h1";
+import { H2 } from "@/components/ui/h2";
+import { P } from "@/components/ui/p";
 
 export const metadata: Metadata = {
   title: "Terms & Conditions | OpenXmart",
@@ -30,22 +33,22 @@ export const metadata: Metadata = {
 export default function TermsAndConditionsPage() {
   return (
     <main className="container mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-3xl font-semibold tracking-tight">
+      <H1 className="text-3xl font-semibold tracking-tight">
         OpenXmart Terms &amp; Conditions
-      </h1>
-      <p className="mt-2 text-sm text-muted-foreground">
+      </H1>
+      <P className="mt-2 text-sm text-muted-foreground">
         Last updated: August 14, 2025
-      </p>
+      </P>
 
-      <p className="mt-6 leading-7">
+      <P className="mt-6 leading-7">
         Welcome to OpenXmart! By accessing or using our platform, you agree to
         the following terms.
-      </p>
+      </P>
 
       <hr className="my-8" />
 
       <section className="space-y-3">
-        <h2 className="text-xl font-semibold">1. Nature of the Platform</h2>
+        <H2 className="text-xl font-semibold">1. Nature of the Platform</H2>
         <ul className="list-disc pl-6 space-y-1">
           <li>
             OpenXmart is a B2B marketplace operated by OpenXmart Technologies.
@@ -63,7 +66,7 @@ export default function TermsAndConditionsPage() {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-xl font-semibold">2. Buyer Responsibilities</h2>
+        <H2 className="text-xl font-semibold">2. Buyer Responsibilities</H2>
         <ul className="list-disc pl-6 space-y-1">
           <li>Provide accurate details for contact, shipping, and payment.</li>
           <li>Review product samples before bulk purchases.</li>
@@ -73,7 +76,7 @@ export default function TermsAndConditionsPage() {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-xl font-semibold">3. Supplier Responsibilities</h2>
+        <H2 className="text-xl font-semibold">3. Supplier Responsibilities</H2>
         <ul className="list-disc pl-6 space-y-1">
           <li>
             Provide accurate product descriptions, pricing, and specifications.
@@ -94,9 +97,9 @@ export default function TermsAndConditionsPage() {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-xl font-semibold">
+        <H2 className="text-xl font-semibold">
           4. Platform Role &amp; Liability
-        </h2>
+        </H2>
         <ul className="list-disc pl-6 space-y-1">
           <li>
             OpenXmart acts as a facilitator. We are not liable for product
@@ -115,9 +118,9 @@ export default function TermsAndConditionsPage() {
       </section>
 
       <section className="mt-8 space-y-3">
-        <h2 className="text-xl font-semibold">
+        <H2 className="text-xl font-semibold">
           5. Account Suspension &amp; Termination
-        </h2>
+        </H2>
         <ul className="list-disc pl-6 space-y-1">
           <li>
             Accounts may be suspended/terminated for fraud, violations, or

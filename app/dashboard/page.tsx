@@ -1,6 +1,9 @@
 import LogoutButton from "@/components/LogoutButton";
 import { createClient } from "@/utils/supabase/server"; // Add this import
 import { redirect } from "next/navigation";
+import { H1 } from "@/components/ui/h1";
+import { H2 } from "@/components/ui/h2";
+import { H3 } from "@/components/ui/h3";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -26,7 +29,7 @@ export default async function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold">Dashboard</h1>
+              <H1 className="text-xl font-semibold">Dashboard</H1>
             </div>
             <div className="flex items-center">
               <LogoutButton />
@@ -39,14 +42,14 @@ export default async function Dashboard() {
         <div className="px-4 py-6 sm:px-0">
           <div className="border-4 border-dashed border-gray-200 rounded-lg p-8">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              <H2 className="text-2xl font-bold text-gray-900 mb-4">
                 Welcome to your dashboard!
-              </h2>
+              </H2>
 
               <div className="bg-white shadow rounded-lg p-6 max-w-md mx-auto">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                <H3 className="text-lg font-medium text-gray-900 mb-4">
                   User Information
-                </h3>
+                </H3>
 
                 <dl className="space-y-2">
                   <div>

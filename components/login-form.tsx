@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
+import { H1 } from "@/components/ui/h1";
+import { P } from "@/components/ui/p";
 
 export function LoginForm({
   className,
@@ -85,13 +87,13 @@ export function LoginForm({
             <CheckCircle className="size-6 text-green-600 dark:text-green-400" />
           </div>
           <div className="text-center">
-            <h1 className="text-xl font-bold">Check your email</h1>
-            <p className="text-muted-foreground mt-2">
+            <H1 className="text-xl font-bold">Check your email</H1>
+            <P className="text-muted-foreground mt-2">
               We've sent a magic link to <strong>{email}</strong>
-            </p>
-            <p className="text-muted-foreground text-sm mt-1">
+            </P>
+            <P className="text-muted-foreground text-sm mt-1">
               Click the link in the email to sign in to your account.
-            </p>
+            </P>
           </div>
         </div>
 
@@ -154,7 +156,7 @@ export function LoginForm({
               </div>
               <span className="sr-only">OpenXmart.</span>
             </a>
-            <h1 className="text-xl font-bold">Welcome to OpenXmart.</h1>
+            <H1 className="text-xl font-bold">Welcome to OpenXmart.</H1>
           </div>
 
           {/* Error Message */}

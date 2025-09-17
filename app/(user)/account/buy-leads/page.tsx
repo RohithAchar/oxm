@@ -5,11 +5,15 @@ import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/utils/supabase/database.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, MessageSquare } from "lucide-react";
+import { EnhancedBuyLeadCard } from "@/components/rfq/enhanced-buy-lead-card";
+import { EnhancedResponseCard } from "@/components/rfq/enhanced-response-card";
+import { StatusFilter } from "@/components/rfq/status-filter";
+import { RFQHeader } from "@/components/rfq/rfq-header";
 
 type BuyLead = Database["public"]["Tables"]["buy_leads"]["Row"];
 
@@ -28,13 +32,7 @@ export default function AccountBuyLeadsPage() {
   const [responsesByLead, setResponsesByLead] = useState<
     Record<
       string,
-      Array<{
-        id: string;
-        quoted_price: number | null;
-        min_qty: number | null;
-        message: string | null;
-        created_at: string;
-      }>
+      Array<Database["public"]["Tables"]["buy_lead_responses"]["Row"]>
     >
   >({});
 
@@ -53,7 +51,13 @@ export default function AccountBuyLeadsPage() {
 
         const { data, error } = await supabase
           .from("buy_leads")
-          .select("*")
+          .select(
+            `
+            *,
+            product_snapshot,
+            buyer_snapshot
+          `
+          )
           .eq("buyer_id", user.id)
           .order("created_at", { ascending: false });
 
@@ -65,7 +69,15 @@ export default function AccountBuyLeadsPage() {
           const { data: resp, error: respErr } = await supabase
             .from("buy_lead_responses")
             .select(
-              "id, buy_lead_id, quoted_price, min_qty, message, created_at"
+              `
+              id, 
+              buy_lead_id, 
+              quoted_price, 
+              min_qty, 
+              message, 
+              created_at,
+              supplier_snapshot
+            `
             )
             .in(
               "buy_lead_id",
@@ -89,115 +101,97 @@ export default function AccountBuyLeadsPage() {
     run();
   }, []);
 
-  return (
-    <div className="max-w-7xl mx-auto">
-      {/* Sticky header */}
-      <div className="sticky top-0 z-40 border-b bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/80 px-4 py-3 flex items-center gap-2">
-        <MessageCircle className="h-5 w-5 text-primary" />
-        <div>
-          <div className="text-base font-semibold leading-tight">
-            My Buy Leads
-          </div>
-          <div className="text-xs text-muted-foreground">
-            Your RFQs and supplier responses
-          </div>
-        </div>
-      </div>
+  // Calculate counts for status filter
+  const statusCounts = {
+    all: items.length,
+    submitted: items.filter((lead) => lead.status === "submitted").length,
+    viewed: items.filter((lead) => lead.status === "viewed").length,
+    responded: items.filter((lead) => lead.status === "responded").length,
+    closed: items.filter((lead) => lead.status === "closed").length,
+  };
 
-      <Card className="border-muted mx-4 mt-3">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base md:text-lg">
-            Requests for Quote
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
+  return (
+    <div className="min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* Header */}
+        <RFQHeader
+          title="My Buy Leads"
+          subtitle="Track your product requests and supplier responses to find the best deals"
+          totalCount={items.length}
+          variant="buyer"
+        />
+
+        {/* Status Filter */}
+        <div className="mb-6">
+          <StatusFilter
+            currentStatus="all"
+            onStatusChange={() => {}}
+            counts={statusCounts}
+          />
+        </div>
+
+        {/* Content */}
+        <div className="space-y-6">
           {loading ? (
             <div className="space-y-4">
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
-              <Skeleton className="h-16 w-full" />
+              <div className="bg-white rounded-2xl p-6 border border-slate-200">
+                <Skeleton className="h-6 w-1/3 mb-4" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
+              <div className="bg-white rounded-2xl p-6 border border-slate-200">
+                <Skeleton className="h-6 w-1/3 mb-4" />
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-2/3" />
+              </div>
             </div>
           ) : error ? (
-            <div className="text-sm text-destructive">{error}</div>
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
+              <div className="text-red-600 font-medium mb-2">
+                Error Loading Buy Leads
+              </div>
+              <div className="text-sm text-red-500">{error}</div>
+            </div>
           ) : items.length === 0 ? (
-            <div className="text-sm text-muted-foreground">
-              You have not submitted any buy leads yet.
+            <div className="bg-white rounded-2xl p-12 text-center border border-slate-200">
+              <div className="text-slate-400 mb-4">
+                <MessageCircle className="h-12 w-12 mx-auto" />
+              </div>
+              <div className="text-lg font-semibold text-slate-900 mb-2">
+                No Buy Leads Yet
+              </div>
+              <div className="text-slate-600 mb-6">
+                You haven't submitted any product requests yet. Start by
+                creating your first buy lead.
+              </div>
+              <Button className="px-6 py-3 rounded-xl">
+                Create Your First Request
+              </Button>
             </div>
           ) : (
-            <ScrollArea className="h-[70vh] pr-2">
-              <div className="space-y-4">
-                {items.map((lead) => (
-                  <div key={lead.id} className="rounded-lg border p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-start gap-3 min-w-0">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage
-                            src="/placeholder-profile.png"
-                            alt="supplier"
-                          />
-                          <AvatarFallback>BL</AvatarFallback>
-                        </Avatar>
-                        <div className="min-w-0">
-                          <div className="font-semibold truncate">
-                            {lead.product_name || "Product"} ·{" "}
-                            {lead.supplier_name || "Supplier"}
-                          </div>
-                          {/* High-signal badges */}
-                          <div className="flex flex-wrap items-center gap-2 mt-1">
-                            <Badge className="bg-primary/10 text-primary border border-primary/20">
-                              Qty {lead.quantity_required ?? "-"}
-                            </Badge>
-                            <Badge className="bg-emerald-600 text-white">
-                              Target ₹{lead.target_price ?? "-"}
-                            </Badge>
-                          </div>
-                        </div>
-                      </div>
-                      <Badge
-                        className={
-                          StatusColor[
-                            lead.status as keyof typeof StatusColor
-                          ] || "bg-zinc-200 text-zinc-700"
-                        }
-                      >
-                        {lead.status}
-                      </Badge>
-                    </div>
+            <div className="space-y-6">
+              {items.map((lead) => (
+                <div key={lead.id} className="space-y-4">
+                  <EnhancedBuyLeadCard
+                    lead={lead}
+                    variant="buyer"
+                    showRespondButton={false}
+                  />
 
-                    {/* Low-signal details */}
-                    <div className="grid gap-2 text-sm mt-3">
-                      {(lead.delivery_pincode || lead.delivery_city) && (
-                        <div className="text-muted-foreground">
-                          Delivery: {lead.delivery_city || ""}{" "}
-                          {lead.delivery_pincode || ""}
-                        </div>
-                      )}
-                      {lead.customization && (
-                        <div className="text-muted-foreground truncate">
-                          Customization: {JSON.stringify(lead.customization)}
-                        </div>
-                      )}
-                      {lead.notes && (
-                        <div className="text-muted-foreground">
-                          Notes: {lead.notes}
-                        </div>
-                      )}
-                      {(lead.contact_email || lead.contact_phone) && (
-                        <div className="text-muted-foreground">
-                          Contact: {lead.contact_email || ""}{" "}
-                          {lead.contact_phone || ""}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Responses */}
-                    {responsesByLead[lead.id] &&
-                      responsesByLead[lead.id].length > 0 && (
-                        <div className="mt-4 border-t pt-3 space-y-2">
-                          <div className="text-xs font-medium text-muted-foreground">
-                            Supplier responses (
-                            {responsesByLead[lead.id].length})
+                  {/* Responses */}
+                  {responsesByLead[lead.id] &&
+                    responsesByLead[lead.id].length > 0 && (
+                      <div className="bg-white rounded-2xl p-6 border border-slate-200">
+                        <div className="flex items-center gap-2 mb-4">
+                          <MessageSquare className="h-5 w-5 text-slate-600" />
+                          <div className="text-lg font-semibold text-slate-900">
+                            Supplier Responses
                           </div>
+                          <Badge variant="secondary" className="ml-2">
+                            {responsesByLead[lead.id].length}
+                          </Badge>
+                        </div>
+                        <div className="space-y-4">
                           {responsesByLead[lead.id]
                             .slice()
                             .sort(
@@ -206,44 +200,22 @@ export default function AccountBuyLeadsPage() {
                                 new Date(a.created_at).getTime()
                             )
                             .map((r) => (
-                              <div
+                              <EnhancedResponseCard
                                 key={r.id}
-                                className="rounded-md border px-3 py-2 text-sm bg-muted/30"
-                              >
-                                <div className="flex items-center justify-between">
-                                  <div className="font-medium">
-                                    Supplier response
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {new Date(r.created_at).toLocaleString()}
-                                  </div>
-                                </div>
-                                <div className="text-muted-foreground mt-1">
-                                  {r.message || "—"}
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1 flex gap-2">
-                                  {r.quoted_price != null && (
-                                    <Badge className="bg-emerald-600 text-white">
-                                      Quoted ₹{r.quoted_price}
-                                    </Badge>
-                                  )}
-                                  {r.min_qty != null && (
-                                    <Badge className="bg-primary/10 text-primary border border-primary/20">
-                                      Min qty {r.min_qty}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
+                                response={r}
+                                variant="buyer"
+                                productId={lead.product_id || null}
+                              />
                             ))}
                         </div>
-                      )}
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
+                      </div>
+                    )}
+                </div>
+              ))}
+            </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

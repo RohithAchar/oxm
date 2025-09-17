@@ -2,16 +2,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 import {
   Truck,
-  Search,
-  Camera,
   Package,
   Handshake,
   ShieldCheck,
   GraduationCap,
   Sparkles,
-  Bell,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import ProductSearch from "@/components/search/ProductSearch";
 import {
   Card,
@@ -27,6 +23,9 @@ import { Carousal } from "@/components/home/carousal";
 import { CustomCarousalSkeleton } from "./custom-carousal";
 import RecentlyViewedList from "@/components/recent/RecentlyViewedList";
 import FavoritesSection from "@/components/home/favorites-section";
+import { H1 } from "@/components/ui/h1";
+import { H2 } from "@/components/ui/h2";
+import { P } from "@/components/ui/p";
 
 const NewLandingPage = async () => {
   return (
@@ -66,7 +65,7 @@ const NewLandingPage = async () => {
       />
 
       {/* Mobile-only layout */}
-      <section className="md:hidden max-w-7xl mx-auto px-4 pt-2 space-y-4">
+      <section className="md:hidden max-w-7xl mx-auto px-4 pt-4 space-y-4">
         {/* Custom Carousel */}
         <Suspense fallback={<CustomCarousalSkeleton />}>
           {/* Using existing carousal that renders CustomCarousal items */}
@@ -110,13 +109,13 @@ const NewLandingPage = async () => {
         <div className="rounded-md border p-4 pt-8 md:p-12 shadow">
           {/* subtle accent removed for cleaner light mode */}
           <div className="relative mx-auto max-w-3xl text-center space-y-6">
-            <h1 className="text-2xl md:text-6xl font-semibold tracking-tight leading-tight text-foreground">
+            <H1 className="text-2xl md:text-6xl font-semibold tracking-tight leading-tight text-foreground">
               Find Winning Products & Verified Suppliers
-            </h1>
-            <p className="text-sm md:text-lg text-foreground/80">
+            </H1>
+            <P className="text-sm md:text-lg text-foreground/80">
               Source confidently from verified Indian suppliers. Samples to
               bulk, all in one place.
-            </p>
+            </P>
             <ProductSearch
               placeholder="Search Winning Products & Verified Suppliers"
               size="lg"
@@ -182,13 +181,13 @@ const NewLandingPage = async () => {
       {/* How it works (desktop only) */}
       <section className="hidden md:block max-w-7xl mx-auto px-4">
         <div className="w-full text-center mb-8">
-          <h2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
+          <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
             How OpenXmart works for you
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
+          </H2>
+          <P className="text-sm sm:text-base text-muted-foreground">
             A simple, transparent process designed to connect you with verified
             suppliers and quality products.
-          </p>
+          </P>
         </div>
         {/* Mobile horizontal scroller */}
         <div

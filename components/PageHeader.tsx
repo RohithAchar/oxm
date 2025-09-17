@@ -3,6 +3,8 @@
 import { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { H1 } from "@/components/ui/h1";
+import { P } from "@/components/ui/p";
 
 type PageHeaderProps = {
   title: string;
@@ -25,13 +27,13 @@ export function PageHeader({
       )}
     >
       <div>
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-semibold md:font-light tracking-tight text-foreground">
+        <H1 className="text-xl sm:text-2xl md:text-3xl font-semibold md:font-light tracking-tight text-foreground">
           {title}
-        </h1>
+        </H1>
         {description ? (
-          <p className="text-muted-foreground mt-1 font-medium md:font-light">
+          <P className="text-muted-foreground mt-1 font-medium md:font-light">
             {description}
-          </p>
+          </P>
         ) : null}
       </div>
       {actions ? <div className="flex gap-2 flex-wrap">{actions}</div> : null}
