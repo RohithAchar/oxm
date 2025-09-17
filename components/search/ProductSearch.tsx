@@ -142,7 +142,7 @@ export default function ProductSearch({
           </Button>
         ) : (
           <Button
-            className={`rounded-none rounded-r-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-4 md:px-5 border-0 shadow-none bg-primary text-primary-foreground hover:bg-primary/90 -ml-px`}
+            className={`rounded-none cursor-pointer ${heightClass} py-0 flex-shrink-0 px-4 md:px-5 border-0 shadow-none bg-primary text-primary-foreground hover:bg-primary/90 -ml-px`}
             onClick={submit}
           >
             Search

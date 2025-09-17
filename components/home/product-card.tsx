@@ -103,7 +103,7 @@ export const ProductCard = ({
             {name}
           </h1>
 
-          <p className="text-sm text-muted-foreground truncate">
+          <p className="text-sm text-muted-foreground truncate min-h-[1.25rem]">
             {/demo/i.test(supplierName || "") || /demo/i.test(brand || "")
               ? "OpenXmart Supplier"
               : supplierName}

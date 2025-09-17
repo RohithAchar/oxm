@@ -25,7 +25,7 @@ export default function RecentlyViewedList() {
       <div className="rounded-2xl border bg-muted/30 p-4 md:p-6">
         <div className="flex items-center justify-between mb-6 md:mb-8">
           <div className="w-full text-left">
-            <h2 className="text-foreground text-xl md:text-2xl font-semibold mb-1">
+            <h2 className="text-foreground text-2xl md:text-3xl font-medium tracking-wide mb-1">
               Recently viewed
             </h2>
             <p className="text-sm text-muted-foreground">

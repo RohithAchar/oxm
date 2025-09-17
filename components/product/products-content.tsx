@@ -46,14 +46,9 @@ export default async function ProductsContent({
 
   return (
     <div className="space-y-6">
-      {/* Fixed Search and Filter Bar */}
+      {/* Fixed Summary and Active Filters Bar */}
       <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
         <div className="space-y-4 py-4">
-          {/* Advanced Search Component */}
-          <div>
-            <AdvancedSearch filterOptions={data.filters} />
-          </div>
-
           {/* Active Filters */}
           <ActiveFilters />
 
@@ -66,6 +61,11 @@ export default async function ProductsContent({
               ` (Page ${data.page} of ${data.totalPages})`}
           </div>
         </div>
+      </div>
+
+      {/* Filters Button - left-aligned anchor above products */}
+      <div>
+        <AdvancedSearch filterOptions={data.filters} />
       </div>
 
       {isEmpty ? (

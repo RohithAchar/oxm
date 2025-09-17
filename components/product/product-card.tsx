@@ -102,16 +102,10 @@ export const ProductCard = ({
 
           {/* Badges moved to top-right for unified placement */}
 
-          {/* Brand (hide obvious demo values) */}
+          {/* Supplier / brand (muted, consistent height) */}
           {!isDemoBrand && (
-            <p className="text-sm text-muted-foreground truncate">{brand}</p>
-          )}
-
-          {/* City */}
-          {city && (
-            <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
-              <MapPin className="w-3 h-3" />
-              {city}
+            <p className="text-sm text-muted-foreground truncate min-h-[1.25rem]">
+              {brand}
             </p>
           )}
 
