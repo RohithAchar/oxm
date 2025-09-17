@@ -143,7 +143,7 @@ export function Sidebar({
         {/* Navigation */}
         <ScrollArea className="flex-1 px-6 py-6">
           <nav className="space-y-6">
-            {sidebarGroups.map((group) => (
+            {sidebarGroups.map((group, idx) => (
               <div key={group.label} className="space-y-2">
                 <div className="px-3 text-[10px] uppercase tracking-wider text-muted-foreground/70">
                   {group.label}
@@ -152,27 +152,25 @@ export function Sidebar({
                   {group.items.map(({ name, href, icon: Icon }) => {
                     const isActive = pathname === href;
                     return (
-                      <Button
+                      <Link
                         key={name}
-                        variant={"link"}
-                        asChild
+                        href={href}
                         className={cn(
-                          "w-full flex items-center justify-start font-semibold text-muted-foreground",
-                          isActive && "text-primary"
+                          "w-full inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-colors",
+                          isActive
+                            ? "bg-primary/15 text-primary ring-1 ring-primary/20"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
                         )}
                       >
-                        <Link href={href}>
-                          <Icon className="h-4 w-4" />
-                          <span
-                            className={cn("truncate", isActive && "underline")}
-                          >
-                            {name}
-                          </span>
-                        </Link>
-                      </Button>
+                        <Icon className="h-4 w-4" />
+                        <span className="truncate">{name}</span>
+                      </Link>
                     );
                   })}
                 </div>
+                {idx < sidebarGroups.length - 1 && (
+                  <div className="border-t mt-3 pt-3 border-border/60" />
+                )}
               </div>
             ))}
           </nav>

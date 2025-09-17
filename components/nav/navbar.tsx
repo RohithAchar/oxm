@@ -24,8 +24,8 @@ export const Navbar = () => {
             <span className="text-foreground">mart</span>
             <span className="text-muted-foreground text-xs">.com</span>
           </Link>
-          {showSearch && (
-            <div className="hidden md:block justify-self-center w-full">
+          <div className="hidden md:block justify-self-center w-full">
+            {showSearch && (
               <ProductSearch
                 placeholder="Search products"
                 size="sm"
@@ -33,8 +33,8 @@ export const Navbar = () => {
                 className="w-full max-w-2xl mx-auto"
                 buttonMode="icon"
               />
-            </div>
-          )}
+            )}
+          </div>
           <div className="ml-3 md:ml-4 flex items-center gap-1 sm:gap-4">
             {showThemeToggle && <ModeToggle />}
             {/* <Button variant="ghost" size="icon" aria-label="Notifications">

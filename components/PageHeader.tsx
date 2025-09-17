@@ -27,11 +27,11 @@ export function PageHeader({
       )}
     >
       <div>
-        <H1 className="text-xl sm:text-2xl md:text-3xl font-semibold md:font-light tracking-tight text-foreground">
+        <H1 className="text-left text-2xl sm:text-3xl md:text-4xl font-semibold md:font-medium tracking-tight text-foreground">
           {title}
         </H1>
         {description ? (
-          <P className="text-muted-foreground mt-1 font-medium md:font-light">
+          <P className="text-left text-muted-foreground mt-1 font-normal md:font-normal max-w-prose">
             {description}
           </P>
         ) : null}

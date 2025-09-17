@@ -7,7 +7,7 @@ export function H1({
 }) {
   return (
     <h1
-      className={`scroll-m-20 text-center text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-balance leading-tight ${className}`}
+      className={`scroll-m-20 text-left text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-balance leading-tight ${className}`}
     >
       {children}
     </h1>
