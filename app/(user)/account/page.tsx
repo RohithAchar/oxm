@@ -220,7 +220,7 @@ const AccountPage = async () => {
               variant="ghost"
               className="w-full justify-start h-auto p-3"
             >
-              <Link href="/account/buy-leads">
+              <Link href="/account/RFQ">
                 <div className="flex items-center gap-3">
                   <MessageSquare className="h-4 w-4" />
                   <div className="text-left">

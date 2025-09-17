@@ -171,7 +171,7 @@ export function EnhancedBuyLeadCard({
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="h-8 w-8 p-0 rounded-full hover:bg-slate-100"
+              className="h-8 w-8 p-0 rounded-full bg-primary/10 text-primary border border-primary/20"
             >
               {isExpanded ? (
                 <ChevronUp className="h-4 w-4" />

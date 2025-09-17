@@ -3,12 +3,9 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/utils/supabase/database.types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import { MessageCircle, MessageSquare } from "lucide-react";
 import { EnhancedBuyLeadCard } from "@/components/rfq/enhanced-buy-lead-card";
 import { EnhancedResponseCard } from "@/components/rfq/enhanced-response-card";
@@ -112,23 +109,23 @@ export default function AccountBuyLeadsPage() {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6 text-[11px] sm:text-sm md:text-base leading-tight sm:leading-normal">
         {/* Header */}
         <RFQHeader
-          title="My Buy Leads"
+          title="RFQs"
           subtitle="Track your product requests and supplier responses to find the best deals"
           totalCount={items.length}
           variant="buyer"
         />
 
         {/* Status Filter */}
-        <div className="mb-6">
+        {/* <div className="mb-6">
           <StatusFilter
             currentStatus="all"
             onStatusChange={() => {}}
             counts={statusCounts}
           />
-        </div>
+        </div> */}
 
         {/* Content */}
         <div className="space-y-6">
