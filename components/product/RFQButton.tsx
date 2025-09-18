@@ -1,12 +1,24 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/utils/supabase/database.types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +30,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, Tags, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Json = Database["public"]["Tables"]["buy_leads"]["Row"]["customization"];
 
@@ -40,18 +51,68 @@ export function RFQButton({
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showCustomization, setShowCustomization] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
-  const [quantity, setQuantity] = useState<string>("");
-  const [targetPrice, setTargetPrice] = useState<string>("");
-  const [deliveryPincode, setDeliveryPincode] = useState<string>("");
-  const [deliveryCity, setDeliveryCity] = useState<string>("");
-  const [customColor, setCustomColor] = useState<string>("");
-  const [customBranding, setCustomBranding] = useState<string>("");
-  const [customPackaging, setCustomPackaging] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
+  const rfqSchema = z
+    .object({
+      quantity: z
+        .string()
+        .min(1, "Quantity is required")
+        .refine((v) => Number(v) > 0, "Enter a valid quantity"),
+      targetPrice: z
+        .string()
+        .min(1, "Target price is required")
+        .refine((v) => Number(v) > 0, { message: "Enter a valid price" }),
+      deliveryPincode: z
+        .string()
+        .min(6, "Enter 6-digit pincode")
+        .max(6, "Enter 6-digit pincode")
+        .regex(/^[0-9]{6}$/g, "Enter a valid 6-digit pincode"),
+      deliveryCity: z.string().optional(),
+      customColor: z.string().optional(),
+      customBranding: z.string().optional(),
+      customPackaging: z.string().optional(),
+      notes: z.string().optional(),
+      contactEmail: z
+        .string()
+        .email("Invalid email")
+        .optional()
+        .or(z.literal("")),
+      contactPhone: z
+        .string()
+        .regex(/^\d{10}$/g, "Enter 10-digit phone")
+        .optional()
+        .or(z.literal("")),
+    })
+    .refine(
+      (data) =>
+        (data.contactEmail && data.contactEmail !== "") ||
+        (data.contactPhone && data.contactPhone !== ""),
+      {
+        message: "Provide at least one contact method",
+        path: ["contactPhone"],
+      }
+    );
 
-  const [contactEmail, setContactEmail] = useState<string>("");
-  const [contactPhone, setContactPhone] = useState<string>("");
+  type RFQFormValues = z.infer<typeof rfqSchema>;
+
+  const form = useForm<RFQFormValues>({
+    resolver: zodResolver(rfqSchema) as any,
+    defaultValues: {
+      quantity: "",
+      targetPrice: "",
+      deliveryPincode: "",
+      deliveryCity: "",
+      customColor: "",
+      customBranding: "",
+      customPackaging: "",
+      notes: "",
+      contactEmail: "",
+      contactPhone: "",
+    },
+    mode: "onChange",
+  });
 
   // Single dialog UX for all screen sizes (no drawer)
 
@@ -87,34 +148,39 @@ export function RFQButton({
               : undefined;
           const phoneResolved =
             normalise(phoneFromProfileRaw) || normalise(userPhoneRaw);
-
-          setContactEmail(emailFromProfile ?? user.email ?? "");
-          setContactPhone(phoneResolved ?? "");
+          form.setValue("contactEmail", emailFromProfile ?? user.email ?? "");
+          form.setValue("contactPhone", phoneResolved ?? "");
         } else {
-          setContactEmail(user.email ?? "");
+          form.setValue("contactEmail", user.email ?? "");
           const userPhoneRaw =
             (user as any).phone ??
             (user as any).user_metadata?.phone ??
             (user as any).user_metadata?.phone_number;
           if (userPhoneRaw)
-            setContactPhone(
+            form.setValue(
+              "contactPhone",
               typeof userPhoneRaw === "string" ? userPhoneRaw.trim() : ""
             );
         }
       } catch {}
     };
     loadContact();
-  }, [open]);
+  }, [open, form]);
 
   const customization: Json = useMemo(() => {
+    const values = form.getValues();
     const obj: Record<string, string> = {};
-    if (customColor) obj.color = customColor;
-    if (customBranding) obj.branding = customBranding;
-    if (customPackaging) obj.packaging = customPackaging;
+    if (values.customColor) obj.color = values.customColor;
+    if (values.customBranding) obj.branding = values.customBranding;
+    if (values.customPackaging) obj.packaging = values.customPackaging;
     return Object.keys(obj).length ? (obj as any) : null;
-  }, [customColor, customBranding, customPackaging]);
+  }, [
+    form.watch("customColor"),
+    form.watch("customBranding"),
+    form.watch("customPackaging"),
+  ]);
 
-  const submit = async () => {
+  const submit = async (values: RFQFormValues) => {
     setSubmitting(true);
     setError(null);
     try {
@@ -130,14 +196,14 @@ export function RFQButton({
         product_id: productId,
         product_name: productName,
         supplier_name: supplierName,
-        quantity_required: quantity ? Number(quantity) : null,
-        target_price: targetPrice ? Number(targetPrice) : null,
-        delivery_pincode: deliveryPincode || null,
-        delivery_city: deliveryCity || null,
+        quantity_required: values.quantity ? Number(values.quantity) : null,
+        target_price: values.targetPrice ? Number(values.targetPrice) : null,
+        delivery_pincode: values.deliveryPincode || null,
+        delivery_city: values.deliveryCity || null,
         customization: customization as any,
-        notes: notes || null,
-        contact_email: contactEmail || null,
-        contact_phone: contactPhone || null,
+        notes: values.notes || null,
+        contact_email: values.contactEmail || null,
+        contact_phone: values.contactPhone || null,
         tier_pricing_snapshot: tierPricingSnapshot || null,
         currency: "INR",
       });
@@ -146,15 +212,7 @@ export function RFQButton({
         description: "We notified the supplier.",
       });
       setOpen(false);
-      // reset
-      setQuantity("");
-      setTargetPrice("");
-      setDeliveryPincode("");
-      setDeliveryCity("");
-      setCustomColor("");
-      setCustomBranding("");
-      setCustomPackaging("");
-      setNotes("");
+      form.reset();
     } catch (e: any) {
       setError(e.message || "Failed to submit RFQ");
       toast.error("Submission failed", {
@@ -165,177 +223,271 @@ export function RFQButton({
     }
   };
 
-  const Form = (
-    <div className="space-y-5">
-      <Card>
-        <CardContent className="pt-4 text-sm text-muted-foreground">
-          <div className="font-medium text-foreground mb-1">{productName}</div>
-          <div>Supplier: {supplierName}</div>
-        </CardContent>
-      </Card>
+  const FormBody = (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
+        <Card>
+          <CardContent className="pt-4 text-sm text-muted-foreground">
+            <div className="font-medium text-foreground mb-1">
+              {productName}
+            </div>
+            <div>Supplier: {supplierName}</div>
+          </CardContent>
+        </Card>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="quantity" className="text-xs">
-            Quantity required
-          </Label>
-          <Input
-            id="quantity"
-            type="number"
-            inputMode="numeric"
-            placeholder="e.g. 500"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="targetPrice" className="text-xs">
-            Target price (₹)
-          </Label>
-          <Input
-            id="targetPrice"
-            type="number"
-            inputMode="decimal"
-            placeholder="e.g. 120"
-            value={targetPrice}
-            onChange={(e) => setTargetPrice(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="pincode" className="text-xs">
-            Delivery pincode
-          </Label>
-          <Input
-            id="pincode"
-            placeholder="e.g. 560001"
-            inputMode="numeric"
-            value={deliveryPincode}
-            onChange={(e) => setDeliveryPincode(e.target.value)}
-          />
-        </div>
-        <div>
-          <Label htmlFor="city" className="text-xs">
-            Delivery city
-          </Label>
-          <Input
-            id="city"
-            placeholder="e.g. Bengaluru"
-            value={deliveryCity}
-            onChange={(e) => setDeliveryCity(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
-          <Tags className="h-3.5 w-3.5" /> Customization
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <div>
-            <Label htmlFor="color" className="text-xs">
-              Color
-            </Label>
-            <Input
-              id="color"
-              placeholder="e.g. Red"
-              value={customColor}
-              onChange={(e) => setCustomColor(e.target.value)}
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">Request details</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="quantity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Quantity required*</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="e.g. 1000 (typical orders 100–5,000)"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div>
-            <Label htmlFor="branding" className="text-xs">
-              Branding
-            </Label>
-            <Input
-              id="branding"
-              placeholder="e.g. Logo printing"
-              value={customBranding}
-              onChange={(e) => setCustomBranding(e.target.value)}
-            />
-          </div>
-          <div>
-            <Label htmlFor="packaging" className="text-xs">
-              Packaging
-            </Label>
-            <Input
-              id="packaging"
-              placeholder="e.g. Box of 10"
-              value={customPackaging}
-              onChange={(e) => setCustomPackaging(e.target.value)}
+            <FormField
+              control={form.control}
+              name="targetPrice"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Target price (₹)*</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      inputMode="decimal"
+                      placeholder="Your desired unit price (₹)"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
         </div>
-      </div>
 
-      <div>
-        <Label htmlFor="notes" className="text-xs">
-          Notes
-        </Label>
-        <Textarea
-          id="notes"
-          placeholder="Any additional details"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-        />
-      </div>
-
-      <Separator />
-
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label htmlFor="email" className="text-xs">
-            Contact email
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            value={contactEmail}
-            onChange={(e) => setContactEmail(e.target.value)}
-          />
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">Delivery details</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="deliveryPincode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Delivery pincode*</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="6-digit Indian pincode (e.g. 560001)"
+                      inputMode="numeric"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="deliveryCity"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Delivery city</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g. Bengaluru, Karnataka" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
         </div>
-        <div>
-          <Label htmlFor="phone" className="text-xs">
-            Contact phone
-          </Label>
-          <Input
-            id="phone"
-            value={contactPhone}
-            onChange={(e) => setContactPhone(e.target.value)}
-          />
-        </div>
-      </div>
 
-      {error && <div className="text-xs text-destructive">{error}</div>}
-
-      <div className="flex justify-end gap-2 pt-1">
-        <Button
-          variant="outline"
-          onClick={() => setOpen(false)}
-          disabled={submitting}
-        >
-          Cancel
-        </Button>
-        <Button onClick={submit} disabled={submitting}>
-          {submitting ? (
-            <span className="inline-flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" /> Submitting
-            </span>
-          ) : (
-            "Submit RFQ"
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+              <Tags className="h-3.5 w-3.5" />
+              <span>Customization (optional)</span>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowCustomization((v) => !v)}
+            >
+              {showCustomization ? "Hide" : "Add"}
+            </Button>
+          </div>
+          {showCustomization && (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <FormField
+                control={form.control}
+                name="customColor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Color</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. Red / Blue" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="customBranding"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Branding</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g. Logo printing, custom label"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="customPackaging"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-xs">Packaging</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. 10 units per box" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           )}
-        </Button>
-      </div>
-    </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-medium">Additional details</h3>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowNotes((v) => !v)}
+            >
+              {showNotes ? "Hide" : "Add"}
+            </Button>
+          </div>
+          {showNotes && (
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Key specs, timelines, or delivery constraints"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+        </div>
+
+        <Separator />
+
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">Contact information</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <FormField
+              control={form.control}
+              name="contactEmail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Contact email</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="name@company.com"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="contactPhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">Contact phone</FormLabel>
+                  <FormControl>
+                    <Input
+                      inputMode="numeric"
+                      placeholder="9876543210"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            Provide at least one contact
+          </p>
+        </div>
+
+        {error && <div className="text-xs text-destructive">{error}</div>}
+
+        <div className="flex justify-end gap-3 pt-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => setOpen(false)}
+            disabled={submitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            size="lg"
+            className="px-6"
+            disabled={submitting || !form.formState.isValid}
+          >
+            {submitting ? (
+              <span className="inline-flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" /> Submitting
+              </span>
+            ) : (
+              "Submit RFQ"
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 
   const TriggerContent =
     variant === "row" ? (
       <button
         type="button"
-        className="mb-4 w-full bg-background cursor-pointer rounded-lg p-4 focus:outline-none border hover:bg-muted/60 transition"
+        className=" w-full bg-background cursor-pointer rounded-lg p-4 focus:outline-none border hover:bg-muted/60 transition"
       >
         <div className="flex items-center justify-between">
           <span className="font-medium">Get Best Price</span>
@@ -358,7 +510,7 @@ export function RFQButton({
         <DialogHeader>
           <DialogTitle>Request for Quote</DialogTitle>
         </DialogHeader>
-        <div className="pr-1 pb-20">{Form}</div>
+        <div className="pr-1 pb-20">{FormBody}</div>
       </DialogContent>
     </Dialog>
   );

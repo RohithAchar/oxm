@@ -62,85 +62,42 @@ export type Database = {
         }
         Relationships: []
       }
-      buy_lead_notifications: {
-        Row: {
-          buy_lead_id: string
-          created_at: string
-          id: number
-          read_at: string | null
-          supplier_id: string
-        }
-        Insert: {
-          buy_lead_id: string
-          created_at?: string
-          id?: number
-          read_at?: string | null
-          supplier_id: string
-        }
-        Update: {
-          buy_lead_id?: string
-          created_at?: string
-          id?: number
-          read_at?: string | null
-          supplier_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "buy_lead_notifications_buy_lead_id_fkey"
-            columns: ["buy_lead_id"]
-            isOneToOne: false
-            referencedRelation: "buy_leads"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "buy_lead_notifications_buy_lead_id_fkey"
-            columns: ["buy_lead_id"]
-            isOneToOne: false
-            referencedRelation: "enriched_buy_leads"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "buy_lead_notifications_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       buy_lead_responses: {
         Row: {
           buy_lead_id: string
-          created_at: string
+          created_at: string | null
           currency: string | null
           id: string
           message: string | null
           min_qty: number | null
           quoted_price: number | null
+          status: string | null
           supplier_id: string
-          supplier_snapshot: Json | null
+          updated_at: string | null
         }
         Insert: {
           buy_lead_id: string
-          created_at?: string
+          created_at?: string | null
           currency?: string | null
           id?: string
           message?: string | null
           min_qty?: number | null
           quoted_price?: number | null
+          status?: string | null
           supplier_id: string
-          supplier_snapshot?: Json | null
+          updated_at?: string | null
         }
         Update: {
           buy_lead_id?: string
-          created_at?: string
+          created_at?: string | null
           currency?: string | null
           id?: string
           message?: string | null
           min_qty?: number | null
           quoted_price?: number | null
+          status?: string | null
           supplier_id?: string
-          supplier_snapshot?: Json | null
+          updated_at?: string | null
         }
         Relationships: [
           {
@@ -155,13 +112,6 @@ export type Database = {
             columns: ["buy_lead_id"]
             isOneToOne: false
             referencedRelation: "enriched_buy_leads"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "buy_lead_responses_supplier_id_fkey"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -169,10 +119,9 @@ export type Database = {
       buy_leads: {
         Row: {
           buyer_id: string
-          buyer_snapshot: Json | null
           contact_email: string | null
           contact_phone: string | null
-          created_at: string
+          created_at: string | null
           currency: string | null
           customization: Json | null
           delivery_city: string | null
@@ -181,21 +130,19 @@ export type Database = {
           notes: string | null
           product_id: string | null
           product_name: string | null
-          product_snapshot: Json | null
           quantity_required: number | null
-          status: Database["public"]["Enums"]["rfq_status"]
+          status: Database["public"]["Enums"]["rfq_status"] | null
           supplier_id: string
           supplier_name: string | null
           target_price: number | null
           tier_pricing_snapshot: Json | null
-          updated_at: string
+          updated_at: string | null
         }
         Insert: {
           buyer_id: string
-          buyer_snapshot?: Json | null
           contact_email?: string | null
           contact_phone?: string | null
-          created_at?: string
+          created_at?: string | null
           currency?: string | null
           customization?: Json | null
           delivery_city?: string | null
@@ -204,21 +151,19 @@ export type Database = {
           notes?: string | null
           product_id?: string | null
           product_name?: string | null
-          product_snapshot?: Json | null
           quantity_required?: number | null
-          status?: Database["public"]["Enums"]["rfq_status"]
+          status?: Database["public"]["Enums"]["rfq_status"] | null
           supplier_id: string
           supplier_name?: string | null
           target_price?: number | null
           tier_pricing_snapshot?: Json | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Update: {
           buyer_id?: string
-          buyer_snapshot?: Json | null
           contact_email?: string | null
           contact_phone?: string | null
-          created_at?: string
+          created_at?: string | null
           currency?: string | null
           customization?: Json | null
           delivery_city?: string | null
@@ -227,35 +172,20 @@ export type Database = {
           notes?: string | null
           product_id?: string | null
           product_name?: string | null
-          product_snapshot?: Json | null
           quantity_required?: number | null
-          status?: Database["public"]["Enums"]["rfq_status"]
+          status?: Database["public"]["Enums"]["rfq_status"] | null
           supplier_id?: string
           supplier_name?: string | null
           target_price?: number | null
           tier_pricing_snapshot?: Json | null
-          updated_at?: string
+          updated_at?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "buy_leads_buyer_fk"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "buy_leads_product_fk"
+            foreignKeyName: "buy_leads_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "buy_leads_supplier_fk"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1288,27 +1218,32 @@ export type Database = {
       enriched_buy_lead_responses: {
         Row: {
           buy_lead_id: string | null
+          buyer_id: string | null
           created_at: string | null
           currency: string | null
           id: string | null
           message: string | null
           min_qty: number | null
+          product_id: string | null
+          product_name: string | null
+          quantity_required: number | null
           quoted_price: number | null
-          supplier_address: string | null
-          supplier_alternate_phone: string | null
+          rfq_currency: string | null
+          status: string | null
           supplier_avatar: string | null
           supplier_business_name: string | null
-          supplier_business_phone: number | null
           supplier_business_type: string | null
           supplier_city: string | null
           supplier_email: string | null
           supplier_gst: string | null
           supplier_id: string | null
           supplier_name: string | null
+          supplier_name_full: string | null
           supplier_phone: number | null
-          supplier_snapshot: Json | null
           supplier_state: string | null
           supplier_verified: boolean | null
+          target_price: number | null
+          updated_at: string | null
         }
         Relationships: [
           {
@@ -1326,10 +1261,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "buy_lead_responses_supplier_id_fkey"
-            columns: ["supplier_id"]
+            foreignKeyName: "buy_leads_product_id_fkey"
+            columns: ["product_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -1342,7 +1277,6 @@ export type Database = {
           buyer_id: string | null
           buyer_name: string | null
           buyer_phone: number | null
-          buyer_snapshot: Json | null
           contact_email: string | null
           contact_phone: string | null
           created_at: string | null
@@ -1354,17 +1288,12 @@ export type Database = {
           notes: string | null
           product_available_qty: number | null
           product_brand: string | null
-          product_created_at: string | null
           product_description: string | null
           product_id: string | null
-          product_images: Json | null
           product_is_active: boolean | null
           product_name: string | null
           product_name_full: string | null
           product_price: number | null
-          product_snapshot: Json | null
-          product_specifications: Json | null
-          product_updated_at: string | null
           quantity_required: number | null
           status: Database["public"]["Enums"]["rfq_status"] | null
           supplier_avatar: string | null
@@ -1385,24 +1314,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "buy_leads_buyer_fk"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "buy_leads_product_fk"
+            foreignKeyName: "buy_leads_product_id_fkey"
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "buy_leads_supplier_fk"
-            columns: ["supplier_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

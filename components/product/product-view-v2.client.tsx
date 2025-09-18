@@ -9,15 +9,11 @@ import {
   MessageCircle,
   Share2,
   Heart,
-  Phone,
   ChevronDown,
-  ChevronUp,
   Package,
   Check,
   Truck,
-  ChevronRight,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import Description from "@/components/product/product-description";
@@ -26,7 +22,7 @@ import { useFavorites } from "@/lib/contexts/favorites-context";
 import { useFavoriteSuppliers } from "@/lib/contexts/favorite-suppliers-context";
 import { shareProduct, getShareUrl, getShareText } from "@/lib/utils/share";
 import ShippingAddress from "@/components/product/shipping-address";
-import RFQButton from "@/components/product/RFQButton";
+import RFQButton from "./RFQButton";
 
 type Color = { id: string; name: string; hex_code: string };
 type Size = { id: string; name: string };
@@ -234,6 +230,18 @@ export default function ProductViewV2Client({
                 {product.name}
               </h1>
               <Description text={product.description} />
+
+              {/* RFQ Button */}
+              <div className="mt-4">
+                <RFQButton
+                  productId={product.id}
+                  productName={product.name}
+                  supplierId={business?.profile_id}
+                  supplierName={business?.business_name}
+                  tierPricingSnapshot={product.product_tier_pricing}
+                  variant="row"
+                />
+              </div>
             </div>
 
             {/* MOQ price (moved from below) */}
@@ -323,16 +331,6 @@ export default function ProductViewV2Client({
                 )}
               </div>
             )}
-
-            {/* RFQ Section (mobile) */}
-            <RFQButton
-              productId={product.id}
-              productName={product.name}
-              supplierId={business?.profile_id}
-              supplierName={business?.business_name}
-              tierPricingSnapshot={product.product_tier_pricing || null}
-              variant="row"
-            />
 
             {/* Supplier Info */}
             <div className="bg-muted/50 rounded-lg p-4">
@@ -609,16 +607,20 @@ export default function ProductViewV2Client({
                 </h1>
                 <Description text={product.description} />
 
-                {/* RFQ section (desktop) */}
-                <div className="mt-4 sm:mt-6">
+                {/* RFQ Button */}
+                <div className="mt-4">
                   <RFQButton
                     productId={product.id}
                     productName={product.name}
                     supplierId={business?.profile_id}
                     supplierName={business?.business_name}
-                    tierPricingSnapshot={product.product_tier_pricing || null}
+                    tierPricingSnapshot={product.product_tier_pricing}
                     variant="row"
                   />
+                </div>
+
+                {/* RFQ section (desktop) */}
+                <div className="mt-4">
                   <div className="border rounded-lg p-4 bg-card">
                     <h3 className="text-sm font-medium mb-2">Supplier</h3>
                     <div className="flex items-start gap-3">

@@ -19,13 +19,7 @@ export async function GET(
 
     const { data, error } = await supabase
       .from("buy_leads")
-      .select(
-        `
-        *,
-        product_snapshot,
-        buyer_snapshot
-      `
-      )
+      .select("*")
       .eq("id", id)
       .single();
 
