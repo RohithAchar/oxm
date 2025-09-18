@@ -120,7 +120,10 @@ export async function POST(request: NextRequest) {
         product_name: product_name || null,
         supplier_name: supplier_name || null,
         quantity_required: quantity_required ? Number(quantity_required) : null,
-        target_price: target_price ? Number(target_price) : null,
+        // Store target_price in paise
+        target_price: target_price
+          ? Math.round(Number(target_price) * 100)
+          : null,
         delivery_pincode: delivery_pincode || null,
         delivery_city: delivery_city || null,
         customization: customization || null,

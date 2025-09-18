@@ -197,7 +197,10 @@ export function RFQButton({
         product_name: productName,
         supplier_name: supplierName,
         quantity_required: values.quantity ? Number(values.quantity) : null,
-        target_price: values.targetPrice ? Number(values.targetPrice) : null,
+        // Store price in paise
+        target_price: values.targetPrice
+          ? Math.round(Number(values.targetPrice) * 100)
+          : null,
         delivery_pincode: values.deliveryPincode || null,
         delivery_city: values.deliveryCity || null,
         customization: customization as any,

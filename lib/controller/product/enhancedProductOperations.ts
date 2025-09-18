@@ -75,7 +75,12 @@ export interface EnhancedProductsResponse {
   totalPages: number;
   filters: {
     availableCategories: Array<{ id: string; name: string; count: number }>;
-    availableSubcategories: Array<{ id: string; name: string; parent_id: string; count: number }>;
+    availableSubcategories: Array<{
+      id: string;
+      name: string;
+      parent_id: string;
+      count: number;
+    }>;
     availableCities: Array<{ name: string; count: number }>;
     availableStates: Array<{ name: string; count: number }>;
     availableTags: Array<{ name: string; count: number }>;
@@ -179,7 +184,7 @@ const getProductTags = async (productId: string) => {
       return [];
     }
 
-    return data?.map(item => item.tags?.name).filter(Boolean) || [];
+    return data?.map((item) => item.tags?.name).filter(Boolean) || [];
   } catch (error) {
     console.error("Error fetching product tags:", error);
     return [];
@@ -200,7 +205,9 @@ const getProductColors = async (productId: string) => {
       return [];
     }
 
-    return data?.map(item => item.supplier_colors?.name).filter(Boolean) || [];
+    return (
+      data?.map((item) => item.supplier_colors?.name).filter(Boolean) || []
+    );
   } catch (error) {
     console.error("Error fetching product colors:", error);
     return [];
@@ -221,7 +228,7 @@ const getProductSizes = async (productId: string) => {
       return [];
     }
 
-    return data?.map(item => item.supplier_sizes?.name).filter(Boolean) || [];
+    return data?.map((item) => item.supplier_sizes?.name).filter(Boolean) || [];
   } catch (error) {
     console.error("Error fetching product sizes:", error);
     return [];
@@ -229,7 +236,9 @@ const getProductSizes = async (productId: string) => {
 };
 
 // Helper function to get product specifications
-const getProductSpecifications = async (productId: string): Promise<Array<{ spec_name: string; spec_value: string }>> => {
+const getProductSpecifications = async (
+  productId: string
+): Promise<Array<{ spec_name: string; spec_value: string }>> => {
   try {
     const supabase = await createClient();
     const { data, error } = await supabase
@@ -253,15 +262,21 @@ const getProductSpecifications = async (productId: string): Promise<Array<{ spec
 };
 
 // Simple products function (fallback for when no filters are applied)
-const getSimpleProducts = async (filters: EnhancedProductFilters): Promise<EnhancedProductsResponse> => {
+const getSimpleProducts = async (
+  filters: EnhancedProductFilters
+): Promise<EnhancedProductsResponse> => {
   try {
     const supabase = await createAnonClient();
     const { page = 1, pageSize = 12 } = filters;
-    
+
     const from = (page - 1) * pageSize;
     const to = from + pageSize - 1;
 
-    const { data: products, count, error } = await supabase
+    const {
+      data: products,
+      count,
+      error,
+    } = await supabase
       .from("products")
       .select("*", { count: "exact" })
       .eq("is_active", true)
@@ -335,20 +350,17 @@ export const getEnhancedProducts = async (
 ): Promise<EnhancedProductsResponse> => {
   try {
     // If no filters are applied, use the original simple approach for better performance
-    const hasFilters = Object.values(filters).some(value => {
+    const hasFilters = Object.values(filters).some((value) => {
       if (Array.isArray(value)) return value.length > 0;
-      if (typeof value === 'boolean') return value === true;
+      if (typeof value === "boolean") return value === true;
       return value !== undefined && value !== "" && value !== "created_at_desc";
     });
-    
 
     if (!hasFilters) {
-      
       const simpleResult = await getSimpleProducts(filters);
 
       return simpleResult;
     }
-    
 
     const supabase = await createClient();
     const {
@@ -379,19 +391,30 @@ export const getEnhancedProducts = async (
       .eq("is_active", true)
       .range(from, to);
 
-
     // Apply keyword search (name, brand, description, hsn_code) and also match category/subcategory names
     if (q && q.trim() !== "") {
       const like = `%${q.trim()}%`;
 
       // Find category and subcategory ids whose names match q
       const [catRes, subcatRes] = await Promise.all([
-        supabase.from("categories").select("id").is("parent_id", null).ilike("name", like),
-        supabase.from("categories").select("id").not("parent_id", "is", null).ilike("name", like),
+        supabase
+          .from("categories")
+          .select("id")
+          .is("parent_id", null)
+          .ilike("name", like),
+        supabase
+          .from("categories")
+          .select("id")
+          .not("parent_id", "is", null)
+          .ilike("name", like),
       ]);
 
-      const matchedCategoryIds = (catRes.data || []).map((r: { id: string }) => r.id);
-      const matchedSubcategoryIds = (subcatRes.data || []).map((r: { id: string }) => r.id);
+      const matchedCategoryIds = (catRes.data || []).map(
+        (r: { id: string }) => r.id
+      );
+      const matchedSubcategoryIds = (subcatRes.data || []).map(
+        (r: { id: string }) => r.id
+      );
 
       const orParts: string[] = [
         `name.ilike.${like}`,
@@ -469,7 +492,15 @@ export const getEnhancedProducts = async (
     // Fetch additional data for each product
     const enrichedProducts = await Promise.all(
       products?.map(async (product) => {
-        const [imageUrl, priceAndQuantity, productTags, productColors, productSizes, business, specifications] = await Promise.all([
+        const [
+          imageUrl,
+          priceAndQuantity,
+          productTags,
+          productColors,
+          productSizes,
+          business,
+          specifications,
+        ] = await Promise.all([
           getProductMainImageUrl(product.id),
           getPricesAndQuantities(product.id),
           getProductTags(product.id),
@@ -506,60 +537,74 @@ export const getEnhancedProducts = async (
 
     // Start with all products (including undefined ones, like the original function)
     let filteredProducts = enrichedProducts;
-    
-    
+
     // Show the actual product data for debugging
-    const validProducts = enrichedProducts.filter(p => p !== undefined);
-
-
+    const validProducts = enrichedProducts.filter((p) => p !== undefined);
 
     // Apply location filters (only on defined products)
     if (city) {
-      const beforeCount = filteredProducts.filter(p => p !== undefined).length;
+      const beforeCount = filteredProducts.filter(
+        (p) => p !== undefined
+      ).length;
       filteredProducts = filteredProducts.filter(
         (product) => product && product.city === city
       );
-      const afterCount = filteredProducts.filter(p => p !== undefined).length;
+      const afterCount = filteredProducts.filter((p) => p !== undefined).length;
     }
     if (state) {
-      const beforeCount = filteredProducts.filter(p => p !== undefined).length;
+      const beforeCount = filteredProducts.filter(
+        (p) => p !== undefined
+      ).length;
       filteredProducts = filteredProducts.filter(
         (product) => product && product.state === state
       );
-      const afterCount = filteredProducts.filter(p => p !== undefined).length;
+      const afterCount = filteredProducts.filter((p) => p !== undefined).length;
     }
 
     // Apply tag, color, and size filters after enrichment (only on defined products)
     if (tags && tags.length > 0) {
-      const beforeCount = filteredProducts.filter(p => p !== undefined).length;
-      filteredProducts = filteredProducts.filter((product) =>
-        product && tags.some((tag) => product.tags.includes(tag))
+      const beforeCount = filteredProducts.filter(
+        (p) => p !== undefined
+      ).length;
+      filteredProducts = filteredProducts.filter(
+        (product) => product && tags.some((tag) => product.tags.includes(tag))
       );
-      const afterCount = filteredProducts.filter(p => p !== undefined).length;
+      const afterCount = filteredProducts.filter((p) => p !== undefined).length;
     }
 
     if (colors && colors.length > 0) {
-      const requested = colors.map((c) => (c || "").toString().trim().toLowerCase());
+      const requested = colors.map((c) =>
+        (c || "").toString().trim().toLowerCase()
+      );
       filteredProducts = filteredProducts.filter((product) => {
         if (!product) return false;
-        const productColors = (product.colors || []).map((c: string) => (c || "").toString().trim().toLowerCase());
+        const productColors = (product.colors || []).map((c: string) =>
+          (c || "").toString().trim().toLowerCase()
+        );
         return requested.some((c) => productColors.includes(c));
       });
     }
 
     if (sizes && sizes.length > 0) {
-      const requested = sizes.map((s) => (s || "").toString().trim().toLowerCase());
+      const requested = sizes.map((s) =>
+        (s || "").toString().trim().toLowerCase()
+      );
       filteredProducts = filteredProducts.filter((product) => {
         if (!product) return false;
-        const productSizes = (product.sizes || []).map((s: string) => (s || "").toString().trim().toLowerCase());
+        const productSizes = (product.sizes || []).map((s: string) =>
+          (s || "").toString().trim().toLowerCase()
+        );
         return requested.some((s) => productSizes.includes(s));
       });
     }
 
-
     // If no rows matched DB keyword search, widen result set and use fuzzy scoring on the client side
     if ((products?.length || 0) === 0 && q && q.trim() !== "") {
-      const { data: fallbackProducts, count: fallbackCount, error: fbError } = await supabase
+      const {
+        data: fallbackProducts,
+        count: fallbackCount,
+        error: fbError,
+      } = await supabase
         .from("products")
         .select("*", { count: "exact" })
         .eq("is_active", true)
@@ -570,7 +615,15 @@ export const getEnhancedProducts = async (
         count = fallbackCount || count;
         const fbEnriched = await Promise.all(
           fallbackProducts.map(async (product) => {
-            const [imageUrl, priceAndQuantity, productTags, productColors, productSizes, business, specifications] = await Promise.all([
+            const [
+              imageUrl,
+              priceAndQuantity,
+              productTags,
+              productColors,
+              productSizes,
+              business,
+              specifications,
+            ] = await Promise.all([
               getProductMainImageUrl(product.id),
               getPricesAndQuantities(product.id),
               getProductTags(product.id),
@@ -607,39 +660,40 @@ export const getEnhancedProducts = async (
 
     // Rank with Fuse.js when q is present (typo tolerant)
     if (q && q.trim() !== "") {
-      const fuse = new Fuse((filteredProducts || []).filter(Boolean).map((p: any) => ({
-        ...p,
-        // Compute category/subcategory names lazily as plain strings for Fuse by
-        // piggybacking on the names present in filter options (best-effort):
-        category_name: p.category_name || "",
-        subcategory_name: p.subcategory_name || "",
-      })) as any[], {
-        includeScore: true,
-        threshold: 0.38,
-        ignoreLocation: true,
-        useExtendedSearch: false,
-        keys: [
-          { name: "name", weight: 0.45 },
-          { name: "brand", weight: 0.18 },
-          { name: "description", weight: 0.15 },
-          { name: "hsn_code", weight: 0.08 },
-          { name: "category_name", weight: 0.09 },
-          { name: "subcategory_name", weight: 0.08 },
-          { name: "supplierName", weight: 0.06 },
-          { name: "tags", weight: 0.03 },
-          { name: "colors", weight: 0.025 },
-          { name: "sizes", weight: 0.025 },
-          { name: "specifications.spec_name", weight: 0.02 },
-          { name: "specifications.spec_value", weight: 0.02 },
-        ],
-      });
-      filteredProducts = fuse.search(q.trim()).map(r => r.item);
+      const fuse = new Fuse(
+        (filteredProducts || []).filter(Boolean).map((p: any) => ({
+          ...p,
+          // Compute category/subcategory names lazily as plain strings for Fuse by
+          // piggybacking on the names present in filter options (best-effort):
+          category_name: p.category_name || "",
+          subcategory_name: p.subcategory_name || "",
+        })) as any[],
+        {
+          includeScore: true,
+          threshold: 0.38,
+          ignoreLocation: true,
+          useExtendedSearch: false,
+          keys: [
+            { name: "name", weight: 0.45 },
+            { name: "brand", weight: 0.18 },
+            { name: "description", weight: 0.15 },
+            { name: "hsn_code", weight: 0.08 },
+            { name: "category_name", weight: 0.09 },
+            { name: "subcategory_name", weight: 0.08 },
+            { name: "supplierName", weight: 0.06 },
+            { name: "tags", weight: 0.03 },
+            { name: "colors", weight: 0.025 },
+            { name: "sizes", weight: 0.025 },
+            { name: "specifications.spec_name", weight: 0.02 },
+            { name: "specifications.spec_value", weight: 0.02 },
+          ],
+        }
+      );
+      filteredProducts = fuse.search(q.trim()).map((r) => r.item);
     }
 
     // Get filter options for the UI
     const filterOptions = await getFilterOptions(supabase, filters);
-
-   
 
     return {
       products: filteredProducts,
@@ -656,7 +710,10 @@ export const getEnhancedProducts = async (
 };
 
 // Helper function to get available filter options
-const getFilterOptions = async (supabase: any, currentFilters: EnhancedProductFilters) => {
+const getFilterOptions = async (
+  supabase: any,
+  currentFilters: EnhancedProductFilters
+) => {
   try {
     // Get all available categories
     const { data: categories } = await supabase
@@ -685,9 +742,7 @@ const getFilterOptions = async (supabase: any, currentFilters: EnhancedProductFi
       .not("state", "is", null);
 
     // Get all available tags
-    const { data: tags } = await supabase
-      .from("tags")
-      .select("name");
+    const { data: tags } = await supabase.from("tags").select("name");
 
     // Get all available colors
     const { data: colors } = await supabase
@@ -706,19 +761,47 @@ const getFilterOptions = async (supabase: any, currentFilters: EnhancedProductFi
       .eq("is_active", true)
       .not("price_per_unit", "is", null);
 
-    const prices = priceRange?.map((p: { price_per_unit: number | null }) => p.price_per_unit).filter(Boolean) as number[] || [];
+    const prices =
+      (priceRange
+        ?.map((p: { price_per_unit: number | null }) => p.price_per_unit)
+        .filter(Boolean) as number[]) || [];
     const minPrice = prices.length > 0 ? Math.min(...prices) : 0;
     const maxPrice = prices.length > 0 ? Math.max(...prices) : 100000;
 
     return {
-      availableCategories: categories?.map((cat: { id: string; name: string }) => ({ ...cat, count: 0 })) || [],
-      availableSubcategories: subcategories?.map((sub: { id: string; name: string; parent_id: string }) => ({ ...sub, count: 0 })) || [],
-      availableCities: cities?.map((c: { city: string | null }) => ({ name: c.city, count: 0 })) || [],
-      availableStates: states?.map((s: { state: string | null }) => ({ name: s.state, count: 0 })) || [],
-      availableTags: tags?.map((t: { name: string }) => ({ name: t.name, count: 0 })) || [],
-      availableColors: colors?.map((c: { name: string }) => ({ name: c.name, count: 0 })) || [],
-      availableSizes: sizes?.map((s: { name: string }) => ({ name: s.name, count: 0 })) || [],
-      priceRange: { min: parseFloat(toRupee(minPrice)), max: parseFloat(toRupee(maxPrice)) },
+      availableCategories:
+        categories?.map((cat: { id: string; name: string }) => ({
+          ...cat,
+          count: 0,
+        })) || [],
+      availableSubcategories:
+        subcategories?.map(
+          (sub: { id: string; name: string; parent_id: string }) => ({
+            ...sub,
+            count: 0,
+          })
+        ) || [],
+      availableCities:
+        cities?.map((c: { city: string | null }) => ({
+          name: c.city,
+          count: 0,
+        })) || [],
+      availableStates:
+        states?.map((s: { state: string | null }) => ({
+          name: s.state,
+          count: 0,
+        })) || [],
+      availableTags:
+        tags?.map((t: { name: string }) => ({ name: t.name, count: 0 })) || [],
+      availableColors:
+        colors?.map((c: { name: string }) => ({ name: c.name, count: 0 })) ||
+        [],
+      availableSizes:
+        sizes?.map((s: { name: string }) => ({ name: s.name, count: 0 })) || [],
+      priceRange: {
+        min: parseFloat(toRupee(minPrice)),
+        max: parseFloat(toRupee(maxPrice)),
+      },
     };
   } catch (error) {
     console.error("Error getting filter options:", error);
@@ -739,10 +822,11 @@ const getFilterOptions = async (supabase: any, currentFilters: EnhancedProductFi
 export const getEnhancedProductById = async (productId: string) => {
   try {
     const supabase = await createClient();
-    
+
     const { data: product, error } = await supabase
       .from("products")
-      .select(`
+      .select(
+        `
         *,
         categories!products_category_id_fkey(name, slug),
         categories!products_subcategory_id_fkey(name, slug),
@@ -753,7 +837,8 @@ export const getEnhancedProductById = async (productId: string) => {
           is_verified,
           status
         )
-      `)
+      `
+      )
       .eq("id", productId)
       .single();
 
@@ -762,7 +847,13 @@ export const getEnhancedProductById = async (productId: string) => {
     }
 
     // Fetch additional data
-    const [imageUrl, priceAndQuantity, productTags, productColors, productSizes] = await Promise.all([
+    const [
+      imageUrl,
+      priceAndQuantity,
+      productTags,
+      productColors,
+      productSizes,
+    ] = await Promise.all([
       getProductMainImageUrl(product.id),
       getPricesAndQuantities(product.id),
       getProductTags(product.id),

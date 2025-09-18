@@ -46,7 +46,10 @@ const sidebarGroups: SidebarGroup[] = [
   },
   {
     label: "Sales",
-    items: [{ name: "Orders", href: "/supplier/orders", icon: ClipboardList }],
+    items: [
+      { name: "Orders", href: "/supplier/orders", icon: ClipboardList },
+      { name: "Buy Lead", href: "/supplier/buylead", icon: ClipboardList },
+    ],
   },
   {
     label: "Communication",

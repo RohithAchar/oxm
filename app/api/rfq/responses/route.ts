@@ -202,7 +202,10 @@ export async function POST(request: NextRequest) {
       .insert({
         buy_lead_id,
         supplier_id: user.id,
-        quoted_price: quoted_price ? Number(quoted_price) : null,
+        // Store quoted_price in paise
+        quoted_price: quoted_price
+          ? Math.round(Number(quoted_price) * 100)
+          : null,
         min_qty: min_qty ? Number(min_qty) : null,
         message: message || null,
         currency,
