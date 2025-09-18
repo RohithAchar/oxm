@@ -41,9 +41,19 @@ import { Database } from "@/utils/supabase/database.types";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerClose,
+} from "@/components/ui/drawer";
 
 type Category = Database["public"]["Tables"]["categories"]["Row"];
 type Product = Database["public"]["Tables"]["products"]["Row"];
+type Color = { id: string; name: string };
+type Size = { id: string; name: string };
 
 const ManageProductsPage = () => {
   const [statusFilter, setStatusFilter] = useState("all");
@@ -51,6 +61,11 @@ const ManageProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [categroies, setCategories] = useState<Category[]>([]);
+  const [colorsMap, setColorsMap] = useState<Record<string, string>>({});
+  const [sizesMap, setSizesMap] = useState<Record<string, string>>({});
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activeProductForActions, setActiveProductForActions] =
+    useState<Product | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -62,6 +77,51 @@ const ManageProductsPage = () => {
 
         const categoriesResponse = await axios.get("/api/categories");
         const categories = categoriesResponse.data.categories;
+        // Fetch color/size names per id to avoid large payloads
+        const uniqueColorIds = new Set<string>();
+        const uniqueSizeIds = new Set<string>();
+        (result as any[]).forEach((p: any) => {
+          if (Array.isArray(p.color_ids))
+            p.color_ids.forEach((id: string) => uniqueColorIds.add(id));
+          if (Array.isArray(p.size_ids))
+            p.size_ids.forEach((id: string) => uniqueSizeIds.add(id));
+        });
+
+        const [colorPairs, sizePairs] = await Promise.all([
+          Promise.all(
+            Array.from(uniqueColorIds).map(async (id) => {
+              try {
+                const res = await axios.get(`/api/colors/${id}`);
+                const data = res.data?.data || res.data || {};
+                return [id, data.name as string];
+              } catch {
+                return [id, undefined];
+              }
+            })
+          ),
+          Promise.all(
+            Array.from(uniqueSizeIds).map(async (id) => {
+              try {
+                const res = await axios.get(`/api/sizes/${id}`);
+                const data = res.data?.data || res.data || {};
+                return [id, data.name as string];
+              } catch {
+                return [id, undefined];
+              }
+            })
+          ),
+        ]);
+
+        setColorsMap(
+          Object.fromEntries(
+            colorPairs.filter(([, v]) => Boolean(v)) as [string, string][]
+          )
+        );
+        setSizesMap(
+          Object.fromEntries(
+            sizePairs.filter(([, v]) => Boolean(v)) as [string, string][]
+          )
+        );
         const mainCategories = categories.filter(
           (category: Category) => category.parent_id === null
         );
@@ -116,18 +176,29 @@ const ManageProductsPage = () => {
 
   const handleToggleStatus = async (productId: string, product: Product) => {
     try {
-      setLoading(true);
+      // Optimistic toggle
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === productId ? { ...p, is_active: !product.is_active } : p
+        )
+      );
+
       await axios.patch(`/api/products/${productId}`, {
         is_active: !product.is_active,
       });
 
       toast.success("Product status updated successfully");
-      window.location.reload();
     } catch (error) {
       console.error("Error toggling product status:", error);
+      // Revert optimistic update on error
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === productId ? { ...p, is_active: product.is_active } : p
+        )
+      );
       toast.error("Error toggling product status");
     } finally {
-      setLoading(false);
+      // no-op
     }
   };
 
@@ -140,262 +211,242 @@ const ManageProductsPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto pb-20 md:pb-12 space-y-6">
+    <div className="max-w-screen-2xl mx-auto pb-20 md:pb-12 space-y-6">
       {/* Header */}
-      <PageHeader
-        title="Manage Products"
-        description="Manage your product catalog, inventory, and pricing"
-      />
-
-      {/* Stats Cards */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-card border shadow-sm rounded-xl overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Products
-            </CardTitle>
-            <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center">
-              <Package className="h-5 w-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            {loading ? (
-              <CardSkeleton />
-            ) : (
-              <>
-                <div className="text-3xl font-semibold text-foreground">
-                  {products.length}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  +2 from last month
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border shadow-sm rounded-xl overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Active Products
-            </CardTitle>
-            <div className="h-10 w-10 bg-green-500/10 rounded-full flex items-center justify-center">
-              <Package className="h-5 w-5 text-green-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            {loading ? (
-              <CardSkeleton />
-            ) : (
-              <>
-                <div className="text-3xl font-semibold text-foreground">
-                  {products.filter((p) => p.is_active).length}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {Math.round(
-                    (products.filter((p) => p.is_active).length /
-                      products.length) *
-                      100
-                  )}
-                  % of total
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-card border shadow-sm rounded-xl overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 pt-6 px-6">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Sample Available
-            </CardTitle>
-            <div className="h-10 w-10 bg-purple-500/10 rounded-full flex items-center justify-center">
-              <Package className="h-5 w-5 text-purple-600" />
-            </div>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            {loading ? (
-              <CardSkeleton />
-            ) : (
-              <>
-                <div className="text-3xl font-semibold text-foreground">
-                  {products.filter((p) => p.is_sample_available).length}
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Ready for sampling
-                </p>
-              </>
-            )}
-          </CardContent>
-        </Card>
+      <div className="flex items-center justify-between pt-2 md:pt-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Products
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            List and manage all your products.
+          </p>
+        </div>
+        <Button
+          className="inline-flex bg-foreground text-background cursor-pointer h-8 px-3 hover:bg-foreground hover:opacity-90"
+          asChild
+        >
+          <Link href="/supplier/add-product">Add Product</Link>
+        </Button>
       </div>
+      <div className="border-t" />
 
-      {/* Filters and Search */}
-      <Card className="bg-card border shadow-sm rounded-xl overflow-hidden">
-        <CardHeader className="px-8 pt-8 pb-4">
-          <CardTitle className="text-2xl font-semibold text-foreground">
-            Product Catalog
-          </CardTitle>
-          <CardDescription className="text-muted-foreground text-base mt-2">
-            Filter and manage your products
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="px-8 pb-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-end">
-            <div className="flex items-center space-x-3">
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[140px] border-border rounded-xl bg-background hover:bg-muted/50">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-border">
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                <SelectTrigger className="w-[150px] border-border rounded-xl bg-background hover:bg-muted/50">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-border">
-                  <SelectItem value="all">All</SelectItem>
-                  {categroies.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Products Table */}
+      {/* Products Table / Mobile List */}
       <Card className="bg-card border shadow-sm rounded-xl overflow-hidden">
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b border-border bg-muted/30">
-                <TableHead className="text-muted-foreground font-medium py-4 px-6">
-                  Product
-                </TableHead>
-                <TableHead className="text-muted-foreground font-medium py-4 px-6">
-                  Brand
-                </TableHead>
-                <TableHead className="text-muted-foreground font-medium py-4 px-6">
-                  Category
-                </TableHead>
-                <TableHead className="text-muted-foreground font-medium py-4 px-6">
-                  Status
-                </TableHead>
-                <TableHead className="text-muted-foreground font-medium py-4 px-6">
-                  Sample
-                </TableHead>
-                <TableHead className="text-right text-muted-foreground font-medium py-4 px-6">
-                  Actions
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <SkeletonProducts />
-              ) : (
-                filteredProducts.map((product) => (
-                  <TableRow
-                    key={product.id}
-                    className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+          {/* Mobile list */}
+          <div className="md:hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <span className="text-[13px] font-medium text-muted-foreground">
+                Product
+              </span>
+            </div>
+            {loading ? (
+              <div className="divide-y">
+                {[...Array(6)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center justify-between px-4 py-3"
                   >
-                    <TableCell className="py-4 px-6">
-                      <div className="space-y-1">
-                        <div className="font-medium text-foreground">
-                          {product.name}
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-6 w-14 rounded-full" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="divide-y">
+                {filteredProducts.map((product) => (
+                  <button
+                    key={product.id}
+                    className="w-full flex items-center justify-between px-4 py-3 active:opacity-90"
+                    onClick={() => {
+                      setActiveProductForActions(product);
+                      setDrawerOpen(true);
+                    }}
+                  >
+                    <div className="min-w-0 text-left">
+                      <p className="text-sm text-foreground truncate">
+                        {product.name}
+                      </p>
+                    </div>
+                    <Badge
+                      className={`rounded-full px-3 py-1 text-xs font-medium ${
+                        product.is_active
+                          ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-100 border-gray-200"
+                      }`}
+                    >
+                      {product.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </button>
+                ))}
+                {/* Drawer lives outside list for single parent JSX */}
+                <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+                  <DrawerContent>
+                    <DrawerHeader>
+                      <DrawerTitle>Product actions</DrawerTitle>
+                    </DrawerHeader>
+                    <div className="px-4 pb-4 grid gap-2">
+                      <Button
+                        variant="outline"
+                        className="justify-start"
+                        onClick={() => {
+                          if (!activeProductForActions) return;
+                          router.push(
+                            `/supplier/manage-products/${activeProductForActions.id}?mode=edit`
+                          );
+                          setDrawerOpen(false);
+                        }}
+                      >
+                        Edit product
+                      </Button>
+                      <Button
+                        className="justify-start"
+                        onClick={() => {
+                          if (!activeProductForActions) return;
+                          handleToggleStatus(
+                            activeProductForActions.id,
+                            activeProductForActions
+                          );
+                          setDrawerOpen(false);
+                        }}
+                      >
+                        {activeProductForActions?.is_active
+                          ? "Deactivate"
+                          : "Activate"}
+                      </Button>
+                      <DrawerClose asChild>
+                        <Button variant="ghost" className="justify-start">
+                          Close
+                        </Button>
+                      </DrawerClose>
+                    </div>
+                  </DrawerContent>
+                </Drawer>
+              </div>
+            )}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-b border-border bg-muted/30">
+                  <TableHead className="text-muted-foreground font-medium py-4 px-6">
+                    Product
+                  </TableHead>
+                  <TableHead className="text-muted-foreground font-medium py-4 px-6">
+                    Brand
+                  </TableHead>
+                  <TableHead className="text-muted-foreground font-medium py-4 px-6">
+                    Category
+                  </TableHead>
+                  <TableHead className="text-muted-foreground font-medium py-4 px-6">
+                    Status
+                  </TableHead>
+                  <TableHead className="text-muted-foreground font-medium py-4 px-6">
+                    Sample
+                  </TableHead>
+                  <TableHead className="text-right text-muted-foreground font-medium py-4 px-6">
+                    Actions
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {loading ? (
+                  <SkeletonProducts />
+                ) : (
+                  filteredProducts.map((product) => (
+                    <TableRow
+                      key={product.id}
+                      className="border-b border-border/50 hover:bg-muted/30 transition-colors"
+                    >
+                      <TableCell className="py-4 px-6">
+                        <div className="space-y-1">
+                          <div className="font-medium text-foreground">
+                            {product.name}
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="py-4 px-6 text-muted-foreground">
-                      {product.brand}
-                    </TableCell>
-                    <TableCell className="py-4 px-6 text-muted-foreground capitalize">
-                      {
-                        categroies.find(
-                          (category) => category.id === product.category_id
-                        )?.name
-                      }
-                    </TableCell>
-                    <TableCell className="py-4 px-6">
-                      <Badge
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          product.is_active
-                            ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
-                            : "bg-gray-100 text-gray-600 hover:bg-gray-100 border-gray-200"
-                        }`}
-                      >
-                        {product.is_active ? "Active" : "Inactive"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="py-4 px-6">
-                      <Badge
-                        className={`rounded-full px-3 py-1 text-xs font-medium ${
-                          product.is_sample_available
-                            ? "bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200"
-                            : "bg-orange-100 text-orange-800 hover:bg-orange-100 border-orange-200"
-                        }`}
-                      >
-                        {product.is_sample_available
-                          ? "Available"
-                          : "Not Available"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right py-4 px-6">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            className="h-9 w-9 p-0 rounded-full hover:bg-muted"
-                          >
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="rounded-xl border-border shadow-lg"
+                      </TableCell>
+                      <TableCell className="py-4 px-6 text-muted-foreground">
+                        {product.brand}
+                      </TableCell>
+                      <TableCell className="py-4 px-6 text-muted-foreground capitalize">
+                        {
+                          categroies.find(
+                            (category) => category.id === product.category_id
+                          )?.name
+                        }
+                      </TableCell>
+
+                      <TableCell className="py-4 px-6">
+                        <Badge
+                          className={`rounded-full px-3 py-1 text-xs font-medium ${
+                            product.is_active
+                              ? "bg-green-100 text-green-800 hover:bg-green-100 border-green-200"
+                              : "bg-gray-100 text-gray-600 hover:bg-gray-100 border-gray-200"
+                          }`}
                         >
-                          <DropdownMenuLabel className="text-muted-foreground font-medium">
-                            Actions
-                          </DropdownMenuLabel>
-                          <DropdownMenuItem
-                            onClick={() => handleViewProduct(product.id)}
-                            className="rounded-lg hover:bg-muted"
+                          {product.is_active ? "Active" : "Inactive"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-4 px-6">
+                        <Badge
+                          className={`rounded-full px-3 py-1 text-xs font-medium ${
+                            product.is_sample_available
+                              ? "bg-blue-100 text-blue-800 hover:bg-blue-100 border-blue-200"
+                              : "bg-orange-100 text-orange-800 hover:bg-orange-100 border-orange-200"
+                          }`}
+                        >
+                          {product.is_sample_available
+                            ? "Available"
+                            : "Not Available"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right py-4 px-6">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              className="h-9 w-9 p-0 rounded-full hover:bg-muted"
+                            >
+                              <span className="sr-only">Open menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            align="end"
+                            className="rounded-xl border-border shadow-lg"
                           >
-                            <Eye className="mr-2 h-4 w-4" />
-                            View Details
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleEditProduct(product.id)}
-                            className="rounded-lg hover:bg-muted"
-                          >
-                            <Edit className="mr-2 h-4 w-4" />
-                            Edit Product
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-border" />
-                          <DropdownMenuItem
-                            className="text-destructive hover:bg-destructive/10 rounded-lg"
-                            onClick={() =>
-                              handleToggleStatus(product.id, product)
-                            }
-                          >
-                            {product.is_active ? "Deactivate" : "Activate"}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
+                            <DropdownMenuLabel className="text-muted-foreground font-medium">
+                              Actions
+                            </DropdownMenuLabel>
+
+                            <DropdownMenuItem
+                              onClick={() => handleEditProduct(product.id)}
+                              className="rounded-lg hover:bg-muted"
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Product
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-border" />
+                            <DropdownMenuItem
+                              className="text-destructive hover:bg-destructive/10 rounded-lg"
+                              onClick={() =>
+                                handleToggleStatus(product.id, product)
+                              }
+                            >
+                              {product.is_active ? "Deactivate" : "Activate"}
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 

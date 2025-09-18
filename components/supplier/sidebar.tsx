@@ -34,11 +34,6 @@ const sidebarGroups: SidebarGroup[] = [
   {
     label: "Catalog",
     items: [
-      {
-        name: "Add New Product",
-        href: "/supplier/add-product",
-        icon: CirclePlus,
-      },
       { name: "Products", href: "/supplier/manage-products", icon: Boxes },
       { name: "Colors", href: "/supplier/colors", icon: CirclePlus },
       { name: "Sizes", href: "/supplier/sizes", icon: CirclePlus },
@@ -124,76 +119,7 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:flex rounded-2xl h-screen w-64 backdrop-blur-xl border flex-col ml-4">
-        {/* Header */}
-        <div className="px-6 py-6 border-b">
-          <div className="flex items-center space-x-3">
-            <Avatar className="border">
-              <AvatarImage
-                src={profileUrl || "/placeholder-profile.png"}
-                alt="Profile"
-              />
-              <AvatarFallback>{name.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
-
-            <h1 className="text-xl font-semibold text-foreground">{name}</h1>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <ScrollArea className="flex-1 px-6 py-6">
-          <nav className="space-y-6">
-            {sidebarGroups.map((group, idx) => (
-              <div key={group.label} className="space-y-2">
-                <div className="px-3 text-[10px] uppercase tracking-wider text-muted-foreground/70">
-                  {group.label}
-                </div>
-                <div className="space-y-1">
-                  {group.items.map(({ name, href, icon: Icon }) => {
-                    const isActive = pathname === href;
-                    return (
-                      <Link
-                        key={name}
-                        href={href}
-                        className={cn(
-                          "w-full inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition-colors",
-                          isActive
-                            ? "bg-primary/15 text-primary ring-1 ring-primary/20"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                        )}
-                      >
-                        <Icon className="h-4 w-4" />
-                        <span className="truncate">{name}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-                {idx < sidebarGroups.length - 1 && (
-                  <div className="border-t mt-3 pt-3 border-border/60" />
-                )}
-              </div>
-            ))}
-          </nav>
-        </ScrollArea>
-
-        {/* Footer */}
-        <div className="px-6 py-6 border-t border-gray-200/50">
-          <div className="flex items-center gap-3 px-3 py-2">
-            <Avatar>
-              <AvatarImage src={userProfileUrl} alt="Profile" />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
-
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {username}
-              </p>
-              <p className="text-xs text-gray-500 truncate">{email}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Desktop Sidebar removed for large screens. Navigation handled by top Navbar. */}
     </>
   );
 }

@@ -1,6 +1,5 @@
 // app/(business)/supplier/layout.tsx
 
-import { Sidebar } from "@/components/supplier/sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -41,7 +40,7 @@ export default async function SupplierLayout({
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen lg:min-h-0 py-2 sm:py-4">
-      <Sidebar
+      {/* <Sidebar
         profileUrl={
           businessData?.profile_avatar_url || "/placeholder-profile.png"
         }
@@ -51,7 +50,7 @@ export default async function SupplierLayout({
         userProfileUrl={
           user.user?.user_metadata.picture || "/placeholder-profile.png"
         }
-      />
+      /> */}
       <main className="flex-1 px-3 sm:px-4 md:px-8 pt-3 sm:pt-4 lg:pt-0">
         {children}
       </main>

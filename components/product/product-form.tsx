@@ -368,23 +368,31 @@ export const ProductForm = ({
     name: "images",
   });
 
-  // Load draft on mount
+  // Load draft on mount (add mode only) or reset to product defaults in edit mode
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(draftStorageKey);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        form.reset({
-          ...getDefaultValues(),
-          ...parsed,
-        });
+      if (mode === "add") {
+        const raw = localStorage.getItem(draftStorageKey);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          form.reset({
+            ...getDefaultValues(),
+            ...parsed,
+          });
+          return;
+        }
       }
+      // For edit mode or when no draft exists, ensure defaults come from product
+      form.reset({
+        ...getDefaultValues(),
+      });
     } catch (_) {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draftStorageKey]);
+  }, [draftStorageKey, mode]);
 
-  // Autosave draft (exclude File objects)
+  // Autosave draft (exclude File objects) - add mode only
   useEffect(() => {
+    if (mode !== "add") return;
     const subscription = form.watch((values) => {
       const { images: _images, ...rest } = values as any;
       try {
@@ -392,9 +400,10 @@ export const ProductForm = ({
       } catch (_) {}
     });
     return () => subscription.unsubscribe();
-  }, [draftStorageKey, form]);
+  }, [draftStorageKey, form, mode]);
 
   const handleSaveDraft = () => {
+    if (mode !== "add") return; // no-op in edit mode
     const values = form.getValues();
     const { images: _images, ...rest } = values as any;
     try {
@@ -530,7 +539,7 @@ export const ProductForm = ({
                       <div
                         className={`h-7 px-3 rounded-full border flex items-center gap-2 ${
                           idx === currentStep
-                            ? "bg-primary text-primary-foreground border-primary"
+                            ? "bg-foreground text-background border-foreground"
                             : idx < currentStep
                             ? "bg-muted text-foreground"
                             : "bg-muted/50 text-muted-foreground"
@@ -906,7 +915,7 @@ export const ProductForm = ({
                               onValueChange={field.onChange}
                               defaultValue={field.value}
                             >
-                              <SelectTrigger className="w-full bg-primary-foreground">
+                              <SelectTrigger className="w-full bg-background">
                                 <SelectValue placeholder="Select a category" />
                               </SelectTrigger>
                               <SelectContent>
@@ -947,7 +956,7 @@ export const ProductForm = ({
                               defaultValue={field.value}
                               disabled={!selectedCategoryId}
                             >
-                              <SelectTrigger className="w-full bg-primary-foreground">
+                              <SelectTrigger className="w-full bg-background">
                                 <SelectValue placeholder="Select a sub-category" />
                               </SelectTrigger>
                               <SelectContent>
@@ -1100,7 +1109,7 @@ export const ProductForm = ({
 
                         {/* Visual indicator for bulk discount */}
                         {index > 0 && (
-                          <div className="mt-3 text-xs text-primary bg-primary/10 px-2 py-1 rounded-md inline-block">
+                          <div className="mt-3 text-xs text-foreground bg-muted px-2 py-1 rounded-md inline-block">
                             💰 Bulk discount tier
                           </div>
                         )}
@@ -2031,7 +2040,7 @@ export const ProductForm = ({
                                         <div className="border-t border-border p-2">
                                           <button
                                             type="button"
-                                            className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm text-primary"
+                                            className="w-full flex items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground rounded-sm text-foreground"
                                             onClick={() =>
                                               handleTagAdd(tagInput)
                                             }
@@ -2128,10 +2137,14 @@ export const ProductForm = ({
                   Back
                 </Button>
                 <Button
-                  type="reset"
+                  type="button"
                   variant="outline"
                   disabled={form.formState.isSubmitting}
-                  onClick={() => form.reset()}
+                  onClick={() => {
+                    form.reset();
+                    form.setValue("images", [] as any);
+                    setTagInput("");
+                  }}
                 >
                   Reset
                 </Button>

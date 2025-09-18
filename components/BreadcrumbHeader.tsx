@@ -26,6 +26,7 @@ function toTitleCase(segment: string): string {
 export default function BreadcrumbHeader() {
   const pathname = usePathname();
   const router = useRouter();
+  const isSupplier = pathname?.startsWith("/supplier");
 
   const segments = useMemo(() => {
     if (!pathname || pathname === "/") {
@@ -55,7 +56,11 @@ export default function BreadcrumbHeader() {
 
   return (
     <div className="w-full">
-      <div className="max-w-7xl mx-auto px-4 pt-3 pb-0 flex items-center gap-3">
+      <div
+        className={`${
+          isSupplier ? "max-w-screen-2xl" : "max-w-7xl"
+        } mx-auto px-4 pt-3 pb-0 flex items-center gap-3`}
+      >
         <Button
           variant="ghost"
           size="icon"
@@ -82,7 +87,9 @@ export default function BreadcrumbHeader() {
                       {idx === segments.slice(-2).length - 1 ? (
                         <BreadcrumbPage>{seg.label}</BreadcrumbPage>
                       ) : (
-                        <BreadcrumbLink href={seg.href}>{seg.label}</BreadcrumbLink>
+                        <BreadcrumbLink href={seg.href}>
+                          {seg.label}
+                        </BreadcrumbLink>
                       )}
                     </BreadcrumbItem>
                     {idx < segments.slice(-2).length - 1 ? (
@@ -103,7 +110,9 @@ export default function BreadcrumbHeader() {
                       {index === segments.length - 1 ? (
                         <BreadcrumbPage>{seg.label}</BreadcrumbPage>
                       ) : (
-                        <BreadcrumbLink href={seg.href}>{seg.label}</BreadcrumbLink>
+                        <BreadcrumbLink href={seg.href}>
+                          {seg.label}
+                        </BreadcrumbLink>
                       )}
                     </BreadcrumbItem>
                   </React.Fragment>
@@ -116,5 +125,3 @@ export default function BreadcrumbHeader() {
     </div>
   );
 }
-
-

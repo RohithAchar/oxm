@@ -39,6 +39,21 @@ import {
   PrimaryActionButton,
   SecondaryActionButton,
 } from "@/components/PageHeader";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  ReferenceLine,
+} from "recharts";
 
 // Type definitions based on your schema
 type OrderWithDetails = Tables<"sample_orders"> & {
@@ -58,6 +73,9 @@ interface DashboardStats {
   pendingOrders: number;
   completedOrders: number;
   cancelledOrders: number;
+  revenueMoMText: string;
+  ordersMoMText: string;
+  productsAddedText: string;
   recentOrders: Array<{
     id: string;
     order_number: string;
@@ -80,6 +98,7 @@ interface DashboardStats {
     revenue: number;
     category: string;
   }>;
+  revenueSeries?: { month: string; revenue: number }[];
 }
 
 const OverviewPage = () => {
@@ -90,11 +109,16 @@ const OverviewPage = () => {
     pendingOrders: 0,
     completedOrders: 0,
     cancelledOrders: 0,
+    revenueMoMText: "",
+    ordersMoMText: "",
+    productsAddedText: "",
     recentOrders: [],
     topProducts: [],
+    revenueSeries: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [range, setRange] = useState<"3M" | "6M" | "12M">("12M");
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -114,7 +138,7 @@ const OverviewPage = () => {
         // Fetch products count
         const { data: products, error: productsError } = await supabase
           .from("products")
-          .select("id, name, categories!category_id(name)")
+          .select("id, name, created_at, categories!category_id(name)")
           .eq("supplier_id", user.id);
 
         if (productsError) throw productsError;
@@ -148,6 +172,108 @@ const OverviewPage = () => {
         const totalRevenue =
           orders?.reduce((sum, order) => sum + Number(order.total_amount), 0) ||
           0;
+        // Build revenue series for last 12 months
+        const now = new Date();
+        const seriesMap = new Map<string, number>();
+        for (let i = 11; i >= 0; i--) {
+          const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}`;
+          seriesMap.set(key, 0);
+        }
+        orders?.forEach((o) => {
+          if (!o.created_at) return;
+          const d = new Date(o.created_at);
+          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+            2,
+            "0"
+          )}`;
+          if (seriesMap.has(key)) {
+            seriesMap.set(
+              key,
+              (seriesMap.get(key) || 0) + Number(o.total_amount)
+            );
+          }
+        });
+        const revenueSeries = Array.from(seriesMap.entries()).map(([k, v]) => {
+          const [, m] = k.split("-");
+          const month = new Date(2000, Number(m) - 1, 1).toLocaleString(
+            "en-US",
+            {
+              month: "short",
+            }
+          );
+          return { month, revenue: v };
+        });
+
+        // Month-over-month calculations
+        const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startOfPrevMonth = new Date(
+          now.getFullYear(),
+          now.getMonth() - 1,
+          1
+        );
+        const endOfPrevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+        const revenueThisMonth =
+          orders
+            ?.filter((o) =>
+              o.created_at ? new Date(o.created_at) >= startOfThisMonth : false
+            )
+            .reduce((sum, o) => sum + Number(o.total_amount), 0) || 0;
+        const revenuePrevMonth =
+          orders
+            ?.filter((o) => {
+              if (!o.created_at) return false;
+              const d = new Date(o.created_at);
+              return d >= startOfPrevMonth && d <= endOfPrevMonth;
+            })
+            .reduce((sum, o) => sum + Number(o.total_amount), 0) || 0;
+
+        const revenueMoMPercent =
+          revenuePrevMonth === 0
+            ? revenueThisMonth > 0
+              ? 100
+              : 0
+            : Math.round(
+                ((revenueThisMonth - revenuePrevMonth) / revenuePrevMonth) * 100
+              );
+        const revenueMoMText = `${
+          revenueMoMPercent >= 0 ? "+" : ""
+        }${revenueMoMPercent}% from last month`;
+
+        const ordersThisMonth =
+          orders?.filter((o) =>
+            o.created_at ? new Date(o.created_at) >= startOfThisMonth : false
+          ).length || 0;
+        const ordersPrevMonth =
+          orders?.filter((o) => {
+            if (!o.created_at) return false;
+            const d = new Date(o.created_at);
+            return d >= startOfPrevMonth && d <= endOfPrevMonth;
+          }).length || 0;
+        const ordersMoMPercent =
+          ordersPrevMonth === 0
+            ? ordersThisMonth > 0
+              ? 100
+              : 0
+            : Math.round(
+                ((ordersThisMonth - ordersPrevMonth) / ordersPrevMonth) * 100
+              );
+        const ordersMoMText = `${
+          ordersMoMPercent >= 0 ? "+" : ""
+        }${ordersMoMPercent}% from last month`;
+
+        const productsAddedThisMonth =
+          products?.filter((p: any) =>
+            p.created_at ? new Date(p.created_at) >= startOfThisMonth : false
+          ).length || 0;
+        const productsAddedText =
+          productsAddedThisMonth > 0
+            ? `+${productsAddedThisMonth} added this month`
+            : "No new products this month";
 
         // Count orders by status
         const pendingOrders =
@@ -205,8 +331,12 @@ const OverviewPage = () => {
           pendingOrders,
           completedOrders,
           cancelledOrders,
+          revenueMoMText,
+          ordersMoMText,
+          productsAddedText,
           recentOrders,
           topProducts,
+          revenueSeries,
         });
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
@@ -258,20 +388,24 @@ const OverviewPage = () => {
     color?: string;
   }) => (
     <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="p-6">
+      <CardContent className="p-4 md:p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-2xl font-bold mt-1">{value}</p>
+            <p className="text-xs md:text-sm font-medium text-muted-foreground">
+              {title}
+            </p>
+            <p className="text-xl md:text-2xl font-bold mt-1">{value}</p>
             {trend && (
-              <div className="flex items-center mt-2">
-                <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-                <span className="text-sm text-green-500">{trend}</span>
+              <div className="flex items-center mt-1 md:mt-2">
+                <TrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-500 mr-1" />
+                <span className="text-xs md:text-sm text-green-500">
+                  {trend}
+                </span>
               </div>
             )}
           </div>
-          <div className="p-3 rounded-full bg-primary/10">
-            <Icon className="w-6 h-6 text-primary" />
+          <div className="p-2.5 md:p-3 rounded-full bg-primary/10">
+            <Icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
           </div>
         </div>
       </CardContent>
@@ -280,23 +414,41 @@ const OverviewPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen rounded-2xl bg-background p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="space-y-6">
-            <Skeleton className="h-8 w-48" />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i}>
-                  <CardContent className="p-6">
-                    <div className="space-y-4">
+      <div className="min-h-screen rounded-2xl bg-background">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-6">
+          {/* Title */}
+          <Skeleton className="h-7 w-56" />
+          <Skeleton className="h-4 w-[360px] mt-2" />
+          <div className="h-px bg-border mt-6" />
+
+          {/* Stat cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-6">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="hover:shadow-none">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-3">
                       <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-7 w-20" />
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    <div className="p-3 rounded-full bg-muted">
+                      <Skeleton className="h-6 w-6 rounded-full" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
+
+          {/* Graph card */}
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-5 w-44" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[420px] w-full" />
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -305,7 +457,7 @@ const OverviewPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-6">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-screen-2xl mx-auto">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -320,221 +472,207 @@ const OverviewPage = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background rounded-2xl pb-20 md:pb-12">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <PageHeader
-            title="Overview"
-            description="Welcome back! Here's what's happening with your business."
-            actions={
-              <>
-                <SecondaryActionButton className="w-full md:w-auto">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
-                </SecondaryActionButton>
-                <PrimaryActionButton>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Product
-                </PrimaryActionButton>
-              </>
-            }
-          />
-        </div>
+  // Prepare Y-axis ticks at 5k intervals for the revenue chart
+  const revenueMax = Math.max(
+    0,
+    ...(stats.revenueSeries || []).map((d) => Number(d.revenue) || 0)
+  );
+  const revenueTop = Math.max(5000, Math.ceil(revenueMax / 5000) * 5000);
+  const revenueTicks = Array.from(
+    { length: revenueTop / 5000 + 1 },
+    (_, i) => i * 5000
+  );
+  const minTopForVisuals = Math.max(revenueTop, 20000);
+  const ticksForVisuals = Array.from(
+    { length: minTopForVisuals / 5000 + 1 },
+    (_, i) => i * 5000
+  );
+  const allZeroRevenue = (stats.revenueSeries || []).every(
+    (d) => (Number(d.revenue) || 0) === 0
+  );
+  const rangeMonths = range === "12M" ? 12 : range === "6M" ? 6 : 3;
+  const revenueSeriesRanged = (stats.revenueSeries || []).slice(-rangeMonths);
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  return (
+    <div className="min-h-screen bg-background rounded-2xl pb-24 md:pb-12">
+      <div className="max-w-screen-2xl mx-auto px-3 md:px-6">
+        {/* Title + Description */}
+        <div className="py-4 md:py-6">
+          <h1 className="text-xl md:text-3xl font-bold tracking-tight">
+            Overview
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
+            Welcome back! Here's what's happening with your business.
+          </p>
+        </div>
+        <div className="border-t" />
+
+        {/* Top Stat Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 py-4 md:py-6">
           <StatCard
-            title="Total Products"
-            value={stats.totalProducts}
-            icon={Package}
-            trend="+12% from last month"
-            color="blue"
-          />
-          <StatCard
-            title="Total Orders"
-            value={stats.totalOrders}
-            icon={ShoppingCart}
-            trend="+8% from last month"
-            color="green"
-          />
-          <StatCard
-            title="Revenue"
+            title="Total Revenue"
             value={`₹${stats.totalRevenue.toLocaleString()}`}
             icon={DollarSign}
-            trend="+15% from last month"
+            trend={stats.revenueMoMText}
             color="purple"
           />
           <StatCard
-            title="Pending Orders"
-            value={stats.pendingOrders}
-            icon={Clock}
-            color="yellow"
+            title="Sales"
+            value={stats.totalOrders}
+            icon={ShoppingCart}
+            trend={stats.ordersMoMText}
+            color="green"
+          />
+          <StatCard
+            title="Products in Stock"
+            value={stats.totalProducts}
+            icon={Package}
+            trend={stats.productsAddedText}
+            color="blue"
           />
         </div>
 
-        {/* Order Status Overview */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Order Status
-                <BarChart3 className="w-5 h-5 text-muted-foreground" />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                    <span className="text-sm font-medium">Delivered</span>
-                  </div>
-                  <span className="text-sm font-semibold">
-                    {stats.completedOrders}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Clock className="w-5 h-5 text-yellow-500" />
-                    <span className="text-sm font-medium">Pending</span>
-                  </div>
-                  <span className="text-sm font-semibold">
-                    {stats.pendingOrders}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <XCircle className="w-5 h-5 text-red-500" />
-                    <span className="text-sm font-medium">Cancelled</span>
-                  </div>
-                  <span className="text-sm font-semibold">
-                    {stats.cancelledOrders}
-                  </span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <Button variant="outline" className="w-full justify-start">
-                  <Package className="w-5 h-5 mr-3" />
-                  Add New Product
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <Eye className="w-5 h-5 mr-3" />
-                  View All Orders
-                </Button>
-                <Button variant="outline" className="w-full justify-start">
-                  <BarChart3 className="w-5 h-5 mr-3" />
-                  Analytics
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Top Products */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Top Products</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {stats.topProducts.map((product, index) => (
-                  <div
-                    key={product.id}
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                        <span className="text-sm font-semibold text-primary">
-                          {index + 1}
-                        </span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{product.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {product.category}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold">
-                        ₹{product.revenue.toLocaleString()}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {product.orders} orders
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Orders */}
-        <Card>
+        {/* Revenue Graph Section (placeholder) */}
+        <Card className="mt-2">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Recent Orders</CardTitle>
-              <Button variant="ghost" size="sm">
-                View All
-              </Button>
+              <CardTitle className="text-sm md:text-base">
+                Revenue per month
+              </CardTitle>
+              <div className="md:hidden inline-flex rounded-full border p-0.5">
+                {(["3M", "6M", "12M"] as const).map((r) => (
+                  <button
+                    key={r}
+                    onClick={() => setRange(r)}
+                    className={`px-2.5 py-1 text-xs rounded-full ${
+                      range === r
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground"
+                    }`}
+                    aria-pressed={range === r}
+                  >
+                    {r}
+                  </button>
+                ))}
+              </div>
             </div>
           </CardHeader>
-          <CardContent className="overflow-x-auto">
-            <Table className="min-w-[640px]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Order</TableHead>
-                  <TableHead>Customer</TableHead>
-                  <TableHead>Items</TableHead>
-                  <TableHead>Amount</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Date</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stats.recentOrders.map((order) => (
-                  <TableRow key={order.id}>
-                    <TableCell className="font-medium">
-                      {order.order_number}
-                    </TableCell>
-                    <TableCell>{order.buyer_name}</TableCell>
-                    <TableCell>{order.items} items</TableCell>
-                    <TableCell className="font-medium">
-                      ₹{order.total_amount.toLocaleString()}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusVariant(order.status)}>
-                        {order.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(order.created_at).toLocaleDateString()}
-                    </TableCell>
-                  </TableRow>
-                ))}
-
-                {stats.recentOrders.length === 0 && (
-                  <TableRow>
-                    <TableCell
-                      colSpan={7}
-                      className="text-center text-muted-foreground py-4"
+          <CardContent className="pl-2 pr-2 md:pl-4 md:pr-4">
+            <div className="relative">
+              <ChartContainer
+                className="h-[300px] md:h-[440px] w-full"
+                config={{
+                  revenue: { label: "Revenue", color: "hsl(var(--primary))" },
+                }}
+              >
+                {
+                  <>
+                    <div className="md:hidden">
+                      <BarChart
+                        data={revenueSeriesRanged}
+                        margin={{ left: 8, right: 8, top: 4, bottom: 0 }}
+                      >
+                        <CartesianGrid vertical={false} strokeOpacity={0.15} />
+                        <XAxis
+                          dataKey="month"
+                          tickLine={false}
+                          axisLine={false}
+                          tick={{ fontSize: 11 }}
+                        />
+                        <YAxis hide domain={[0, minTopForVisuals]} />
+                        <ChartTooltip
+                          content={
+                            <ChartTooltipContent
+                              formatter={(val) =>
+                                `₹${Number(val).toLocaleString()}`
+                              }
+                            />
+                          }
+                        />
+                        <Bar
+                          dataKey="revenue"
+                          fill="var(--color-revenue)"
+                          radius={[4, 4, 0, 0]}
+                          barSize={
+                            range === "3M" ? 28 : range === "6M" ? 18 : 12
+                          }
+                        />
+                      </BarChart>
+                    </div>
+                    <AreaChart
+                      className="hidden md:block"
+                      data={stats.revenueSeries}
+                      margin={{ left: 44, right: 8, top: 8, bottom: 6 }}
                     >
-                      No orders found.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+                      <defs>
+                        <linearGradient
+                          id="revenueGradient"
+                          x1="0"
+                          y1="0"
+                          x2="0"
+                          y2="1"
+                        >
+                          <stop
+                            offset="0%"
+                            stopColor="hsl(var(--primary))"
+                            stopOpacity={0.35}
+                          />
+                          <stop
+                            offset="100%"
+                            stopColor="hsl(var(--primary))"
+                            stopOpacity={0.04}
+                          />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid vertical={false} strokeOpacity={0.2} />
+                      <XAxis
+                        dataKey="month"
+                        interval={2}
+                        tickLine={false}
+                        axisLine={false}
+                        tick={{ fontSize: 11 }}
+                      />
+                      <YAxis
+                        ticks={ticksForVisuals}
+                        domain={[0, minTopForVisuals]}
+                        tickFormatter={(v) =>
+                          `${Math.round(Number(v) / 1000)}k`
+                        }
+                        width={40}
+                      />
+                      <ReferenceLine
+                        y={0}
+                        stroke="hsl(var(--muted-foreground))"
+                        strokeOpacity={0.2}
+                      />
+                      <ChartTooltip
+                        content={
+                          <ChartTooltipContent
+                            formatter={(val) =>
+                              `₹${Number(val).toLocaleString()}`
+                            }
+                          />
+                        }
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="var(--color-revenue)"
+                        strokeWidth={2}
+                        fill="url(#revenueGradient)"
+                        dot={{ r: 2, strokeWidth: 0 }}
+                        activeDot={{ r: 3 }}
+                      />
+                    </AreaChart>
+                  </>
+                }
+              </ChartContainer>
+              {allZeroRevenue ? (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center text-xs md:text-sm text-muted-foreground">
+                  No revenue yet for the past 12 months
+                </div>
+              ) : null}
+            </div>
           </CardContent>
         </Card>
       </div>

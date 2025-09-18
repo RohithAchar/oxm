@@ -109,7 +109,7 @@ const NewLandingPage = async () => {
       </section>
 
       {/* Desktop / large-screen content */}
-      <section className="hidden md:block relative max-w-7xl mx-auto px-4 pt-4 lg:pt-8">
+      <section className="hidden md:block relative max-w-7xl mx-auto px-4 pt-4 lg:pt-16">
         <div className="rounded-md border p-4 pt-8 md:p-12 shadow">
           <div className="relative mx-auto max-w-4xl text-center space-y-4 md:space-y-5">
             <H1 className="text-3xl md:text-6xl text-center font-bold tracking-tight leading-tight text-foreground">

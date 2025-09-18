@@ -37,15 +37,16 @@ export default async function ProductPage({
       }
 
       return (
-        <main className="space-y-6 pb-20 md:pb-12 mx-auto max-w-7xl">
-          <div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-light">
-              Edit Product
+        <main className="space-y-4 md:space-y-6 pb-24 md:pb-12 mx-auto max-w-screen-2xl px-3 md:px-6">
+          <div className="pt-2 md:pt-4">
+            <h1 className="text-xl md:text-3xl font-bold tracking-tight">
+              Edit product
             </h1>
-            <p className="text-muted-foreground mt-1 font-light">
+            <p className="text-muted-foreground mt-1 text-sm md:text-base">
               Update your product information and settings.
             </p>
           </div>
+          <div className="border-t" />
           <ProductForm
             business={business!}
             categories={categories!}
