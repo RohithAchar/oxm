@@ -45,7 +45,7 @@ export default function ProductSearch({
   return (
     <div className={`relative ${className}`}>
       <div
-        className={`flex items-center gap-2 rounded-full border border-border/60 bg-muted/70 backdrop-blur px-3 md:px-4 w-full`}
+        className={`flex items-center gap-2 rounded-full border border-border/60 bg-muted/70 backdrop-blur  w-full`}
       >
         <div className="relative flex-1">
           <Search
@@ -54,7 +54,7 @@ export default function ProductSearch({
             }`}
           />
           <Input
-            className={`w-full ${heightClass} bg-transparent outline-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${
+            className={`w-full ${heightClass} bg-transparent rounded-full outline-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${
               size === "sm" ? "text-xs" : "text-sm md:text-base"
             } placeholder:text-muted-foreground pl-7 sm:pl-8 md:pl-9 pr-2 md:pr-3`}
             placeholder={placeholder}
@@ -68,7 +68,7 @@ export default function ProductSearch({
         </div>
         {buttonMode === "icon" ? (
           <Button
-            className={`rounded-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-3`}
+            className={`absolute right-0 rounded-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-3`}
             size="icon"
             aria-label="Search"
             onClick={submit}
@@ -77,7 +77,7 @@ export default function ProductSearch({
           </Button>
         ) : (
           <Button
-            className={`rounded-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-4 md:px-5`}
+            className={`absolute right-0 rounded-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-4 md:px-5`}
             onClick={submit}
           >
             Search
