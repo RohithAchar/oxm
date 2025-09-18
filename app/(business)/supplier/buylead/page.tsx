@@ -198,84 +198,143 @@ export default function BuyLeadPage() {
           <CardTitle>Received RFQs</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Product</TableHead>
-                <TableHead>Qty</TableHead>
-                <TableHead>Target Price</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Delivery</TableHead>
-                <TableHead>Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading && (
-                <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="py-6 text-center text-muted-foreground"
-                  >
-                    Loading...
-                  </TableCell>
-                </TableRow>
+          {/* Mobile: compact list showing product name, target price and quantity */}
+          <div className="md:hidden space-y-3">
+            {loading && (
+              <div className="py-6 text-center text-muted-foreground">
+                Loading...
+              </div>
+            )}
+            {!loading && error && (
+              <div className="py-6 text-center text-destructive">{error}</div>
+            )}
+            {!loading &&
+              !error &&
+              filteredLeads &&
+              filteredLeads.length === 0 && (
+                <div className="py-6 text-center text-muted-foreground">
+                  No RFQs received yet.
+                </div>
               )}
-              {!loading && error && (
+            {!loading &&
+              !error &&
+              filteredLeads &&
+              filteredLeads.map((lead) => (
+                <div
+                  key={lead.id}
+                  className="rounded-lg border p-3 bg-background"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="font-medium truncate">
+                      {lead.product_name || "-"}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {lead.created_at
+                        ? new Date(lead.created_at).toLocaleDateString()
+                        : "-"}
+                    </div>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Qty</span>
+                      <span className="font-medium">
+                        {lead.quantity_required ?? "-"}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Target</span>
+                      <span className="font-medium">
+                        {formatPrice(lead.target_price)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+          </div>
+
+          {/* Desktop/Tablet: full table */}
+          <div className="hidden md:block">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={7}
-                    className="py-6 text-center text-destructive"
-                  >
-                    {error}
-                  </TableCell>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Product</TableHead>
+                  <TableHead>Qty</TableHead>
+                  <TableHead>Target Price</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Delivery</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
-              )}
-              {!loading &&
-                !error &&
-                filteredLeads &&
-                filteredLeads.length === 0 && (
+              </TableHeader>
+              <TableBody>
+                {loading && (
                   <TableRow>
                     <TableCell
                       colSpan={7}
                       className="py-6 text-center text-muted-foreground"
                     >
-                      No RFQs received yet.
+                      Loading...
                     </TableCell>
                   </TableRow>
                 )}
-              {!loading &&
-                !error &&
-                filteredLeads &&
-                filteredLeads.map((lead) => (
-                  <TableRow key={lead.id}>
-                    <TableCell className="text-muted-foreground">
-                      {lead.created_at
-                        ? new Date(lead.created_at).toLocaleDateString()
-                        : "-"}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {lead.product_name || "-"}
-                    </TableCell>
-                    <TableCell>{lead.quantity_required ?? "-"}</TableCell>
-                    <TableCell className="font-medium">
-                      {formatPrice(lead.target_price)}
-                    </TableCell>
-                    <TableCell>
-                      {lead.contact_email || lead.contact_phone || "-"}
-                    </TableCell>
-                    <TableCell>
-                      {lead.delivery_city || ""}
-                      {lead.delivery_city && lead.delivery_pincode ? ", " : ""}
-                      {lead.delivery_pincode || ""}
-                    </TableCell>
-                    <TableCell className="capitalize">
-                      {lead.status || "submitted"}
+                {!loading && error && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="py-6 text-center text-destructive"
+                    >
+                      {error}
                     </TableCell>
                   </TableRow>
-                ))}
-            </TableBody>
-          </Table>
+                )}
+                {!loading &&
+                  !error &&
+                  filteredLeads &&
+                  filteredLeads.length === 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={7}
+                        className="py-6 text-center text-muted-foreground"
+                      >
+                        No RFQs received yet.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                {!loading &&
+                  !error &&
+                  filteredLeads &&
+                  filteredLeads.map((lead) => (
+                    <TableRow key={lead.id}>
+                      <TableCell className="text-muted-foreground">
+                        {lead.created_at
+                          ? new Date(lead.created_at).toLocaleDateString()
+                          : "-"}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {lead.product_name || "-"}
+                      </TableCell>
+                      <TableCell>{lead.quantity_required ?? "-"}</TableCell>
+                      <TableCell className="font-medium">
+                        {formatPrice(lead.target_price)}
+                      </TableCell>
+                      <TableCell>
+                        {lead.contact_email || lead.contact_phone || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {lead.delivery_city || ""}
+                        {lead.delivery_city && lead.delivery_pincode
+                          ? ", "
+                          : ""}
+                        {lead.delivery_pincode || ""}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {lead.status || "submitted"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>
