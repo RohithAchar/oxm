@@ -14,7 +14,11 @@ export default function Container({
   const isSupplier = pathname?.startsWith("/supplier");
   const maxWidthClass = isSupplier ? "max-w-full" : "max-w-screen-2xl";
   return (
-    <div className={`${maxWidthClass} mx-auto ${className} px-4`}>
+    <div
+      className={`${maxWidthClass} mx-auto ${className} ${
+        isSupplier ? "px-0" : "px-4"
+      }`}
+    >
       {children}
     </div>
   );
