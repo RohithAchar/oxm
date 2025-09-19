@@ -24,7 +24,11 @@ export function SupplierBreadcrumbs() {
   if (!pathname?.startsWith("/supplier")) {
     return null;
   }
-  return <Breadcrumbs />;
+  return (
+    <div className="flex-1 flex items-center">
+      <Breadcrumbs />
+    </div>
+  );
 }
 
 function toTitleCase(segment: string): string {
@@ -54,25 +58,30 @@ export default function Breadcrumbs() {
     });
   }
 
+  const isSupplier = pathname.startsWith("/supplier");
+  const containerClass = isSupplier ? "px-0 py-0" : "px-4 pt-3 pb-0";
+
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink href="/">Home</BreadcrumbLink>
-        </BreadcrumbItem>
-        {segments.map((seg, index) => (
-          <React.Fragment key={seg.href}>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              {index === segments.length - 1 ? (
-                <BreadcrumbPage>{seg.label}</BreadcrumbPage>
-              ) : (
-                <BreadcrumbLink href={seg.href}>{seg.label}</BreadcrumbLink>
-              )}
-            </BreadcrumbItem>
-          </React.Fragment>
-        ))}
-      </BreadcrumbList>
-    </Breadcrumb>
+    <div className={containerClass}>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/">Home</BreadcrumbLink>
+          </BreadcrumbItem>
+          {segments.map((seg, index) => (
+            <React.Fragment key={seg.href}>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                {index === segments.length - 1 ? (
+                  <BreadcrumbPage>{seg.label}</BreadcrumbPage>
+                ) : (
+                  <BreadcrumbLink href={seg.href}>{seg.label}</BreadcrumbLink>
+                )}
+              </BreadcrumbItem>
+            </React.Fragment>
+          ))}
+        </BreadcrumbList>
+      </Breadcrumb>
+    </div>
   );
 }
