@@ -6,7 +6,7 @@ import MobileMenu from "@/components/nav/mobile-menu";
 import RegisterSW from "@/components/RegisterSW";
 import Footer from "@/components/footer";
 import { ErrorBoundary } from "@/components/error-boundary";
-import BreadcrumbHeader from "@/components/BreadcrumbHeader";
+import { GlobalBreadcrumbs } from "@/components/Breadcrumbs";
 import Container from "@/components/common/Container";
 
 export const metadata = {
@@ -87,7 +87,7 @@ export default async function RootLayout({
               }}
             >
               <Container>
-                <BreadcrumbHeader />
+                <GlobalBreadcrumbs />
                 {children}
               </Container>
             </main>

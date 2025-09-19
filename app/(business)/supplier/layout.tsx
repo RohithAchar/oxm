@@ -1,7 +1,16 @@
 // app/(business)/supplier/layout.tsx
 
 import { createClient } from "@/utils/supabase/server";
+import { SupplierBreadcrumbs } from "@/components/Breadcrumbs";
 import { redirect } from "next/navigation";
+import { AppSidebar } from "@/components/app-sidebar";
+import { ModeToggle } from "@/components/nav/theme-toggle-button";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
 
 export const metadata = {
   title: "Supplier portal | OpenXmart",
@@ -39,21 +48,26 @@ export default async function SupplierLayout({
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen lg:min-h-0 py-2 sm:py-4">
-      {/* <Sidebar
-        profileUrl={
-          businessData?.profile_avatar_url || "/placeholder-profile.png"
-        }
-        name={businessData?.business_name || ""}
-        username={user.user?.user_metadata.full_name || "Joe Bloggs"}
-        email={user.user?.user_metadata.email || "joe@example.com"}
-        userProfileUrl={
-          user.user?.user_metadata.picture || "/placeholder-profile.png"
-        }
-      /> */}
-      <main className="flex-1 px-3 sm:px-4 md:px-8 pt-3 sm:pt-4 lg:pt-0">
-        {children}
-      </main>
+    <div className="flex flex-col lg:flex-row min-h-screen lg:min-h-0 py-0">
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset className="-mt-14 md:-mt-14">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <SupplierBreadcrumbs />
+            <div className="ml-auto hidden md:flex">
+              <ModeToggle />
+            </div>
+          </header>
+          <main>
+            <div className="mx-auto px-3 md:px-6">{children}</div>
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
     </div>
   );
 }

@@ -415,7 +415,7 @@ const OverviewPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen rounded-2xl bg-background">
-        <div className="max-w-screen-2xl mx-auto px-4 md:px-6 py-6">
+        <div className="mx-auto px-4 md:px-6 py-6">
           {/* Title */}
           <Skeleton className="h-7 w-56" />
           <Skeleton className="h-4 w-[360px] mt-2" />
@@ -457,7 +457,7 @@ const OverviewPage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-background p-6">
-        <div className="max-w-screen-2xl mx-auto">
+        <div className="mx-auto">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -495,9 +495,9 @@ const OverviewPage = () => {
 
   return (
     <div className="min-h-screen bg-background rounded-2xl pb-24 md:pb-12">
-      <div className="max-w-screen-2xl mx-auto px-3 md:px-6">
+      <div className="">
         {/* Title + Description */}
-        <div className="py-4 md:py-6">
+        <div className="pt-2 md:pt-3 pb-4 md:pb-5">
           <h1 className="text-xl md:text-3xl font-bold tracking-tight">
             Overview
           </h1>
@@ -508,7 +508,7 @@ const OverviewPage = () => {
         <div className="border-t" />
 
         {/* Top Stat Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 py-4 md:py-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 pt-3 md:pt-4 pb-4 md:pb-6">
           <StatCard
             title="Total Revenue"
             value={`₹${stats.totalRevenue.toLocaleString()}`}

@@ -37,7 +37,7 @@ export default async function ProductPage({
       }
 
       return (
-        <main className="space-y-4 md:space-y-6 pb-24 md:pb-12 mx-auto max-w-screen-2xl px-3 md:px-6">
+        <main className="space-y-4 md:space-y-6 pb-24 md:pb-12 mx-auto px-3 md:px-6">
           <div className="pt-2 md:pt-4">
             <h1 className="text-xl md:text-3xl font-bold tracking-tight">
               Edit product

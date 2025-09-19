@@ -116,7 +116,7 @@ export default function BuyLeadPage() {
   };
 
   return (
-    <div className="max-w-screen-2xl mx-auto pb-24 md:pb-12 space-y-6">
+    <div className="mx-auto pb-24 md:pb-12 space-y-6">
       {/* Title + Description */}
       <div className="pt-2 md:pt-4">
         <div className="flex items-start justify-between gap-3">

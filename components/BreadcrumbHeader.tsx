@@ -58,7 +58,7 @@ export default function BreadcrumbHeader() {
     <div className="w-full">
       <div
         className={`${
-          isSupplier ? "max-w-screen-2xl" : "max-w-7xl"
+          isSupplier ? "max-w-screen-7xl" : "max-w-7xl"
         } mx-auto px-4 pt-3 pb-0 flex items-center gap-3`}
       >
         <Button

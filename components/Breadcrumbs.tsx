@@ -1,40 +1,78 @@
-import { clsx } from "clsx";
-import Link from "next/link";
+"use client";
 
-interface Breadcrumb {
-  label: string;
-  href: string;
-  active?: boolean;
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { usePathname } from "next/navigation";
+import React from "react";
+
+export function GlobalBreadcrumbs() {
+  const pathname = usePathname();
+  if (pathname?.startsWith("/supplier")) {
+    return null;
+  }
+  return <Breadcrumbs />;
 }
 
-export default function Breadcrumbs({
-  breadcrumbs,
-}: {
-  breadcrumbs: Breadcrumb[];
-}) {
+export function SupplierBreadcrumbs() {
+  const pathname = usePathname();
+  if (!pathname?.startsWith("/supplier")) {
+    return null;
+  }
+  return <Breadcrumbs />;
+}
+
+function toTitleCase(segment: string): string {
+  const cleaned = segment.replace(/[-_]+/g, " ");
+  return cleaned
+    .split(" ")
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+export default function Breadcrumbs() {
+  const pathname = usePathname();
+
+  if (!pathname || pathname === "/") {
+    return null;
+  }
+
+  const parts = pathname.split("/").filter(Boolean);
+  const segments: { label: string; href: string }[] = [];
+  let current = "";
+  for (const part of parts) {
+    current += `/${part}`;
+    segments.push({
+      label: toTitleCase(decodeURIComponent(part)),
+      href: current,
+    });
+  }
+
   return (
-    <nav aria-label="Breadcrumb" className="mb-6 block py-3">
-      <ol className={"flex text-sm"}>
-        {breadcrumbs.map((breadcrumb, index) => (
-          <li
-            key={breadcrumb.href}
-            aria-current={breadcrumb.active}
-            className={clsx(
-              breadcrumb.active ? "text-foreground" : "text-muted-foreground"
-            )}
-          >
-            <Link
-              href={breadcrumb.href}
-              className={breadcrumb.active ? "font-semibold" : "font-light"}
-            >
-              {breadcrumb.label}
-            </Link>
-            {index < breadcrumbs.length - 1 ? (
-              <span className="mx-3 inline-block">/</span>
-            ) : null}
-          </li>
+    <Breadcrumb>
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/">Home</BreadcrumbLink>
+        </BreadcrumbItem>
+        {segments.map((seg, index) => (
+          <React.Fragment key={seg.href}>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              {index === segments.length - 1 ? (
+                <BreadcrumbPage>{seg.label}</BreadcrumbPage>
+              ) : (
+                <BreadcrumbLink href={seg.href}>{seg.label}</BreadcrumbLink>
+              )}
+            </BreadcrumbItem>
+          </React.Fragment>
         ))}
-      </ol>
-    </nav>
+      </BreadcrumbList>
+    </Breadcrumb>
   );
 }

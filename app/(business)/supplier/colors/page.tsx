@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trash } from "lucide-react";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/PageHeader";
 
 type Color = { id: string; name: string; hex_code: string };
 
@@ -60,7 +59,7 @@ export default function SupplierColorsPage() {
   };
 
   return (
-    <main className="space-y-4 md:space-y-6 pb-24 md:pb-12 mx-auto max-w-screen-2xl px-3 md:px-6">
+    <main className="space-y-4 md:space-y-6 pb-24 md:pb-12">
       <div className="pt-2 md:pt-4">
         <div className="flex items-start justify-between gap-3">
           <div>

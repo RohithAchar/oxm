@@ -211,7 +211,7 @@ const ManageProductsPage = () => {
   };
 
   return (
-    <div className="max-w-screen-2xl mx-auto pb-20 md:pb-12 space-y-6">
+    <div className="pb-20 md:pb-12 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between pt-2 md:pt-4">
         <div>

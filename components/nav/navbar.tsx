@@ -35,7 +35,7 @@ export const Navbar = () => {
       <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div
           className={`${
-            isSupplier ? "max-w-screen-2xl" : "max-w-7xl"
+            isSupplier ? "hidden max-w-full" : "max-w-7xl"
           } mx-auto px-4 h-14 grid grid-cols-[auto_1fr_auto] items-center`}
         >
           <Link href="/" className="font-semibold text-xl mr-4 md:mr-5 lg:mr-6">
@@ -47,7 +47,7 @@ export const Navbar = () => {
           <div className="hidden md:block justify-self-center w-full">
             {isSupplier ? (
               <nav className="flex items-center justify-center gap-2">
-                {supplierNav.map((item) => {
+                {/* {supplierNav.map((item) => {
                   const active = pathname === item.href;
                   return (
                     <Link
@@ -63,7 +63,7 @@ export const Navbar = () => {
                       {item.name}
                     </Link>
                   );
-                })}
+                })} */}
               </nav>
             ) : showSearch ? (
               <ProductSearch
@@ -106,7 +106,7 @@ export const Navbar = () => {
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_2px_24px_rgba(0,0,0,0.06)]">
         <div
           className={`${
-            isSupplier ? "max-w-screen-2xl" : "max-w-7xl"
+            isSupplier ? "hidden max-w-screen-2xl" : "max-w-7xl"
           } mx-auto px-3 h-14 flex items-center justify-between`}
         >
           <Link href="/" className="font-semibold text-lg leading-none">

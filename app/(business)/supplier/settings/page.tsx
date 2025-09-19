@@ -7,7 +7,7 @@ export default async function SettingsPage() {
   const business = await getBusiness(userId);
 
   return (
-    <main className="space-y-4 md:space-y-6 pb-24 md:pb-12 mx-auto max-w-screen-2xl px-3 md:px-6">
+    <main className="space-y-4 md:space-y-6 pb-24 md:pb-12">
       <div className="pt-2 md:pt-4">
         <div className="flex items-start justify-between gap-3">
           <div>
