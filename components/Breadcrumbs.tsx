@@ -59,7 +59,7 @@ export default function Breadcrumbs() {
   }
 
   const isSupplier = pathname.startsWith("/supplier");
-  const containerClass = isSupplier ? "px-0 py-0" : "px-4 pt-3 pb-0";
+  const containerClass = isSupplier ? "px-0 py-0" : "lg:px-0 px-4 pt-3 pb-0";
 
   return (
     <div className={containerClass}>

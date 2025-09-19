@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 
 type ProductSearchProps = {
   placeholder?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "xxs" | "xs" | "sm" | "md" | "lg";
   rounded?: "full" | "md";
   showCamera?: boolean;
   className?: string;
@@ -28,9 +28,25 @@ export default function ProductSearch({
   const router = useRouter();
 
   const heightClass =
-    size === "sm" ? "h-8" : size === "lg" ? "h-12 md:h-14" : "h-10 md:h-12";
+    size === "xxs"
+      ? "h-6"
+      : size === "xs"
+      ? "h-7"
+      : size === "sm"
+      ? "h-8"
+      : size === "lg"
+      ? "h-12 md:h-14"
+      : "h-10 md:h-12";
   const btnHeightClass =
-    size === "sm" ? "h-8 px-2.5" : size === "lg" ? "h-10 px-4" : "h-9 px-3.5";
+    size === "xxs"
+      ? "h-6 px-1.5"
+      : size === "xs"
+      ? "h-7 px-2"
+      : size === "sm"
+      ? "h-8 px-2.5"
+      : size === "lg"
+      ? "h-10 px-4"
+      : "h-9 px-3.5";
   const paddingX = size === "sm" ? "px-2.5" : size === "lg" ? "px-5" : "px-4";
   const paddingY = size === "sm" ? "py-1" : size === "lg" ? "py-3" : "py-2";
   const radiusClass = rounded === "full" ? "rounded-full" : "rounded-md";
@@ -43,47 +59,70 @@ export default function ProductSearch({
   };
 
   return (
-    <div className={`relative ${className}`}>
-      <div
-        className={`flex items-center gap-2 rounded-full border border-border/60 bg-muted/70 backdrop-blur  w-full`}
-      >
-        <div className="relative flex-1">
+    <div className={`relative w-full ${className}`}>
+      <Search
+        className={`pointer-events-none absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground ${
+          size === "xxs"
+            ? "h-2.5 w-2.5"
+            : size === "xs"
+            ? "h-3 w-3"
+            : size === "sm"
+            ? "h-3.5 w-3.5"
+            : "h-4 w-4 md:h-5 md:w-5"
+        }`}
+      />
+      <Input
+        className={`w-full ${heightClass} ${radiusClass} bg-background border-input ${
+          size === "xxs"
+            ? "pl-6 pr-7"
+            : size === "xs"
+            ? "pl-7 pr-8"
+            : "pl-8 sm:pl-9 pr-10"
+        } outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-0 ${
+          size === "xxs"
+            ? "text-[10px]"
+            : size === "xs"
+            ? "text-[11px]"
+            : size === "sm"
+            ? "text-xs"
+            : "text-sm md:text-base"
+        } placeholder:text-muted-foreground`}
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") submit();
+        }}
+        aria-label="Search"
+      />
+      {buttonMode === "icon" ? (
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Search"
+          onClick={submit}
+          className={`absolute right-0.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground ${
+            size === "xxs" ? "h-6 w-6 p-0" : size === "xs" ? "h-7 w-7 p-0" : ""
+          }`}
+        >
           <Search
-            className={`absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground md:h-5 md:w-5 ${
-              size === "sm" ? "h-3.5 w-3.5" : "h-4 w-4"
+            className={`${
+              size === "xxs"
+                ? "h-3 w-3"
+                : size === "xs"
+                ? "h-3.5 w-3.5"
+                : "h-4 w-4 md:h-5 md:w-5"
             }`}
           />
-          <Input
-            className={`w-full ${heightClass} bg-transparent rounded-full outline-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 ${
-              size === "sm" ? "text-xs" : "text-sm md:text-base"
-            } placeholder:text-muted-foreground pl-7 sm:pl-8 md:pl-9 pr-2 md:pr-3`}
-            placeholder={placeholder}
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") submit();
-            }}
-            aria-label="Search"
-          />
-        </div>
-        {buttonMode === "icon" ? (
-          <Button
-            className={`absolute right-0 rounded-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-3`}
-            size="icon"
-            aria-label="Search"
-            onClick={submit}
-          >
-            <Search className="h-4 w-4 md:h-5 md:w-5" />
-          </Button>
-        ) : (
-          <Button
-            className={`absolute right-0 rounded-full cursor-pointer ${heightClass} py-0 flex-shrink-0 px-4 md:px-5`}
-            onClick={submit}
-          >
-            Search
-          </Button>
-        )}
-      </div>
+        </Button>
+      ) : (
+        <Button
+          onClick={submit}
+          className={`absolute right-1.5 top-1/2 -translate-y-1/2 ${btnHeightClass} ${radiusClass}`}
+        >
+          Search
+        </Button>
+      )}
     </div>
   );
 }

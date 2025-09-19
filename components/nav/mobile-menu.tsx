@@ -35,7 +35,7 @@ const MobileMenu = () => {
 
   return (
     <div
-      className="md:hidden fixed left-0 right-0 bottom-0 z-50 border-t bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_-8px_24px_rgba(0,0,0,0.06)]"
+      className="md:hidden fixed left-0 right-0 bottom-0 z-50 border-t bg-background"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <nav className="max-w-7xl mx-auto px-3 h-16 flex items-stretch">

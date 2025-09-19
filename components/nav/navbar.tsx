@@ -32,7 +32,7 @@ export const Navbar = () => {
   return (
     <>
       {/* Desktop Topbar */}
-      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-background">
         <div
           className={`${
             isSupplier ? "hidden max-w-full" : "max-w-screen-2xl"
@@ -70,7 +70,7 @@ export const Navbar = () => {
                 placeholder="Search products"
                 size="sm"
                 rounded="full"
-                className="w-full max-w-4xl mx-auto"
+                className="w-full max-w-xl mx-auto"
                 buttonMode="icon"
               />
             ) : null}
