@@ -54,6 +54,17 @@ export function RFQButton({
   const [showCustomization, setShowCustomization] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
 
+  const handleFocus = (e: React.FocusEvent<HTMLElement>) => {
+    // Scroll the focused field into view on mobile when the keyboard opens
+    try {
+      const target = e.target as HTMLElement;
+      // Delay to let keyboard animate in
+      setTimeout(() => {
+        target.scrollIntoView({ block: "center", behavior: "smooth" });
+      }, 50);
+    } catch {}
+  };
+
   const rfqSchema = z
     .object({
       quantity: z
@@ -252,6 +263,7 @@ export function RFQButton({
                       type="number"
                       inputMode="numeric"
                       placeholder="e.g. 1000 (typical orders 100–5,000)"
+                      onFocus={handleFocus}
                       {...field}
                     />
                   </FormControl>
@@ -270,6 +282,7 @@ export function RFQButton({
                       type="number"
                       inputMode="decimal"
                       placeholder="Your desired unit price (₹)"
+                      onFocus={handleFocus}
                       {...field}
                     />
                   </FormControl>
@@ -293,6 +306,7 @@ export function RFQButton({
                     <Input
                       placeholder="6-digit Indian pincode (e.g. 560001)"
                       inputMode="numeric"
+                      onFocus={handleFocus}
                       {...field}
                     />
                   </FormControl>
@@ -307,7 +321,11 @@ export function RFQButton({
                 <FormItem>
                   <FormLabel className="text-xs">Delivery city</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g. Bengaluru, Karnataka" {...field} />
+                    <Input
+                      placeholder="e.g. Bengaluru, Karnataka"
+                      onFocus={handleFocus}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -340,7 +358,11 @@ export function RFQButton({
                   <FormItem>
                     <FormLabel className="text-xs">Color</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Red / Blue" {...field} />
+                      <Input
+                        placeholder="e.g. Red / Blue"
+                        onFocus={handleFocus}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -355,6 +377,7 @@ export function RFQButton({
                     <FormControl>
                       <Input
                         placeholder="e.g. Logo printing, custom label"
+                        onFocus={handleFocus}
                         {...field}
                       />
                     </FormControl>
@@ -369,7 +392,11 @@ export function RFQButton({
                   <FormItem>
                     <FormLabel className="text-xs">Packaging</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. 10 units per box" {...field} />
+                      <Input
+                        placeholder="e.g. 10 units per box"
+                        onFocus={handleFocus}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -401,6 +428,7 @@ export function RFQButton({
                   <FormControl>
                     <Textarea
                       placeholder="Key specs, timelines, or delivery constraints"
+                      onFocus={handleFocus}
                       {...field}
                     />
                   </FormControl>
@@ -426,6 +454,7 @@ export function RFQButton({
                     <Input
                       type="email"
                       placeholder="name@company.com"
+                      onFocus={handleFocus}
                       {...field}
                     />
                   </FormControl>
@@ -443,6 +472,7 @@ export function RFQButton({
                     <Input
                       inputMode="numeric"
                       placeholder="9876543210"
+                      onFocus={handleFocus}
                       {...field}
                     />
                   </FormControl>
@@ -509,7 +539,7 @@ export function RFQButton({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{TriggerContent}</DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-md max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-md max-h-[80svh] sm:max-h-[85vh] overflow-y-auto overscroll-contain">
         <DialogHeader>
           <DialogTitle>Request for Quote</DialogTitle>
         </DialogHeader>

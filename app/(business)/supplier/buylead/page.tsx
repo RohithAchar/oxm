@@ -471,7 +471,7 @@ export default function BuyLeadPage() {
       </Card>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="w-[95vw] sm:w-auto sm:max-w-2xl max-h-[80svh] sm:max-h-[85vh] overflow-y-auto overscroll-contain">
           <DialogHeader>
             <DialogTitle>RFQ Details</DialogTitle>
             <DialogDescription>
@@ -563,6 +563,17 @@ export default function BuyLeadPage() {
                 placeholder="List changes or clarifications needed from the buyer..."
                 value={changesNeeded}
                 onChange={(e) => setChangesNeeded(e.target.value)}
+                onFocus={(e) => {
+                  try {
+                    const target = e.target as HTMLElement;
+                    setTimeout(() => {
+                      target.scrollIntoView({
+                        block: "center",
+                        behavior: "smooth",
+                      });
+                    }, 50);
+                  } catch {}
+                }}
                 className="min-h-[96px]"
               />
               {submitError ? (
