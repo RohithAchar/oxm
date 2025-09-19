@@ -21,7 +21,7 @@ export default function RecentlyViewedList() {
   if (!products || products.length === 0) return null;
 
   return (
-    <section className="max-w-7xl mx-auto mt-6 md:mt-10 px-4">
+    <section className="mt-6 md:mt-10 lg:px-0 px-4">
       <div className="rounded-2xl border bg-muted/30 p-4 md:p-6">
         <div className="flex items-center justify-between mb-6 md:mb-8">
           <div className="w-full text-left">

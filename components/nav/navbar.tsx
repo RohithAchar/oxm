@@ -35,8 +35,8 @@ export const Navbar = () => {
       <header className="hidden md:block fixed top-0 left-0 right-0 z-50 border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div
           className={`${
-            isSupplier ? "hidden max-w-full" : "max-w-7xl"
-          } mx-auto px-4 h-14 grid grid-cols-[auto_1fr_auto] items-center`}
+            isSupplier ? "hidden max-w-full" : "max-w-screen-2xl"
+          } mx-auto px-4 lg:px-0 h-14 grid grid-cols-[auto_1fr_auto] items-center`}
         >
           <Link href="/" className="font-semibold text-xl mr-4 md:mr-5 lg:mr-6">
             <span className="text-foreground">Open</span>

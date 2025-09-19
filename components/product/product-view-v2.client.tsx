@@ -154,7 +154,7 @@ export default function ProductViewV2Client({
       {/* Track this product as recently viewed (no UI) */}
       <RecentlyViewedTracker product={product} />
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-screen-2xl mx-auto">
         {/* Mobile Layout */}
         <div className="lg:hidden">
           {/* Image Gallery */}

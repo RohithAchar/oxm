@@ -109,7 +109,7 @@ const NewLandingPage = async () => {
       </section>
 
       {/* Desktop / large-screen content */}
-      <section className="hidden md:block relative max-w-7xl mx-auto px-4 pt-4 lg:pt-16">
+      <section className="hidden md:block relative px-4 lg:px-0 pt-4 lg:pt-16">
         <div className="rounded-md border p-4 pt-8 md:p-12 shadow">
           <div className="relative mx-auto max-w-4xl text-center space-y-4 md:space-y-5">
             <H1 className="text-3xl md:text-6xl text-center font-bold tracking-tight leading-tight text-foreground">
@@ -169,7 +169,7 @@ const NewLandingPage = async () => {
       </section>
 
       {/* How it works (desktop only) */}
-      <section className="hidden md:block max-w-7xl mx-auto px-4 mt-16 lg:mt-24">
+      <section className="hidden md:block px-4 lg:px-0 mt-16 lg:mt-24">
         <div className="w-full text-center mb-8">
           <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
             How OpenXmart works for you

@@ -63,7 +63,7 @@ export default async function IntroPage() {
   const hasBusiness = await isBusinessExists(userId);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14 lg:py-16">
+    <div className="px-4 lg:px-0 py-10 sm:py-14 lg:py-16">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -109,7 +109,7 @@ export default async function IntroPage() {
       />
       <section className="text-center space-y-6">
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight">
-          Start Supplying to thousands of Buyers on{" "}
+          Start Supplying to thousands of Buyers on <br />
           <span className="text-primary">OpenXmart</span>
         </h1>
         <p className="text-muted-foreground text-lg sm:text-xl max-w-3xl mx-auto">

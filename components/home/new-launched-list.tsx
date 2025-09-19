@@ -16,7 +16,7 @@ export const NewLaunchedItems = async () => {
   }
 
   return (
-    <section className="max-w-7xl mx-auto mt-12">
+    <section className="mt-12">
       <div>
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <div className="w-full text-center">
@@ -69,7 +69,7 @@ export const NewLaunchedItems = async () => {
 
 export const NewLaunchedItemsSkeleton = () => {
   return (
-    <section className="max-w-7xl mx-auto px-4 mt-12">
+    <section className="px-4 mt-12">
       <div>
         <div className="flex items-center justify-between mb-8 md:mb-12">
           <div className="w-full text-center">

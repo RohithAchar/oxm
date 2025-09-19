@@ -1,4 +1,7 @@
-import { getProductByIdCached, getLatestProducts } from "@/lib/controller/product/productOperations";
+import {
+  getProductByIdCached,
+  getLatestProducts,
+} from "@/lib/controller/product/productOperations";
 import { getBusiness } from "@/lib/controller/business/businessOperations";
 import ProductViewV2Client from "@/components/product/product-view-v2.client";
 import { ProductCard } from "@/components/home/product-card";
@@ -9,8 +12,12 @@ export default async function ProductViewV2({ id }: { id: string }) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center space-y-2">
-          <h2 className="text-xl font-medium text-gray-900">Product not found</h2>
-          <p className="text-gray-500">The product you're looking for doesn't exist.</p>
+          <h2 className="text-xl font-medium text-gray-900">
+            Product not found
+          </h2>
+          <p className="text-gray-500">
+            The product you're looking for doesn't exist.
+          </p>
         </div>
       </div>
     );
@@ -26,13 +33,15 @@ export default async function ProductViewV2({ id }: { id: string }) {
       <ProductViewV2Client product={product} business={business} />
 
       {similar.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 pb-12">
+        <section className="px-4 lg:px-0 pb-12">
           <div className="flex items-center justify-between mb-4 md:mb-6">
             <div className="w-full text-left">
               <h2 className="text-foreground text-xl md:text-2xl font-semibold mb-1">
                 Similar products
               </h2>
-              <p className="text-sm text-muted-foreground">You might also like</p>
+              <p className="text-sm text-muted-foreground">
+                You might also like
+              </p>
             </div>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 md:gap-4 lg:gap-5 xl:gap-6">
@@ -55,5 +64,3 @@ export default async function ProductViewV2({ id }: { id: string }) {
     </div>
   );
 }
-
-
