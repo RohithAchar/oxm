@@ -16,10 +16,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const buy_lead_id = searchParams.get("buy_lead_id");
 
-    let query = supabase.from("buy_lead_responses").select(`
-        *,
-        supplier_snapshot
-      `);
+    let query = supabase.from("buy_lead_responses").select(`*`);
 
     if (buy_lead_id) {
       // First check if user has access to this buy lead
@@ -145,57 +142,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get supplier business information for snapshot
-    const { data: businessData, error: businessError } = await supabase
-      .from("supplier_businesses")
-      .select(
-        "id, business_name, type, city, state, gst_number, is_verified, business_address, phone, alternate_phone, profile_avatar_url"
-      )
-      .eq("profile_id", user.id)
-      .single();
-
-    if (businessError) {
-      console.error("Error fetching supplier business:", businessError);
-      return NextResponse.json(
-        { error: "Failed to fetch supplier information" },
-        { status: 500 }
-      );
-    }
-
-    // Get supplier profile information
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("full_name, email, phone_number, avatar_url")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError) {
-      console.error("Error fetching supplier profile:", profileError);
-      return NextResponse.json(
-        { error: "Failed to fetch supplier profile" },
-        { status: 500 }
-      );
-    }
-
-    // Create supplier snapshot
-    const supplierSnapshot = {
-      id: user.id,
-      business_id: businessData.id,
-      full_name: profileData.full_name,
-      email: profileData.email,
-      phone_number: profileData.phone_number,
-      avatar_url: profileData.avatar_url || businessData.profile_avatar_url,
-      business_name: businessData.business_name,
-      business_type: businessData.type,
-      city: businessData.city,
-      state: businessData.state,
-      gst_number: businessData.gst_number,
-      is_verified: businessData.is_verified,
-      business_address: businessData.business_address,
-      phone: businessData.phone,
-      alternate_phone: businessData.alternate_phone,
-    };
-
     // Create the response
     const { data, error } = await supabase
       .from("buy_lead_responses")
@@ -209,7 +155,6 @@ export async function POST(request: NextRequest) {
         min_qty: min_qty ? Number(min_qty) : null,
         message: message || null,
         currency,
-        supplier_snapshot: supplierSnapshot,
       })
       .select()
       .single();

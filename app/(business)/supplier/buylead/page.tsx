@@ -26,10 +26,22 @@ import {
 } from "@/components/ui/popover";
 import { Calendar as CalendarIcon, Filter, X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 type BuyLead = {
   id: string;
+  product_id?: string | null;
   product_name: string | null;
   quantity_required: number | null;
   target_price: number | null; // stored in paise
@@ -40,6 +52,7 @@ type BuyLead = {
   delivery_pincode: string | null;
   status: string | null;
   created_at: string | null;
+  tier_pricing_snapshot?: any | null;
 };
 
 export default function BuyLeadPage() {
@@ -65,7 +78,7 @@ export default function BuyLeadPage() {
         const { data, error } = await supabase
           .from("buy_leads")
           .select(
-            "id, product_name, quantity_required, target_price, currency, contact_email, contact_phone, delivery_city, delivery_pincode, status, created_at"
+            "id, product_id, product_name, quantity_required, target_price, currency, contact_email, contact_phone, delivery_city, delivery_pincode, status, created_at, tier_pricing_snapshot"
           )
           .eq("supplier_id", user.id)
           .order("created_at", { ascending: false });
@@ -95,8 +108,17 @@ export default function BuyLeadPage() {
     if (!leads) return [] as BuyLead[];
     return leads.filter((lead) => {
       let ok = true;
+      const normalizedStatus = (lead.status || "").toLowerCase();
       if (statusFilter !== "all") {
-        ok = ok && (lead.status || "").toLowerCase() === statusFilter;
+        if (statusFilter === "new") {
+          ok =
+            ok &&
+            (normalizedStatus === "submitted" || normalizedStatus === "viewed");
+        } else if (statusFilter === "responded") {
+          ok = ok && normalizedStatus === "responded";
+        } else {
+          ok = ok && normalizedStatus === statusFilter;
+        }
       }
       if ((dateRange.from || dateRange.to) && lead.created_at) {
         const created = new Date(lead.created_at);
@@ -114,6 +136,100 @@ export default function BuyLeadPage() {
     setStatusFilter("all");
     setDateRange({});
   };
+
+  const formatDate = (iso: string | null) =>
+    iso ? format(new Date(iso), "d MMM, yyyy") : "-";
+
+  const renderStatusBadge = (status: string | null) => {
+    const s = (status || "").toLowerCase();
+    if (s === "responded") return <Badge>Responded</Badge>;
+    if (s === "closed") return <Badge variant="destructive">Closed</Badge>;
+    if (s === "submitted" || s === "viewed")
+      return <Badge variant="secondary">New</Badge>;
+    return (
+      <Badge variant="outline">
+        {s ? s.charAt(0).toUpperCase() + s.slice(1) : "-"}
+      </Badge>
+    );
+  };
+
+  // Extract supplier's original price and MOQ from tier_pricing_snapshot if available
+  const getSupplierOriginals = (
+    snapshot: any
+  ): { originalPrice: string | null; originalQty: number | null } => {
+    try {
+      if (!snapshot) return { originalPrice: null, originalQty: null };
+      const tiers = Array.isArray(snapshot?.tiers)
+        ? snapshot.tiers
+        : Array.isArray(snapshot)
+        ? snapshot
+        : null;
+      if (!tiers || tiers.length === 0)
+        return { originalPrice: null, originalQty: null };
+      const first = tiers[0];
+      const qty = Number(
+        first?.minQty ?? first?.min_qty ?? first?.quantity ?? null
+      );
+      const priceRs = Number(
+        first?.price ?? first?.unitPrice ?? first?.unit_price ?? null
+      );
+      return {
+        originalQty: Number.isFinite(qty) ? qty : null,
+        originalPrice: Number.isFinite(priceRs)
+          ? `₹${priceRs.toFixed(2)}`
+          : null,
+      };
+    } catch {
+      return { originalPrice: null, originalQty: null };
+    }
+  };
+
+  const [selectedLead, setSelectedLead] = useState<BuyLead | null>(null);
+  const [open, setOpen] = useState(false);
+  const [changesNeeded, setChangesNeeded] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const openDetails = (lead: BuyLead) => {
+    setSelectedLead(lead);
+    setChangesNeeded("");
+
+    setOpen(true);
+  };
+
+  const handleSubmitChanges = async () => {
+    if (!selectedLead) return;
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const res = await fetch("/api/rfq/responses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          buy_lead_id: selectedLead.id,
+          message: changesNeeded || undefined,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json?.error || "Failed to submit response");
+      }
+      // Optimistically mark as responded in local state
+      setLeads(
+        (prev) =>
+          prev?.map((l) =>
+            l.id === selectedLead.id ? { ...l, status: "responded" } : l
+          ) || prev
+      );
+      setOpen(false);
+    } catch (e: any) {
+      setSubmitError(e?.message || "Something went wrong");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // No comparison helpers needed
 
   return (
     <div className="mx-auto pb-24 md:pb-12 space-y-6">
@@ -135,12 +251,9 @@ export default function BuyLeadPage() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="submitted">Submitted</SelectItem>
-                <SelectItem value="reviewing">Reviewing</SelectItem>
-                <SelectItem value="contacted">Contacted</SelectItem>
-                <SelectItem value="quoted">Quoted</SelectItem>
-                <SelectItem value="closed">Closed</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="new">New</SelectItem>
+                <SelectItem value="responded">Responded</SelectItem>
               </SelectContent>
             </Select>
 
@@ -223,6 +336,7 @@ export default function BuyLeadPage() {
                 <div
                   key={lead.id}
                   className="rounded-lg border p-3 bg-background"
+                  onClick={() => openDetails(lead)}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="font-medium truncate">
@@ -257,13 +371,27 @@ export default function BuyLeadPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Qty</TableHead>
-                  <TableHead>Target Price</TableHead>
-                  <TableHead>Contact</TableHead>
-                  <TableHead>Delivery</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead className="w-[120px] text-muted-foreground">
+                    Date
+                  </TableHead>
+                  <TableHead className="text-muted-foreground">
+                    Product
+                  </TableHead>
+                  <TableHead className="w-[100px] text-right text-muted-foreground">
+                    Qty
+                  </TableHead>
+                  <TableHead className="w-[150px] text-right text-muted-foreground">
+                    Target
+                  </TableHead>
+                  <TableHead className="w-[220px] text-muted-foreground">
+                    Contact
+                  </TableHead>
+                  <TableHead className="w-[200px] text-muted-foreground">
+                    Delivery
+                  </TableHead>
+                  <TableHead className="w-[130px] text-muted-foreground">
+                    Status
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -304,31 +432,35 @@ export default function BuyLeadPage() {
                   !error &&
                   filteredLeads &&
                   filteredLeads.map((lead) => (
-                    <TableRow key={lead.id}>
-                      <TableCell className="text-muted-foreground">
-                        {lead.created_at
-                          ? new Date(lead.created_at).toLocaleDateString()
-                          : "-"}
+                    <TableRow
+                      key={lead.id}
+                      className="hover:bg-muted/50 cursor-pointer"
+                      onClick={() => openDetails(lead)}
+                    >
+                      <TableCell className="text-muted-foreground align-middle">
+                        {formatDate(lead.created_at)}
                       </TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium align-middle max-w-[320px] truncate">
                         {lead.product_name || "-"}
                       </TableCell>
-                      <TableCell>{lead.quantity_required ?? "-"}</TableCell>
-                      <TableCell className="font-medium">
+                      <TableCell className="text-right align-middle">
+                        {lead.quantity_required ?? "-"}
+                      </TableCell>
+                      <TableCell className="font-medium text-right align-middle whitespace-nowrap">
                         {formatPrice(lead.target_price)}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="align-middle max-w-[260px] truncate">
                         {lead.contact_email || lead.contact_phone || "-"}
                       </TableCell>
-                      <TableCell>
-                        {lead.delivery_city || ""}
-                        {lead.delivery_city && lead.delivery_pincode
-                          ? ", "
-                          : ""}
-                        {lead.delivery_pincode || ""}
+                      <TableCell className="align-middle max-w-[240px] truncate">
+                        {(lead.delivery_city || "") +
+                          (lead.delivery_city && lead.delivery_pincode
+                            ? ", "
+                            : "") +
+                          (lead.delivery_pincode || "")}
                       </TableCell>
-                      <TableCell className="capitalize">
-                        {lead.status || "submitted"}
+                      <TableCell className="align-middle">
+                        {renderStatusBadge(lead.status)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -337,6 +469,115 @@ export default function BuyLeadPage() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>RFQ Details</DialogTitle>
+            <DialogDescription>
+              Product and buyer info. Clean and minimal.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="rounded-lg border p-3 bg-muted/20 sm:col-span-2">
+                <div className="text-xs text-muted-foreground mb-1">
+                  Product
+                </div>
+                <div className="font-medium">
+                  {selectedLead?.product_name || "-"}
+                </div>
+                <div className="mt-1 text-sm text-muted-foreground">
+                  Qty: {selectedLead?.quantity_required ?? "-"}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Target: {formatPrice(selectedLead?.target_price)}
+                </div>
+                {(() => {
+                  const { originalPrice, originalQty } = getSupplierOriginals(
+                    selectedLead?.tier_pricing_snapshot
+                  );
+                  if (!originalPrice && !originalQty) return null;
+                  return (
+                    <div className="text-xs text-muted-foreground mt-2">
+                      Supplier original: Qty {originalQty ?? "-"} • Price{" "}
+                      {originalPrice ?? "-"}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              <div className="rounded-lg border p-3 bg-muted/20">
+                <div className="text-xs text-muted-foreground mb-1">Buyer</div>
+                <div className="font-medium truncate">Buyer</div>
+                <div className="mt-1 text-sm text-muted-foreground truncate">
+                  {selectedLead?.contact_email || "-"}
+                </div>
+                <div className="text-sm text-muted-foreground truncate">
+                  {selectedLead?.contact_phone || "-"}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border p-3 bg-muted/20">
+              <div className="text-xs text-muted-foreground mb-1">
+                Buyer needs
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                <div>
+                  <div className="text-muted-foreground">Quantity</div>
+                  <div className="font-medium">
+                    {selectedLead?.quantity_required ?? "-"}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Target price</div>
+                  <div className="font-medium">
+                    {formatPrice(selectedLead?.target_price)}
+                  </div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Delivery</div>
+                  <div className="font-medium truncate">
+                    {(selectedLead?.delivery_city || "") +
+                      (selectedLead?.delivery_city &&
+                      selectedLead?.delivery_pincode
+                        ? ", "
+                        : "") +
+                      (selectedLead?.delivery_pincode || "")}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <div className="text-xs text-muted-foreground">
+                Original: Qty {selectedLead?.quantity_required ?? "-"} • Target{" "}
+                {formatPrice(selectedLead?.target_price)}
+              </div>
+              <div className="text-xs text-muted-foreground">
+                Changes needed
+              </div>
+              <Textarea
+                placeholder="List changes or clarifications needed from the buyer..."
+                value={changesNeeded}
+                onChange={(e) => setChangesNeeded(e.target.value)}
+                className="min-h-[96px]"
+              />
+              {submitError ? (
+                <div className="text-xs text-destructive">{submitError}</div>
+              ) : null}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button onClick={handleSubmitChanges} disabled={submitting}>
+              {submitting ? "Sending..." : "Send"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
