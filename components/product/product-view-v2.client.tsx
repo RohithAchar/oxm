@@ -115,14 +115,14 @@ export default function ProductViewV2Client({
       setCurrentImageIdx(currentImageIdx + 1);
       // Haptic feedback simulation
       if (navigator.vibrate) {
-        navigator.vibrate(50);
+        navigator.vibrate(10);
       }
     }
     if (isRightSwipe && currentImageIdx > 0) {
       setCurrentImageIdx(currentImageIdx - 1);
       // Haptic feedback simulation
       if (navigator.vibrate) {
-        navigator.vibrate(50);
+        navigator.vibrate(10);
       }
     }
   };
@@ -131,7 +131,7 @@ export default function ProductViewV2Client({
     toggleFavorite(product.id);
     // Haptic feedback simulation
     if (navigator.vibrate) {
-      navigator.vibrate(100);
+      navigator.vibrate(10);
     }
   };
 
@@ -158,7 +158,7 @@ export default function ProductViewV2Client({
         {/* Mobile Layout */}
         <div className="lg:hidden">
           {/* Image Gallery */}
-          <div className="relative">
+          <div className="relative -mx-4 sm:mx-0 pt-2 sm:pt-0">
             <div
               className="relative w-full aspect-square overflow-hidden touch-pan-y"
               onTouchStart={onTouchStart}
@@ -224,7 +224,7 @@ export default function ProductViewV2Client({
           </div>
 
           {/* Product Info */}
-          <div className="p-4 space-y-4">
+          <div className="py-4 space-y-4">
             <div>
               <h1 className="text-base font-semibold mb-2 leading-tight">
                 {product.name}

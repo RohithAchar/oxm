@@ -65,7 +65,7 @@ const NewLandingPage = async () => {
       />
 
       {/* Mobile-only layout */}
-      <section className="md:hidden max-w-7xl mx-auto px-4 pt-4 space-y-4">
+      <section className="md:hidden max-w-7xl mx-auto pt-4 space-y-4">
         {/* Custom Carousel */}
         <Suspense fallback={<CustomCarousalSkeleton />}>
           {/* Using existing carousal that renders CustomCarousal items */}
@@ -110,13 +110,10 @@ const NewLandingPage = async () => {
 
       {/* Desktop / large-screen content */}
       <section className="hidden md:block relative px-4 lg:px-0 pt-4 lg:pt-16">
-        <div className="rounded-md border p-4 pt-8 md:p-12 shadow">
+        <div className="rounded-md p-4 pt-8 md:p-12">
           <div className="relative mx-auto max-w-4xl text-center space-y-4 md:space-y-5">
             <H1 className="text-3xl md:text-6xl text-center font-bold tracking-tight leading-tight text-foreground">
-              Find Winning Products{" "}
-              <span className="text-foreground/60 font-medium">
-                &amp; Verified Suppliers
-              </span>
+              Find Winning Products
             </H1>
             <P className="text-sm md:text-base lg:text-lg text-center">
               Source confidently from verified Indian suppliers. Samples to
@@ -129,7 +126,7 @@ const NewLandingPage = async () => {
               className="mx-auto w-full max-w-4xl"
             />
             {/* Secondary actions in a single pill bar */}
-            <div className="mx-auto w-full max-w-4xl">
+            <div className="mx-auto w-full max-w-2xl">
               <div className="rounded-full bg-muted/60 border border-muted/60 px-2 md:px-3 py-2">
                 <div className="flex items-center justify-between gap-1">
                   <Link

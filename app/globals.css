@@ -121,6 +121,13 @@
       "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
       "Segoe UI Symbol", "Noto Color Emoji";
   }
+
+  /* Prevent layout shift when scroll is locked by dialogs/drawers.
+     Many libraries (e.g., Radix) set --removed-body-scroll-bar-size on body.
+     Compensate by adding equivalent right padding only while locked. */
+  body[style*="--removed-body-scroll-bar-size"] {
+    padding-right: var(--removed-body-scroll-bar-size) !important;
+  }
 }
 
 @layer utilities {

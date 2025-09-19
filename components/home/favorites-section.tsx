@@ -70,7 +70,7 @@ export default function FavoritesSection() {
 
   if (loading) {
     return (
-      <section className="px-4 lg:px-0">
+      <section className="">
         <div className="rounded-2xl border bg-muted/30 p-4 md:p-6">
           <div className="flex items-center justify-between mb-4 md:mb-6">
             <div className="w-full text-left">
@@ -98,7 +98,7 @@ export default function FavoritesSection() {
 
   if (favoriteProducts.length === 0) {
     return (
-      <section className="px-4 lg:px-0 py-8">
+      <section className="py-8">
         <div className="rounded-2xl border bg-muted/30 p-6">
           <div className="flex items-center justify-between mb-4 md:mb-6">
             <div className="w-full text-left">
@@ -124,7 +124,7 @@ export default function FavoritesSection() {
   }
 
   return (
-    <section className="px-4 lg:px-0">
+    <section className="">
       <div className="rounded-2xl border bg-muted/30 p-4 md:p-6">
         <div className="flex items-center justify-between mb-4 md:mb-6">
           <div className="w-full text-left">

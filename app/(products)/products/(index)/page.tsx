@@ -11,7 +11,7 @@ export default async function ProductsPage({
   const params = await searchParams;
 
   return (
-    <div className="space-y-6 px-4 lg:px-0">
+    <div className="space-y-6">
       {/* Lightweight client loading indicator for route/query changes */}
       <ProductsRouteLoadingMount />
       <Suspense

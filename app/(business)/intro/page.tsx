@@ -206,7 +206,7 @@ export default async function IntroPage() {
         </div>
       </section>
 
-      <section className="mt-12 sm:mt-16 rounded-xl bg-muted/40 px-4 sm:px-6 py-8">
+      <section className="mt-12 sm:mt-16 rounded-xl bg-muted/40 py-8">
         <h2 className="text-3xl font-semibold tracking-tight">FAQ</h2>
         <div className="mt-4">
           <Accordion
