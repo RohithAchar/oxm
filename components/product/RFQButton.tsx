@@ -6,6 +6,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createClient } from "@/utils/supabase/client";
 import type { Database } from "@/utils/supabase/database.types";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -39,6 +40,7 @@ export function RFQButton({
   supplierId,
   supplierName,
   tierPricingSnapshot,
+  productImage,
   variant = "button",
 }: {
   productId: string;
@@ -46,6 +48,7 @@ export function RFQButton({
   supplierId: string;
   supplierName: string;
   tierPricingSnapshot?: any | null;
+  productImage?: string;
   variant?: "button" | "row";
 }) {
   const [open, setOpen] = useState(false);
@@ -242,10 +245,24 @@ export function RFQButton({
       <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
         <Card>
           <CardContent className="pt-4 text-sm text-muted-foreground">
-            <div className="font-medium text-foreground mb-1">
-              {productName}
+            <div className="flex gap-3">
+              {productImage && (
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                  <Image
+                    src={productImage}
+                    alt={productName}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-foreground mb-1">
+                  {productName}
+                </div>
+                <div>Supplier: {supplierName}</div>
+              </div>
             </div>
-            <div>Supplier: {supplierName}</div>
           </CardContent>
         </Card>
 

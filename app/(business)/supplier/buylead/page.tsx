@@ -58,9 +58,21 @@ export default function SupplierBuyLeadPage(): JSX.Element {
         if (productIds.length) {
           const { data: products } = await supabase
             .from("products")
-            .select(
-              "id,name,description,brand,price_per_unit,quantity,total_price,is_active"
-            )
+            .select(`
+              id,
+              name,
+              description,
+              brand,
+              price_per_unit,
+              quantity,
+              total_price,
+              is_active,
+              product_images (
+                id,
+                image_url,
+                display_order
+              )
+            `)
             .in("id", productIds);
           productsById = (products || []).reduce(
             (acc: Record<string, any>, p: any) => {
@@ -87,13 +99,23 @@ export default function SupplierBuyLeadPage(): JSX.Element {
         }
 
         setItems(
-          leads.map((l: any) => ({
-            ...l,
-            product_snapshot: l.product_id
-              ? productsById[l.product_id] ?? null
-              : null,
-            buyer_snapshot: l.buyer_id ? buyersById[l.buyer_id] ?? null : null,
-          }))
+          leads.map((l: any) => {
+            const product = l.product_id ? productsById[l.product_id] ?? null : null;
+            const productSnapshot = product ? {
+              ...product,
+              images: product.product_images 
+                ? product.product_images
+                    .sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0))
+                    .map((img: any) => img.image_url)
+                : []
+            } : null;
+            
+            return {
+              ...l,
+              product_snapshot: productSnapshot,
+              buyer_snapshot: l.buyer_id ? buyersById[l.buyer_id] ?? null : null,
+            };
+          })
         );
       } catch (e: any) {
         setError(e.message || "Failed to load buy leads");

@@ -239,6 +239,7 @@ export default function ProductViewV2Client({
                   supplierId={business?.profile_id}
                   supplierName={business?.business_name}
                   tierPricingSnapshot={product.product_tier_pricing}
+                  productImage={images[0]?.image_url}
                   variant="row"
                 />
               </div>
@@ -615,6 +616,7 @@ export default function ProductViewV2Client({
                     supplierId={business?.profile_id}
                     supplierName={business?.business_name}
                     tierPricingSnapshot={product.product_tier_pricing}
+                    productImage={images[0]?.image_url}
                     variant="row"
                   />
                 </div>
