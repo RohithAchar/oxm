@@ -11,6 +11,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
+import Footer from "@/components/footer";
 
 export const metadata = {
   title: "Supplier portal | OpenXmart",
@@ -66,6 +67,7 @@ export default async function SupplierLayout({
           <main>
             <div className="mx-auto px-3 md:px-6">{children}</div>
           </main>
+          <Footer fullWidth={false} />
         </SidebarInset>
       </SidebarProvider>
     </div>

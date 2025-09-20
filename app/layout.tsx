@@ -4,7 +4,7 @@ import Providers from "@/lib/Providers";
 import { Navbar } from "@/components/nav/navbar";
 import MobileMenu from "@/components/nav/mobile-menu";
 import RegisterSW from "@/components/RegisterSW";
-import Footer from "@/components/footer";
+import ConditionalFooter from "@/components/ConditionalFooter";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { GlobalBreadcrumbs } from "@/components/Breadcrumbs";
 import Container from "@/components/common/Container";
@@ -92,7 +92,7 @@ export default async function RootLayout({
               </Container>
             </main>
             <RegisterSW />
-            <Footer />
+            <ConditionalFooter />
           </ErrorBoundary>
         </Providers>
       </body>
