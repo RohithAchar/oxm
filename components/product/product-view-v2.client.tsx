@@ -10,6 +10,7 @@ import {
   Share2,
   Heart,
   ChevronDown,
+  ChevronRight,
   Package,
   Check,
   Truck,
@@ -191,7 +192,7 @@ export default function ProductViewV2Client({
                 >
                   <Heart
                     className={`w-5 h-5 text-white transition-colors duration-200 ${
-                      isFavorite(product.id) ? "fill-red-500 text-red-500" : ""
+                      isFavorite(product.id) ? "fill-rose-600 text-rose-600" : ""
                     }`}
                   />
                 </Button>
@@ -334,8 +335,42 @@ export default function ProductViewV2Client({
             )}
 
             {/* Supplier Info */}
-            <div className="bg-muted/50 rounded-lg p-4">
-              <h3 className="font-medium mb-3">Supplier</h3>
+            <div className="bg-muted/50 rounded-lg p-4 relative">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-medium">Supplier</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`p-2 rounded-full transition-all duration-200 active:scale-95 ${
+                    isFavoriteSupplier(business?.id)
+                      ? "text-rose-600 hover:text-rose-700"
+                      : "text-slate-400 hover:text-rose-600"
+                  }`}
+                  onClick={() => {
+                    if (navigator.vibrate) navigator.vibrate(100);
+                    if (business) {
+                      if (isFavoriteSupplier(business.id)) {
+                        removeFromFavoriteSuppliers(business.id);
+                      } else {
+                        addToFavoriteSuppliers({
+                          id: business.id,
+                          business_name: business.business_name,
+                          profile_avatar_url: business.profile_avatar_url,
+                          city: business.city,
+                          is_verified: business.is_verified,
+                          profile_id: business.profile_id,
+                        });
+                      }
+                    }
+                  }}
+                >
+                  <Heart
+                    className={`w-5 h-5 transition-colors duration-200 ${
+                      isFavoriteSupplier(business?.id) ? "fill-current" : ""
+                    }`}
+                  />
+                </Button>
+              </div>
               <div className="flex items-start gap-3">
                 <Avatar className="w-12 h-12">
                   <AvatarImage
@@ -351,7 +386,7 @@ export default function ProductViewV2Client({
                     </p>
                     {(business?.status === "APPROVED" ||
                       business?.is_verified) && (
-                      <BadgeCheck className="w-4 h-4 text-primary flex-shrink-0" />
+                      <BadgeCheck className="w-4 h-4 text-blue-600 flex-shrink-0" />
                     )}
                   </div>
                   <div className="text-xs text-muted-foreground mb-3">
@@ -361,58 +396,27 @@ export default function ProductViewV2Client({
                     </div>
                     <div>Trust Score: 500 • Rating: 4.5/5</div>
                   </div>
-                  <div className="flex gap-2">
-                    <Link href={`/${business?.id}`} className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <Link href={`/messages/${business?.profile_id}/chat`} className="flex-1">
                       <Button
                         size="sm"
-                        variant="outline"
-                        className="w-full rounded-full transition-all duration-200 active:scale-95"
-                      >
-                        View Profile
-                      </Button>
-                    </Link>
-                    <Link
-                      href={`/messages/${business?.profile_id}/chat`}
-                      className="flex-1"
-                    >
-                      <Button
-                        size="sm"
-                        className="w-full bg-green-600 hover:bg-green-700 active:bg-green-800 text-white rounded-full transition-all duration-200 active:scale-95"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-full transition-all duration-200 active:scale-95"
                       >
                         <MessageCircle className="w-4 h-4 mr-1" />
                         Chat
                       </Button>
                     </Link>
-                    <Button
-                      size="sm"
-                      className={`flex-1 rounded-full transition-all duration-200 active:scale-95 ${
-                        isFavoriteSupplier(business?.id)
-                          ? "bg-pink-500 hover:bg-pink-600 active:bg-pink-700 text-white"
-                          : "bg-gray-500 hover:bg-gray-600 active:bg-gray-700 text-white"
-                      }`}
-                      onClick={() => {
-                        if (navigator.vibrate) navigator.vibrate(100);
-                        if (business) {
-                          if (isFavoriteSupplier(business.id)) {
-                            removeFromFavoriteSuppliers(business.id);
-                          } else {
-                            addToFavoriteSuppliers({
-                              id: business.id,
-                              business_name: business.business_name,
-                              profile_avatar_url: business.profile_avatar_url,
-                              city: business.city,
-                              is_verified: business.is_verified,
-                              profile_id: business.profile_id,
-                            });
-                          }
-                        }
-                      }}
-                    >
-                      <Heart className="w-4 h-4 mr-1" />
-                      {isFavoriteSupplier(business?.id)
-                        ? "Favorited"
-                        : "Favorite"}
-                    </Button>
+                    <Link href={`/${business?.id}`}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="px-3 py-2 rounded-full transition-all duration-200 active:scale-95 text-slate-600 hover:text-slate-900 flex items-center gap-1"
+                        title="View Supplier Profile"
+                      >
+                        <span className="text-xs font-medium">Profile</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -423,7 +427,7 @@ export default function ProductViewV2Client({
               {/* Top Row - Sample Available, Bulk Adjustment, Price */}
               <div className="flex items-center justify-between p-3 border-b">
                 <div className="flex items-center gap-1.5">
-                  <Package className="w-4 h-4 text-red-500" />
+                  <Package className="w-4 h-4 text-rose-600" />
                   <span className="text-xs font-medium text-gray-900">
                     Sample Available
                   </span>
@@ -562,7 +566,7 @@ export default function ProductViewV2Client({
                     <Heart
                       className={`w-5 h-5 text-white transition-colors duration-200 ${
                         isFavorite(product.id)
-                          ? "fill-red-500 text-red-500"
+                          ? "fill-rose-600 text-rose-600"
                           : ""
                       }`}
                     />
@@ -623,8 +627,43 @@ export default function ProductViewV2Client({
 
                 {/* RFQ section (desktop) */}
                 <div className="mt-4">
-                  <div className="border rounded-lg p-4 bg-card">
-                    <h3 className="text-sm font-medium mb-2">Supplier</h3>
+                  <div className="border rounded-lg p-4 bg-card relative">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-sm font-medium">Supplier</h3>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`p-2 rounded-full transition-all duration-200 active:scale-95 ${
+                          isFavoriteSupplier(business?.id)
+                            ? "text-rose-600 hover:text-rose-700"
+                            : "text-slate-400 hover:text-rose-600"
+                        }`}
+                        onClick={() => {
+                          if (navigator.vibrate) navigator.vibrate(100);
+                          if (business) {
+                            if (isFavoriteSupplier(business.id)) {
+                              removeFromFavoriteSuppliers(business.id);
+                            } else {
+                              addToFavoriteSuppliers({
+                                id: business.id,
+                                business_name: business.business_name,
+                                profile_avatar_url:
+                                  business.profile_avatar_url,
+                                city: business.city,
+                                is_verified: business.is_verified,
+                                profile_id: business.profile_id,
+                              });
+                            }
+                          }
+                        }}
+                      >
+                        <Heart
+                          className={`w-5 h-5 transition-colors duration-200 ${
+                            isFavoriteSupplier(business?.id) ? "fill-current" : ""
+                          }`}
+                        />
+                      </Button>
+                    </div>
                     <div className="flex items-start gap-3">
                       <Avatar className="w-12 h-12">
                         <AvatarImage
@@ -641,8 +680,8 @@ export default function ProductViewV2Client({
                           </p>
                           {(business?.status === "APPROVED" ||
                             business?.is_verified) && (
-                            <span className="inline-flex items-center gap-1 text-xs text-primary font-medium">
-                              <BadgeCheck className="w-4 h-4 text-primary" />
+                            <span className="inline-flex items-center gap-1 text-xs text-blue-700 font-medium">
+                              <BadgeCheck className="w-4 h-4 text-blue-600" />
                               verified
                             </span>
                           )}
@@ -677,62 +716,33 @@ export default function ProductViewV2Client({
                             <span className="ml-1 font-medium">4.5/ 5</span>
                           </div>
                         </div>
-                        <div className="mt-3 flex items-center gap-3">
-                          <Link
-                            href={`/${business?.id}`}
-                            className="inline-block"
-                          >
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="inline-flex items-center gap-1 rounded-full px-4"
-                            >
-                              View Profile
-                            </Button>
-                          </Link>
+                        <div className="mt-3 flex items-center gap-2">
                           <Link
                             href={`/messages/${business?.profile_id}/chat`}
-                            className="inline-block"
+                            className="flex-1"
                           >
                             <Button
                               size="sm"
-                              className="bg-green-600 hover:bg-green-700 text-white inline-flex items-center gap-1 rounded-full px-4"
+                              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white inline-flex items-center gap-1 rounded-full px-4"
                             >
                               <MessageCircle className="w-4 h-4" />
                               CHAT NOW
                             </Button>
                           </Link>
-                          <Button
-                            size="sm"
-                            className={`rounded-full px-4 ${
-                              isFavoriteSupplier(business?.id)
-                                ? "bg-pink-500 hover:bg-pink-600 text-white"
-                                : "bg-gray-500 hover:bg-gray-600 text-white"
-                            }`}
-                            onClick={() => {
-                              if (navigator.vibrate) navigator.vibrate(100);
-                              if (business) {
-                                if (isFavoriteSupplier(business.id)) {
-                                  removeFromFavoriteSuppliers(business.id);
-                                } else {
-                                  addToFavoriteSuppliers({
-                                    id: business.id,
-                                    business_name: business.business_name,
-                                    profile_avatar_url:
-                                      business.profile_avatar_url,
-                                    city: business.city,
-                                    is_verified: business.is_verified,
-                                    profile_id: business.profile_id,
-                                  });
-                                }
-                              }
-                            }}
+                          <Link
+                            href={`/${business?.id}`}
+                            className="inline-block"
                           >
-                            <Heart className="w-4 h-4 mr-1" />
-                            {isFavoriteSupplier(business?.id)
-                              ? "Favorited"
-                              : "Favorite"}
-                          </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="px-3 py-2 rounded-full transition-all duration-200 active:scale-95 text-slate-600 hover:text-slate-900 flex items-center gap-1"
+                              title="View Supplier Profile"
+                            >
+                              <span className="text-xs font-medium">Profile</span>
+                              <ChevronRight className="w-4 h-4" />
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                     </div>
@@ -874,7 +884,7 @@ export default function ProductViewV2Client({
                   {/* Top Row - Sample Available, Bulk Adjustment, Price */}
                   <div className="flex items-center justify-between p-6 border-b">
                     <div className="flex items-center gap-3">
-                      <Package className="w-6 h-6 text-red-500" />
+                      <Package className="w-6 h-6 text-rose-600" />
                       <span className="text-base font-medium text-gray-900">
                         Sample Available
                       </span>

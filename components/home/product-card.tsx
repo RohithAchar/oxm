@@ -94,8 +94,8 @@ export const ProductCard = ({
             {name}
           </h1>
 
-          <div className="flex items-center gap-1 min-h-[1.25rem]">
-            <p className="text-sm text-muted-foreground truncate">
+          <div className="flex items-center gap-1 min-h-[1.25rem] min-w-0">
+            <p className="text-sm text-muted-foreground truncate flex-1 min-w-0">
               {supplierName}
             </p>
             {is_verified && (
