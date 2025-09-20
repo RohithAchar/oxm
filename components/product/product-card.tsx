@@ -54,17 +54,8 @@ export const ProductCard = ({
     <Link href={`/products/${id}`} className="block h-full">
       <div className="relative isolate bg-white dark:bg-card h-full overflow-hidden flex flex-col">
         {/* Top-right unified badges */}
-        {(is_verified || is_sample_available) && (
+        {is_sample_available && (
           <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
-            {is_verified && (
-              <Badge
-                variant="secondary"
-                className="text-[10px] px-2 py-0.5 leading-none"
-              >
-                <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
-                Verified
-              </Badge>
-            )}
             {is_sample_available && (
               <Badge
                 variant="secondary"
@@ -96,7 +87,7 @@ export const ProductCard = ({
         {/* Product Details */}
         <div className="p-3 md:p-4 space-y-2 flex-1 flex flex-col">
           {/* Product Title */}
-          <h1 className="font-semibold text-foreground text-base leading-tight line-clamp-2 break-words">
+          <h1 className="font-normal text-foreground text-base leading-tight line-clamp-2 break-words">
             {name}
           </h1>
 
@@ -104,9 +95,20 @@ export const ProductCard = ({
 
           {/* Supplier / brand (muted, consistent height) */}
           {!isDemoBrand && (
-            <p className="text-sm text-muted-foreground truncate min-h-[1.25rem]">
-              {brand}
-            </p>
+            <div className="flex items-center gap-2 min-h-[1.25rem]">
+              <p className="text-sm text-muted-foreground truncate">
+                {brand}
+              </p>
+              {is_verified && (
+                <Badge
+                  variant="secondary"
+                  className="text-[9px] px-1.5 py-0.5 leading-none flex-shrink-0 bg-blue-50 text-blue-700 border-blue-200"
+                >
+                  <BadgeCheckIcon className="h-2 w-2 mr-0.5" />
+                  Verified
+                </Badge>
+              )}
+            </div>
           )}
 
           {/* Price and MOQ */}

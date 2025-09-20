@@ -58,17 +58,8 @@ export const ProductCard = ({
         key={id}
         className="relative isolate bg-white dark:bg-card h-full overflow-hidden cursor-pointer flex flex-col"
       >
-        {(is_verified || hasSample) && (
+        {hasSample && (
           <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
-            {is_verified && (
-              <Badge
-                variant="secondary"
-                className="text-[10px] px-2 py-0.5 leading-none"
-              >
-                <BadgeCheckIcon className="h-2.5 w-2.5 mr-1" />
-                Verified{verificationYears ? ` · ${verificationYears}y` : ""}
-              </Badge>
-            )}
             {hasSample && (
               <Badge
                 variant="secondary"
@@ -99,15 +90,24 @@ export const ProductCard = ({
         {/* Product Details */}
         <div className="p-3 md:p-4 space-y-2 flex-1 flex flex-col">
           {/* Product Title */}
-          <h1 className="font-semibold text-foreground text-base leading-tight line-clamp-2 break-words">
+          <h1 className="font-normal text-foreground text-base leading-tight line-clamp-2 break-words">
             {name}
           </h1>
 
-          <p className="text-sm text-muted-foreground truncate min-h-[1.25rem]">
-            {/demo/i.test(supplierName || "") || /demo/i.test(brand || "")
-              ? "OpenXmart Supplier"
-              : supplierName}
-          </p>
+          <div className="flex items-center gap-1 min-h-[1.25rem]">
+            <p className="text-sm text-muted-foreground truncate">
+              {supplierName}
+            </p>
+            {is_verified && (
+              <Badge
+                variant="secondary"
+                className="text-[9px] px-1.5 py-0.5 leading-none flex-shrink-0 bg-blue-50 text-blue-700 border-blue-200"
+              >
+                <BadgeCheckIcon className="h-2 w-2 mr-0.5" />
+                Verified
+              </Badge>
+            )}
+          </div>
 
           {/* Badges moved to top-right for unified placement */}
 
