@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MoreHorizontal, Edit, Eye, Package } from "lucide-react";
+import { MoreHorizontal, Edit, Eye, Package, Palette } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -210,6 +210,10 @@ const ManageProductsPage = () => {
     router.push(`/supplier/manage-products/${productId}`);
   };
 
+  const handleManageVariants = (productId: string) => {
+    router.push(`/supplier/manage-products/${productId}/variants`);
+  };
+
   return (
     <div className="pb-20 md:pb-12 space-y-6">
       {/* Header */}
@@ -299,6 +303,18 @@ const ManageProductsPage = () => {
                         }}
                       >
                         Edit product
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="justify-start"
+                        onClick={() => {
+                          if (!activeProductForActions) return;
+                          handleManageVariants(activeProductForActions.id);
+                          setDrawerOpen(false);
+                        }}
+                      >
+                        <Palette className="w-4 h-4 mr-2" />
+                        Manage Variants
                       </Button>
                       <Button
                         className="justify-start"
@@ -428,6 +444,13 @@ const ManageProductsPage = () => {
                             >
                               <Edit className="mr-2 h-4 w-4" />
                               Edit Product
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleManageVariants(product.id)}
+                              className="rounded-lg hover:bg-muted"
+                            >
+                              <Palette className="mr-2 h-4 w-4" />
+                              Manage Variants
                             </DropdownMenuItem>
                             <DropdownMenuSeparator className="bg-border" />
                             <DropdownMenuItem

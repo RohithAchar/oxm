@@ -27,37 +27,60 @@ const groupedNav: Array<{
   items: { title: string; url: string; matchPrefix?: boolean }[];
 }> = [
   {
-    section: "Business Overview",
-    items: [{ title: "Overview", url: "/supplier/overview" }],
+    section: "Business overview",
+    items: [
+      { title: "Overview", url: "/supplier/overview" },
+      { title: "Profile", url: "/supplier/profile" },
+      { title: "Insights", url: "/supplier/insights" },
+    ],
   },
   {
-    section: "Product Catalog",
+    section: "Product catalog",
     items: [
+      { title: "Add new product", url: "/supplier/add-product" },
       {
         title: "Products",
         url: "/supplier/manage-products",
         matchPrefix: true,
       },
-      { title: "Colors", url: "/supplier/colors" },
-      { title: "Sizes", url: "/supplier/sizes" },
+      { title: "Verients (colour / sizes)", url: "/supplier/variants" },
     ],
   },
   {
-    section: "Orders & Leads",
+    section: "Lead manager",
     items: [
-      { title: "Orders", url: "/supplier/orders", matchPrefix: true },
-      { title: "Buy Lead", url: "/supplier/buylead" },
       { title: "Enquiry", url: "/supplier/enquiry", matchPrefix: true },
+      { title: "Buylead", url: "/supplier/buylead" },
+    ],
+  },
+  {
+    section: "Orders & logistics",
+    items: [
+      { title: "Sample orders", url: "/supplier/sample-orders" },
+      { title: "Bulk orders", url: "/supplier/bulk-orders" },
+      { title: "Shipping & tracking", url: "/supplier/shipping-tracking" },
     ],
   },
   {
     section: "Trust & Reputation",
-    items: [{ title: "Trust Score", url: "/supplier/trust-score" }],
+    items: [
+      { title: "Trust score", url: "/supplier/trust-score" },
+      { title: "Ratings & reviews", url: "/supplier/ratings-reviews" },
+    ],
   },
   {
-    section: "Business Settings",
+    section: "Education center",
     items: [
-      { title: "Settings", url: "/supplier/settings", matchPrefix: true },
+      { title: "Tips", url: "/supplier/tips" },
+      { title: "Tutorial hub", url: "/supplier/tutorial-hub" },
+    ],
+  },
+  {
+    section: "Support",
+    items: [
+      { title: "Messages / Notifications", url: "/messages" },
+      { title: "Help center", url: "/supplier/help-center" },
+      { title: "Contact us", url: "/supplier/contact-us" },
     ],
   },
 ];

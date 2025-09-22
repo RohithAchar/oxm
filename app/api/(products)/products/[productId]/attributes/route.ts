@@ -1,6 +1,87 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
+// Gets the colors and sizes associations for a product
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ productId: string }> }
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { productId } = await params;
+  if (!productId) {
+    return NextResponse.json({ error: "Missing productId" }, { status: 400 });
+  }
+
+  // Verify product ownership
+  const { data: product, error: prodErr } = await supabase
+    .from("products")
+    .select("id, supplier_id")
+    .eq("id", productId)
+    .single();
+
+  if (prodErr || !product || product.supplier_id !== user.id) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  // Fetch product colors with color details
+  const { data: productColors, error: colorsError } = await supabase
+    .from("product_colors")
+    .select(
+      `
+      color_id,
+      supplier_colors (
+        id,
+        name,
+        hex_code
+      )
+    `
+    )
+    .eq("product_id", productId);
+
+  // Fetch product sizes with size details
+  const { data: productSizes, error: sizesError } = await supabase
+    .from("product_sizes")
+    .select(
+      `
+      size_id,
+      supplier_sizes (
+        id,
+        name
+      )
+    `
+    )
+    .eq("product_id", productId);
+
+  if (colorsError || sizesError) {
+    return NextResponse.json(
+      { error: "Failed to fetch attributes" },
+      { status: 500 }
+    );
+  }
+
+  // Transform the data to match the expected format
+  const colors =
+    productColors?.map((pc) => pc.supplier_colors).filter(Boolean) || [];
+  const sizes =
+    productSizes?.map((ps) => ps.supplier_sizes).filter(Boolean) || [];
+
+  return NextResponse.json({
+    data: {
+      colors,
+      sizes,
+    },
+  });
+}
+
 // Sets the colors and sizes associations for a product owned by the current supplier
 export async function PUT(
   req: NextRequest,

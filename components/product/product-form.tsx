@@ -88,15 +88,6 @@ export const ProductForm = ({
 }) => {
   const [tagInput, setTagInput] = useState("");
   const [isTagPopoverOpen, setIsTagPopoverOpen] = useState(false);
-  const [colors, setColors] = useState<
-    Array<{ id: string; name: string; hex_code: string }>
-  >([]);
-  const [sizes, setSizes] = useState<Array<{ id: string; name: string }>>([]);
-  const [selectedColorIds, setSelectedColorIds] = useState<string[]>([]);
-  const [selectedSizeIds, setSelectedSizeIds] = useState<string[]>([]);
-  const [newColorName, setNewColorName] = useState("");
-  const [newColorHex, setNewColorHex] = useState("");
-  const [newSizeName, setNewSizeName] = useState("");
   const router = useRouter();
 
   // Wizard state
@@ -116,27 +107,26 @@ export const ProductForm = ({
   > = {
     basic: ["name", "description", "brand", "categoryId", "subCategoryId"],
     images: ["images"],
+    // Step 2: Details (Shipping, Additional Details, Specifications, Dimensions, Supplier)
     details: [
+      "supplier_id",
       "country_of_origin",
       "hsn_code",
       "youtube_link",
-      "supplier_id",
       "specifications",
       "height",
       "weight",
       "length",
       "breadth",
-      "tags",
-    ],
-    pricing: ["tiers"],
-    publish: [
-      "sample_available",
-      "is_active",
       "dropship_available",
       "dropship_price",
       "white_label_shipping",
       "dispatch_time",
     ],
+    // Step 3: Pricing
+    pricing: ["tiers"],
+    // Step 4: Publish (Inventory + Tags)
+    publish: ["sample_available", "is_active", "tags"],
   };
   const goNext = async () => {
     const stepKey = steps[currentStep].key as unknown as string;
@@ -260,7 +250,7 @@ export const ProductForm = ({
       country_of_origin: "",
       hsn_code: "",
       youtube_link: "",
-      supplier_id: "",
+      supplier_id: business.profile_id || "",
       specifications: [],
       dropship_available: false,
       dropship_price: undefined,
@@ -274,76 +264,6 @@ export const ProductForm = ({
     defaultValues: getDefaultValues(),
     mode: "onChange",
   });
-
-  // Fetch supplier colors and sizes
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const [cRes, sRes] = await Promise.all([
-          fetch("/api/colors", { cache: "no-store" }),
-          fetch("/api/sizes", { cache: "no-store" }),
-        ]);
-        if (cRes.ok) {
-          const json = await cRes.json();
-          setColors(json?.data ?? []);
-        }
-        if (sRes.ok) {
-          const json = await sRes.json();
-          setSizes(json?.data ?? []);
-        }
-      } catch (e) {
-        // ignore
-      }
-    };
-    load();
-  }, []);
-
-  const toggleSelected = (
-    list: string[],
-    setList: (v: string[]) => void,
-    id: string
-  ) => {
-    if (list.includes(id)) setList(list.filter((x) => x !== id));
-    else setList([...list, id]);
-  };
-
-  const handleCreateColor = async () => {
-    if (!newColorName.trim() || !newColorHex.trim()) return;
-    const res = await fetch("/api/colors", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: newColorName.trim(),
-        hex: newColorHex.trim(),
-      }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      setColors([json.data, ...colors]);
-      setNewColorName("");
-      setNewColorHex("");
-      toast.success("Color added");
-    } else {
-      toast.error("Failed to add color");
-    }
-  };
-
-  const handleCreateSize = async () => {
-    if (!newSizeName.trim()) return;
-    const res = await fetch("/api/sizes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: newSizeName.trim() }),
-    });
-    if (res.ok) {
-      const json = await res.json();
-      setSizes([json.data, ...sizes]);
-      setNewSizeName("");
-      toast.success("Size added");
-    } else {
-      toast.error("Failed to add size");
-    }
-  };
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -431,15 +351,6 @@ export const ProductForm = ({
           ...values,
           total_price: (values.quantity ?? 0) * (values.price_per_unit ?? 0),
         });
-        // Save attributes
-        await fetch(`/api/products/${product.id}/attributes`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            colorIds: selectedColorIds,
-            sizeIds: selectedSizeIds,
-          }),
-        });
         toast.success("Product updated successfully");
         // Redirect to manage products page after successful update
         router.push("/supplier/manage-products");
@@ -448,16 +359,6 @@ export const ProductForm = ({
           ...values,
           total_price: (values.quantity ?? 0) * (values.price_per_unit ?? 0),
         });
-        if (created?.id) {
-          await fetch(`/api/products/${created.id}/attributes`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              colorIds: selectedColorIds,
-              sizeIds: selectedSizeIds,
-            }),
-          });
-        }
         toast.success("Product added successfully");
         form.reset();
         clearDraft();
@@ -556,15 +457,36 @@ export const ProductForm = ({
                     </div>
                   ))}
                 </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSaveDraft}
-                  className="w-full sm:w-auto"
-                >
-                  Save as Draft
-                </Button>
+                <div className="flex gap-2 w-full sm:w-auto">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      try {
+                        clearDraft();
+                        form.reset({
+                          ...getDefaultValues(),
+                        });
+                        toast.success("Draft cleared");
+                      } catch (_) {
+                        toast.error("Failed to clear draft");
+                      }
+                    }}
+                    className="w-full sm:w-auto"
+                  >
+                    Reset Draft
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleSaveDraft}
+                    className="w-full sm:w-auto"
+                  >
+                    Save as Draft
+                  </Button>
+                </div>
               </div>
               <Progress value={((currentStep + 1) / steps.length) * 100} />
             </div>
@@ -1713,115 +1635,15 @@ export const ProductForm = ({
               </div>
             )}
 
-            {/* Step 2: Details - Colors & Sizes */}
-            {currentStep === 2 && (
-              <div className="space-y-4 lg:space-y-6">
-                <div>
-                  <h2 className="text-lg lg:text-xl font-semibold">
-                    Colors & Sizes
-                  </h2>
-                  <p className="text-sm text-muted-foreground">
-                    Create your own colors and sizes, then select for this
-                    product.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  {/* Colors */}
-                  <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg space-y-3">
-                    <h3 className="font-medium">Colors</h3>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline">
-                        <a
-                          href="/supplier/colors"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Manage Colors
-                        </a>
-                      </Button>
-                    </div>
-                    <div className="max-h-48 overflow-auto space-y-2">
-                      {colors.map((c) => (
-                        <label key={c.id} className="flex items-center gap-2">
-                          <Checkbox
-                            checked={selectedColorIds.includes(c.id)}
-                            onCheckedChange={() =>
-                              toggleSelected(
-                                selectedColorIds,
-                                setSelectedColorIds,
-                                c.id
-                              )
-                            }
-                          />
-                          <span
-                            className="w-4 h-4 rounded"
-                            style={{ backgroundColor: c.hex_code }}
-                          />
-                          <span className="text-sm">{c.name}</span>
-                          <span className="text-xs text-muted-foreground">
-                            {c.hex_code}
-                          </span>
-                        </label>
-                      ))}
-                      {colors.length === 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          No colors yet.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Sizes */}
-                  <div className="p-3 lg:p-4 bg-muted/50 border rounded-lg space-y-3">
-                    <h3 className="font-medium">Sizes</h3>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline">
-                        <a
-                          href="/supplier/sizes"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Manage Sizes
-                        </a>
-                      </Button>
-                    </div>
-                    <div className="max-h-48 overflow-auto space-y-2">
-                      {sizes.map((s) => (
-                        <label key={s.id} className="flex items-center gap-2">
-                          <Checkbox
-                            checked={selectedSizeIds.includes(s.id)}
-                            onCheckedChange={() =>
-                              toggleSelected(
-                                selectedSizeIds,
-                                setSelectedSizeIds,
-                                s.id
-                              )
-                            }
-                          />
-                          <span className="text-sm">{s.name}</span>
-                        </label>
-                      ))}
-                      {sizes.length === 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          No sizes yet.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Step 2: Details - Product Specification */}
             {currentStep === 2 && (
               <div className="space-y-4 lg:space-y-6">
                 <div>
                   <h2 className="text-lg lg:text-xl font-semibold">
-                    Product Specification
+                    Product Details
                   </h2>
                   <p className="text-sm text-muted-foreground">
-                    Specify additional details about your product.
+                    Add specifications, dimensions, and other product details.
                   </p>
                 </div>
 

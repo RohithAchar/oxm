@@ -48,7 +48,7 @@ export const Profile = async () => {
     completion >= 90 ? "Gold" : completion >= 70 ? "Silver" : "Bronze";
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mt-4 pb-24 md:pb-0">
+    <div className="flex flex-col gap-6">
       {/* Header with trust badge and completion */}
       <div className="rounded-2xl border bg-muted/30 p-4 md:p-6">
         <div className="flex items-start gap-4">
