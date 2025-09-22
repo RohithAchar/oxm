@@ -1,7 +1,8 @@
 import "./globals.css";
 import Providers from "@/lib/Providers";
 
-import { Navbar } from "@/components/nav/navbar";
+import ConditionalNavbar from "@/components/ConditionalNavbar";
+import RootMain from "@/components/RootMain";
 import MobileMenu from "@/components/nav/mobile-menu";
 import RegisterSW from "@/components/RegisterSW";
 import ConditionalFooter from "@/components/ConditionalFooter";
@@ -77,20 +78,9 @@ export default async function RootLayout({
       >
         <Providers>
           <ErrorBoundary>
-            <Navbar />
+            <ConditionalNavbar />
             <MobileMenu />
-            <main
-              className="pt-14 md:pt-14 md:pb-0"
-              style={{
-                paddingLeft: "env(safe-area-inset-left)",
-                paddingRight: "env(safe-area-inset-right)",
-              }}
-            >
-              <Container>
-                <GlobalBreadcrumbs />
-                {children}
-              </Container>
-            </main>
+            <RootMain>{children}</RootMain>
             <RegisterSW />
             <ConditionalFooter />
           </ErrorBoundary>

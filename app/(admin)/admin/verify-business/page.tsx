@@ -247,7 +247,7 @@ const AdminBusinessVerification = () => {
     setTogglingBusiness(business.id);
     try {
       const newVerifiedStatus = !business.is_verified;
-      
+
       const response = await axios.patch(
         `/api/businesses/${business.id}/verification`,
         {
@@ -312,15 +312,16 @@ const AdminBusinessVerification = () => {
   }
 
   return (
-    <div className="container mx-auto py-4 px-3">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-foreground">
+    <main className="space-y-4 md:space-y-6 pb-24 md:pb-12">
+      <div className="pt-2 md:pt-4">
+        <h1 className="text-xl md:text-3xl font-bold tracking-tight">
           Business Verification
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-muted-foreground mt-1 text-sm md:text-base">
           Review and manage business verification requests
         </p>
       </div>
+      <div className="border-t" />
 
       {/* Filters Section */}
       <Card className="mb-6">
@@ -429,10 +430,16 @@ const AdminBusinessVerification = () => {
                   <TableHead className="hidden md:table-cell">Type</TableHead>
                   <TableHead>Location</TableHead>
                   <TableHead className="hidden sm:table-cell">Phone</TableHead>
-                  <TableHead className="hidden lg:table-cell">GST Number</TableHead>
+                  <TableHead className="hidden lg:table-cell">
+                    GST Number
+                  </TableHead>
                   <TableHead>Status</TableHead>
-                  <TableHead className="hidden sm:table-cell">Verified</TableHead>
-                  <TableHead className="hidden md:table-cell">Submitted</TableHead>
+                  <TableHead className="hidden sm:table-cell">
+                    Verified
+                  </TableHead>
+                  <TableHead className="hidden md:table-cell">
+                    Submitted
+                  </TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -459,7 +466,9 @@ const AdminBusinessVerification = () => {
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">{business.type}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {business.type}
+                      </TableCell>
                       <TableCell>
                         <div className="text-sm">
                           <div>
@@ -470,7 +479,9 @@ const AdminBusinessVerification = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="hidden sm:table-cell">{business.phone}</TableCell>
+                      <TableCell className="hidden sm:table-cell">
+                        {business.phone}
+                      </TableCell>
                       <TableCell className="hidden lg:table-cell">
                         <code className="text-xs bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">
                           {business.gst_number}
@@ -478,10 +489,11 @@ const AdminBusinessVerification = () => {
                       </TableCell>
                       <TableCell>{getStatusBadge(business.status)}</TableCell>
                       <TableCell className="hidden sm:table-cell">
-                        <Badge 
-                          className={business.is_verified 
-                            ? "bg-green-100 text-green-800 hover:bg-green-100" 
-                            : "bg-gray-100 text-gray-800 hover:bg-gray-100"
+                        <Badge
+                          className={
+                            business.is_verified
+                              ? "bg-green-100 text-green-800 hover:bg-green-100"
+                              : "bg-gray-100 text-gray-800 hover:bg-gray-100"
                           }
                         >
                           {business.is_verified ? "Yes" : "No"}
@@ -500,11 +512,17 @@ const AdminBusinessVerification = () => {
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button
-                            variant={business.is_verified ? "destructive" : "default"}
+                            variant={
+                              business.is_verified ? "destructive" : "default"
+                            }
                             size="sm"
                             onClick={() => handleToggleVerified(business)}
                             disabled={togglingBusiness === business.id}
-                            className={business.is_verified ? "bg-green-600 hover:bg-green-700" : "bg-gray-600 hover:bg-gray-700"}
+                            className={
+                              business.is_verified
+                                ? "bg-green-600 hover:bg-green-700"
+                                : "bg-gray-600 hover:bg-gray-700"
+                            }
                           >
                             {togglingBusiness === business.id ? (
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -700,7 +718,7 @@ const AdminBusinessVerification = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </main>
   );
 };
 

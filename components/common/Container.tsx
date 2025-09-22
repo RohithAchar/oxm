@@ -11,12 +11,13 @@ export default function Container({
   className?: string;
 }) {
   const pathname = usePathname();
-  const isSupplier = pathname?.startsWith("/supplier");
-  const maxWidthClass = isSupplier ? "max-w-full" : "max-w-screen-2xl";
+  const isSpecialFullWidth =
+    pathname?.startsWith("/supplier") || pathname?.startsWith("/admin");
+  const maxWidthClass = isSpecialFullWidth ? "max-w-full" : "max-w-screen-2xl";
   return (
     <div
       className={`${maxWidthClass} mx-auto ${className} ${
-        isSupplier ? "px-0" : "px-4"
+        isSpecialFullWidth ? "px-0" : "px-4"
       }`}
     >
       {children}

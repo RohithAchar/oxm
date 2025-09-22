@@ -16,6 +16,13 @@ export function GlobalBreadcrumbs() {
   if (pathname?.startsWith("/supplier")) {
     return null;
   }
+  if (pathname?.startsWith("/admin")) {
+    return (
+      <div className="flex-1 flex items-center">
+        <Breadcrumbs />
+      </div>
+    );
+  }
   return <Breadcrumbs />;
 }
 
@@ -59,7 +66,8 @@ export default function Breadcrumbs() {
   }
 
   const isSupplier = pathname.startsWith("/supplier");
-  const containerClass = isSupplier ? "px-0 py-0" : "pt-3 pb-0";
+  const isAdmin = pathname.startsWith("/admin");
+  const containerClass = isSupplier || isAdmin ? "px-0 py-0" : "pt-3 pb-0";
 
   return (
     <div className={containerClass}>

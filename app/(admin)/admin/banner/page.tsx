@@ -15,18 +15,21 @@ const ManageBanner = async () => {
   const banners = await getBanners();
 
   return (
-    <div className="space-y-8 mx-auto max-w-7xl">
-      <div className="flex items-center justify-between">
+    <main className="space-y-4 md:space-y-6 pb-24 md:pb-12">
+      <div className="pt-2 md:pt-4 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-light">Manage Banner</h1>
-          <p className="text-muted-foreground mt-1 font-light">
+          <h1 className="text-xl md:text-3xl font-bold tracking-tight">
+            Manage Banners
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">
             Manage your banners here.
           </p>
         </div>
-        <Button asChild variant={"link"}>
+        <Button asChild>
           <Link href={`/admin/banner/new`}>Create new banner</Link>
         </Button>
       </div>
+      <div className="border-t" />
       <Card>
         <CardHeader>
           <CardTitle>Overview</CardTitle>
@@ -36,7 +39,7 @@ const ManageBanner = async () => {
           <DataTable columns={columns} data={banners} />
         </CardContent>
       </Card>
-    </div>
+    </main>
   );
 };
 
