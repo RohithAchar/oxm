@@ -5,6 +5,7 @@ import { SupplierBreadcrumbs } from "@/components/Breadcrumbs";
 import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { ModeToggle } from "@/components/nav/theme-toggle-button";
+import { NotificationsBell } from "@/components/nav/NotificationsBell";
 import {
   SidebarInset,
   SidebarProvider,
@@ -60,7 +61,8 @@ export default async function SupplierLayout({
               className="mr-2 data-[orientation=vertical]:h-4"
             />
             <SupplierBreadcrumbs />
-            <div className="ml-auto hidden md:flex">
+            <div className="ml-auto hidden md:flex items-center gap-2">
+              <NotificationsBell />
               <ModeToggle />
             </div>
           </header>

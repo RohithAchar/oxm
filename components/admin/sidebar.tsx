@@ -3,14 +3,19 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { BookImage, UserCircle, Building2 } from "lucide-react";
+import { Bell, BookImage, UserCircle, Building2 } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const sidebarItems = [
   { name: "Banner", href: "/admin/banner", icon: BookImage },
-  { name: "Business Verification", href: "/admin/verify-business", icon: Building2 },
+  {
+    name: "Business Verification",
+    href: "/admin/verify-business",
+    icon: Building2,
+  },
+  { name: "Notifications", href: "/admin/notifications", icon: Bell },
   { name: "Profile", href: "/supplier/view-profile", icon: UserCircle },
 ];
 
