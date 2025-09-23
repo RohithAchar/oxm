@@ -50,7 +50,7 @@ export default async function SupplierLayout({
   }
 
   return (
-    <div className="dark flex flex-col lg:flex-row min-h-screen lg:min-h-0 py-0">
+    <div className="flex flex-col lg:flex-row min-h-screen lg:min-h-0 py-0">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset className="-mt-14 md:-mt-14">
