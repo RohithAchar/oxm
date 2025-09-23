@@ -116,6 +116,32 @@ export const Profile = async () => {
 
       {/* Info cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* About */}
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">About</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {business.message ? (
+              <p className="text-sm leading-6 text-foreground">
+                {business.message}
+              </p>
+            ) : (
+              <div className="flex items-start justify-between gap-4">
+                <p className="text-sm text-muted-foreground">
+                  Add a short description to tell buyers about your business,
+                  specialties, and certifications.
+                </p>
+                <Button asChild size="sm">
+                  <Link href={`/supplier/profile/${business.id}/edit`}>
+                    Add About
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Business Information */}
         <Card>
           <CardHeader>

@@ -2,6 +2,10 @@ import z from "zod";
 
 export const createBusinessformSchema = z.object({
   businessName: z.string().min(3, "Business name is required"),
+  about: z
+    .string()
+    .max(2000, "About must be at most 2000 characters")
+    .optional(),
   gstNumber: z
     .string()
     .min(15, "GST Number is required")
@@ -45,17 +49,25 @@ export const createBusinessformSchema = z.object({
       message: "Profile picture must be JPEG, PNG, or WEBP and under 1MB",
     }
   ),
-  gst_certificate: z.custom<File>(
-    (file) => {
-      if (!(file instanceof File)) return false;
+  gst_certificate: z
+    .custom<File>(
+      (file) => {
+        if (!(file instanceof File)) return false;
 
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+        const allowedTypes = [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "application/pdf",
+        ];
 
-      return file.size <= maxSizeInBytes && allowedTypes.includes(file.type);
-    },
-    {
-      message: "GST certificate must be JPEG, PNG, WEBP, or PDF and under 5MB",
-    }
-  ).optional(),
+        return file.size <= maxSizeInBytes && allowedTypes.includes(file.type);
+      },
+      {
+        message:
+          "GST certificate must be JPEG, PNG, WEBP, or PDF and under 5MB",
+      }
+    )
+    .optional(),
 });

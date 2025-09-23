@@ -18,6 +18,10 @@ export const formSchema = z.object({
   business_name: z
     .string()
     .min(2, "Business name must be at least 2 characters"),
+  message: z
+    .string()
+    .max(2000, "About must be at most 2000 characters")
+    .optional(),
   gst_number: z
     .string()
     .min(15, "GST number must be 15 characters")

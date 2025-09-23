@@ -13,6 +13,7 @@ export async function POST(req: NextRequest) {
 
     const {
       business_name,
+      message,
       gst_number,
       business_address,
       city,
@@ -107,6 +108,7 @@ export async function POST(req: NextRequest) {
         .from("supplier_businesses")
         .update({
           business_name,
+          message,
           gst_number,
           business_address,
           city,
@@ -134,6 +136,7 @@ export async function POST(req: NextRequest) {
       // ➕ CREATE
       const insertResult = await supabase.from("supplier_businesses").insert({
         business_name,
+        message,
         gst_number,
         business_address,
         city,

@@ -48,6 +48,7 @@ export const ProfileForm = ({ business }: { business: BusinessSchema }) => {
     resolver: zodResolver(BusinessProfileUpdateSchema),
     defaultValues: {
       business_name: business.business_name,
+      about: business.message || "",
       business_address: business.business_address,
       city: business.city,
       state: business.state,
@@ -125,6 +126,27 @@ export const ProfileForm = ({ business }: { business: BusinessSchema }) => {
                     />
                   </div>
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="about"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>About</FormLabel>
+                <FormControl>
+                  <Textarea
+                    disabled={loading}
+                    {...field}
+                    placeholder="Write about your business"
+                  />
+                </FormControl>
+                <FormDescription>
+                  This appears on your public supplier profile.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

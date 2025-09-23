@@ -97,6 +97,7 @@ export const updateBusiness = async (
       .from("supplier_businesses")
       .update({
         business_name: data.business_name,
+        message: (data as any).about ?? undefined,
         business_address: data.business_address,
         city: data.city,
         state: data.state,
@@ -158,6 +159,7 @@ export const createBusiness = async (
 
     const validatedFields = createBusinessformSchema.safeParse({
       businessName: data.businessName,
+      about: data.about,
       main_phone: data.main_phone,
       alternative_phone: data.alternative_phone,
       gstNumber: data.gstNumber,
@@ -238,6 +240,7 @@ export const createBusiness = async (
       .insert({
         profile_id: userId,
         business_name: data.businessName,
+        message: (data as any).about,
         business_address: data.businessAddress,
         city: data.city,
         state: data.state,

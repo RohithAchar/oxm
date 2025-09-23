@@ -29,6 +29,10 @@ export const BusinessProfileUpdateSchema = z.object({
     )
     .optional(),
   business_name: z.string().min(1, "Business name is required"),
+  about: z
+    .string()
+    .max(2000, "About must be at most 2000 characters")
+    .optional(),
   business_address: z.string().min(1, "Business address is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),

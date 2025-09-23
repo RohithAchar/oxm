@@ -70,6 +70,7 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
     resolver: zodResolver(createBusinessformSchema),
     defaultValues: {
       businessName: "",
+      about: "",
       main_phone: "",
       alternative_phone: "",
       gstNumber: "",
@@ -162,6 +163,25 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
 
             <FormField
               control={form.control}
+              name="about"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>About your business (optional)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Tell buyers about your business, specialties, capacity, certifications, etc."
+                      {...field}
+                      disabled={loading}
+                    />
+                  </FormControl>
+                  <FormDescription>Up to 2000 characters.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="businessName"
               render={({ field }) => (
                 <FormItem>
@@ -243,18 +263,25 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                         <Button
                           type="button"
                           variant="secondary"
-                          disabled={loading || mainPhone.length !== 10 || mainVerified}
+                          disabled={
+                            loading || mainPhone.length !== 10 || mainVerified
+                          }
                           onClick={async () => {
                             try {
                               setLoading(true);
                               const res = await fetch("/api/otp/send", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ phone: mainPhone, purpose: "main" }),
+                                body: JSON.stringify({
+                                  phone: mainPhone,
+                                  purpose: "main",
+                                }),
                               });
                               const data = await res.json();
                               if (!res.ok || !data?.success) {
-                                throw new Error(data?.message || "Failed to send OTP");
+                                throw new Error(
+                                  data?.message || "Failed to send OTP"
+                                );
                               }
                               setMainOtpSent(true);
                               toast.success("OTP sent to main number");
@@ -265,7 +292,11 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                             }
                           }}
                         >
-                          {mainVerified ? "Verified" : mainOtpSent ? "Resend OTP" : "Send OTP"}
+                          {mainVerified
+                            ? "Verified"
+                            : mainOtpSent
+                            ? "Resend OTP"
+                            : "Send OTP"}
                         </Button>
                       </div>
                       {mainOtpSent && !mainVerified && (
@@ -287,17 +318,27 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                                 setLoading(true);
                                 const res = await fetch("/api/otp/verify", {
                                   method: "POST",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ phone: mainPhone, code: mainOtp, purpose: "main" }),
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    phone: mainPhone,
+                                    code: mainOtp,
+                                    purpose: "main",
+                                  }),
                                 });
                                 const data = await res.json();
                                 if (!res.ok || !data?.success) {
-                                  throw new Error(data?.message || "Invalid or expired OTP");
+                                  throw new Error(
+                                    data?.message || "Invalid or expired OTP"
+                                  );
                                 }
                                 setMainVerified(true);
                                 toast.success("Main phone verified");
                               } catch (err: any) {
-                                toast.error(err?.message || "Failed to verify OTP");
+                                toast.error(
+                                  err?.message || "Failed to verify OTP"
+                                );
                               } finally {
                                 setLoading(false);
                               }
@@ -310,7 +351,8 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Provide your main business contact number. It will be saved only after OTP verification.
+                    Provide your main business contact number. It will be saved
+                    only after OTP verification.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -343,18 +385,25 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                         <Button
                           type="button"
                           variant="secondary"
-                          disabled={loading || altPhone.length !== 10 || altVerified}
+                          disabled={
+                            loading || altPhone.length !== 10 || altVerified
+                          }
                           onClick={async () => {
                             try {
                               setLoading(true);
                               const res = await fetch("/api/otp/send", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ phone: altPhone, purpose: "alternate" }),
+                                body: JSON.stringify({
+                                  phone: altPhone,
+                                  purpose: "alternate",
+                                }),
                               });
                               const data = await res.json();
                               if (!res.ok || !data?.success) {
-                                throw new Error(data?.message || "Failed to send OTP");
+                                throw new Error(
+                                  data?.message || "Failed to send OTP"
+                                );
                               }
                               setAltOtpSent(true);
                               toast.success("OTP sent to alternate number");
@@ -365,7 +414,11 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                             }
                           }}
                         >
-                          {altVerified ? "Verified" : altOtpSent ? "Resend OTP" : "Send OTP"}
+                          {altVerified
+                            ? "Verified"
+                            : altOtpSent
+                            ? "Resend OTP"
+                            : "Send OTP"}
                         </Button>
                       </div>
                       {altOtpSent && !altVerified && (
@@ -387,17 +440,27 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                                 setLoading(true);
                                 const res = await fetch("/api/otp/verify", {
                                   method: "POST",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ phone: altPhone, code: altOtp, purpose: "alternate" }),
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                  },
+                                  body: JSON.stringify({
+                                    phone: altPhone,
+                                    code: altOtp,
+                                    purpose: "alternate",
+                                  }),
                                 });
                                 const data = await res.json();
                                 if (!res.ok || !data?.success) {
-                                  throw new Error(data?.message || "Invalid or expired OTP");
+                                  throw new Error(
+                                    data?.message || "Invalid or expired OTP"
+                                  );
                                 }
                                 setAltVerified(true);
                                 toast.success("Alternate phone verified");
                               } catch (err: any) {
-                                toast.error(err?.message || "Failed to verify OTP");
+                                toast.error(
+                                  err?.message || "Failed to verify OTP"
+                                );
                               } finally {
                                 setLoading(false);
                               }
@@ -410,7 +473,8 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                     </div>
                   </FormControl>
                   <FormDescription>
-                    Provide an alternative contact number. It will be saved only after OTP verification.
+                    Provide an alternative contact number. It will be saved only
+                    after OTP verification.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -468,7 +532,8 @@ const SupplierBusinessForm = ({ userId }: { userId: string }) => {
                       </div>
                     </FormControl>
                     <FormDescription>
-                      Upload your GST certificate (PDF, JPEG, PNG, or WEBP format, max 5MB).
+                      Upload your GST certificate (PDF, JPEG, PNG, or WEBP
+                      format, max 5MB).
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
