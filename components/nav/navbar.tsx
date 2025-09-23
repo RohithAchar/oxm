@@ -13,8 +13,7 @@ import { cn } from "@/lib/utils";
 export const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const showThemeToggle =
-    pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
+  const showThemeToggle = true;
   const showSearch = !(pathname?.startsWith("/supplier") ?? false);
   const isSupplier = pathname?.startsWith("/supplier");
 
@@ -114,51 +113,53 @@ export const Navbar = () => {
             <span className="text-primary">X</span>
             <span className="text-foreground">mart</span>
           </Link>
-          {isSupplier ? (
-            <Drawer>
-              <DrawerTrigger asChild>
-                <button
-                  aria-label="Open supplier navigation"
-                  className="p-2 -mr-1 text-muted-foreground hover:text-foreground"
-                >
-                  <Menu className="h-6 w-6" />
-                </button>
-              </DrawerTrigger>
-              <DrawerContent className="p-2">
-                <nav className="grid">
-                  {supplierNav.map((item) => {
-                    const active = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "px-3 py-3 text-base",
-                          active
-                            ? "text-foreground font-medium"
-                            : "text-muted-foreground"
-                        )}
-                      >
-                        {item.name}
-                      </Link>
-                    );
-                  })}
-                </nav>
-              </DrawerContent>
-            </Drawer>
-          ) : (
-            showSearch && (
-              <div className="flex-1">
-                <ProductSearch
-                  placeholder="Search products"
-                  size="sm"
-                  rounded="full"
-                  buttonMode="icon"
-                />
-              </div>
-            )
-          )}
+          <div className="flex items-center gap-2">
+            {isSupplier ? (
+              <Drawer>
+                <DrawerTrigger asChild>
+                  <button
+                    aria-label="Open supplier navigation"
+                    className="p-2 -mr-1 text-muted-foreground hover:text-foreground"
+                  >
+                    <Menu className="h-6 w-6" />
+                  </button>
+                </DrawerTrigger>
+                <DrawerContent className="p-2">
+                  <nav className="grid">
+                    {supplierNav.map((item) => {
+                      const active = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          aria-current={active ? "page" : undefined}
+                          className={cn(
+                            "px-3 py-3 text-base",
+                            active
+                              ? "text-foreground font-medium"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          {item.name}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                </DrawerContent>
+              </Drawer>
+            ) : (
+              showSearch && (
+                <div className="flex-1">
+                  <ProductSearch
+                    placeholder="Search products"
+                    size="sm"
+                    rounded="full"
+                    buttonMode="icon"
+                  />
+                </div>
+              )
+            )}
+          </div>
         </div>
       </header>
     </>

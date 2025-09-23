@@ -218,13 +218,13 @@ export default function SupplierProfileClient({
       </div>
 
       {/* Main Content - Native App Style */}
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-background min-h-screen">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Sidebar - Stats & Info */}
             <div className="space-y-4 md:space-y-6">
               {/* Business Stats - Native App Style */}
-              <Card className="shadow-sm border-0 bg-white">
+              <Card className="shadow-sm border-0 bg-card">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                     <TrendingUp className="w-5 h-5 text-blue-600" />
@@ -270,7 +270,7 @@ export default function SupplierProfileClient({
               </Card>
 
               {/* Business Information - Native App Style */}
-              <Card className="shadow-sm border-0 bg-white">
+              <Card className="shadow-sm border-0 bg-card">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                     <Building2 className="w-5 h-5 text-blue-600" />
@@ -279,37 +279,39 @@ export default function SupplierProfileClient({
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">
+                    <label className="text-sm font-medium text-muted-foreground">
                       Business Type
                     </label>
-                    <p className="text-gray-900">
+                    <p className="text-foreground">
                       {business.type || "Not specified"}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">
+                    <label className="text-sm font-medium text-muted-foreground">
                       GST Number
                     </label>
-                    <p className="text-gray-900 font-mono">
+                    <p className="text-foreground font-mono">
                       {business.gst_number || "Not provided"}
                     </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">
+                    <label className="text-sm font-medium text-muted-foreground">
                       Address
                     </label>
-                    <p className="text-gray-900">{business.business_address}</p>
-                    <p className="text-gray-600">
+                    <p className="text-foreground">
+                      {business.business_address}
+                    </p>
+                    <p className="text-muted-foreground">
                       {business.city}, {business.state} - {business.pincode}
                     </p>
                   </div>
 
                   {averagePrice > 0 && (
                     <div>
-                      <label className="text-sm font-medium text-gray-500">
+                      <label className="text-sm font-medium text-muted-foreground">
                         Average Product Price
                       </label>
-                      <p className="text-gray-900">
+                      <p className="text-foreground">
                         ₹{averagePrice.toFixed(2)}
                       </p>
                     </div>
@@ -318,7 +320,7 @@ export default function SupplierProfileClient({
               </Card>
 
               {/* Trust & Safety - Native App Style */}
-              <Card className="shadow-sm border-0 bg-white">
+              <Card className="shadow-sm border-0 bg-card">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                     <Shield className="w-5 h-5 text-blue-600" />
@@ -330,9 +332,9 @@ export default function SupplierProfileClient({
                     {isVerified ? (
                       <CheckCircle className="w-4 h-4 text-green-500" />
                     ) : (
-                      <Shield className="w-4 h-4 text-gray-400" />
+                      <Shield className="w-4 h-4 text-muted-foreground" />
                     )}
-                    <span className="text-sm">
+                    <span className="text-sm text-foreground">
                       {isVerified
                         ? "Verified Business"
                         : "Business Not Verified"}
@@ -342,19 +344,23 @@ export default function SupplierProfileClient({
                     {hasGST ? (
                       <CheckCircle className="w-4 h-4 text-green-500" />
                     ) : (
-                      <Shield className="w-4 h-4 text-gray-400" />
+                      <Shield className="w-4 h-4 text-muted-foreground" />
                     )}
-                    <span className="text-sm">
+                    <span className="text-sm text-foreground">
                       {hasGST ? "GST Registered" : "GST Not Provided"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span className="text-sm">Secure Payments</span>
+                    <span className="text-sm text-foreground">
+                      Secure Payments
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Truck className="w-4 h-4 text-blue-500" />
-                    <span className="text-sm">Reliable Shipping</span>
+                    <span className="text-sm text-foreground">
+                      Reliable Shipping
+                    </span>
                   </div>
                   {hasPhone && (
                     <div className="flex items-center gap-2">
@@ -373,7 +379,7 @@ export default function SupplierProfileClient({
                 onValueChange={setActiveTab}
                 className="w-full"
               >
-                <TabsList className="grid w-full grid-cols-3 h-auto bg-white shadow-sm rounded-xl p-1">
+                <TabsList className="grid w-full grid-cols-3 h-auto bg-card shadow-sm rounded-xl p-1">
                   <TabsTrigger
                     value="products"
                     className="text-sm font-medium py-3 rounded-lg data-[state=active]:bg-blue-600 data-[state=active]:text-white"
@@ -417,11 +423,11 @@ export default function SupplierProfileClient({
                   ) : (
                     <Card>
                       <CardContent className="flex flex-col items-center justify-center py-12">
-                        <Package className="w-16 h-16 text-gray-300 mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        <Package className="w-16 h-16 text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-semibold text-foreground mb-2">
                           No products available
                         </h3>
-                        <p className="text-gray-500 text-center">
+                        <p className="text-muted-foreground text-center">
                           This supplier hasn't added any products yet.
                         </p>
                       </CardContent>
@@ -432,35 +438,39 @@ export default function SupplierProfileClient({
                 <TabsContent value="about" className="mt-4 md:mt-6">
                   <Card>
                     <CardContent className="p-4 md:p-6">
-                      <h3 className="text-lg font-semibold mb-4">
+                      <h3 className="text-lg font-semibold mb-4 text-foreground">
                         About {business.business_name}
                       </h3>
                       {business.message ? (
-                        <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                        <p className="text-foreground leading-relaxed text-sm md:text-base">
                           {business.message}
                         </p>
                       ) : (
-                        <p className="text-gray-500 italic text-sm md:text-base">
+                        <p className="text-muted-foreground italic text-sm md:text-base">
                           No description provided by this supplier.
                         </p>
                       )}
 
                       <div className="mt-4 md:mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">
+                          <h4 className="font-medium text-foreground mb-2">
                             Business Details
                           </h4>
                           <div className="space-y-1 text-sm">
                             <p>
-                              <span className="text-gray-500">Type:</span>{" "}
+                              <span className="text-muted-foreground">
+                                Type:
+                              </span>{" "}
                               {business.type || "Not specified"}
                             </p>
                             <p>
-                              <span className="text-gray-500">Location:</span>{" "}
+                              <span className="text-muted-foreground">
+                                Location:
+                              </span>{" "}
                               {business.city}, {business.state}
                             </p>
                             <p>
-                              <span className="text-gray-500">
+                              <span className="text-muted-foreground">
                                 Established:
                               </span>{" "}
                               {business.created_at
@@ -474,22 +484,28 @@ export default function SupplierProfileClient({
                                 : "Unknown"}
                             </p>
                             <p>
-                              <span className="text-gray-500">Status:</span>{" "}
+                              <span className="text-muted-foreground">
+                                Status:
+                              </span>{" "}
                               {business.status || "Unknown"}
                             </p>
                           </div>
                         </div>
                         <div>
-                          <h4 className="font-medium text-gray-900 mb-2">
+                          <h4 className="font-medium text-foreground mb-2">
                             Contact Information
                           </h4>
                           <div className="space-y-1 text-sm">
                             <p>
-                              <span className="text-gray-500">GST:</span>{" "}
+                              <span className="text-muted-foreground">
+                                GST:
+                              </span>{" "}
                               {business.gst_number || "Not provided"}
                             </p>
                             <p>
-                              <span className="text-gray-500">Address:</span>{" "}
+                              <span className="text-muted-foreground">
+                                Address:
+                              </span>{" "}
                               {business.business_address}
                             </p>
                           </div>
@@ -503,11 +519,11 @@ export default function SupplierProfileClient({
                   <Card>
                     <CardContent className="p-6">
                       <div className="text-center py-12">
-                        <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        <Award className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                        <h3 className="text-lg font-semibold text-foreground mb-2">
                           Reviews Coming Soon
                         </h3>
-                        <p className="text-gray-500">
+                        <p className="text-muted-foreground">
                           Customer reviews will be available here once the
                           feature is implemented.
                         </p>

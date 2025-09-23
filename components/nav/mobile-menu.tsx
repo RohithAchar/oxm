@@ -30,8 +30,7 @@ const menuItems = [
 
 const MobileMenu = () => {
   const pathname = usePathname();
-  const showThemeToggle =
-    pathname?.startsWith("/admin") || pathname?.startsWith("/supplier");
+  const showThemeToggle = true;
 
   return (
     <div
