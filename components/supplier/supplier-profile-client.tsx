@@ -83,6 +83,21 @@ export default function SupplierProfileClient({
   const hasPhone = !!business.phone;
   const hasAlternatePhone = !!business.alternate_phone;
 
+  // Dummy trust score (placeholder logic until real system exists)
+  const trustScore = Math.min(
+    100,
+    (isVerified ? 60 : 30) +
+      (hasGST ? 20 : 0) +
+      (hasPhone ? 10 : 0) +
+      (verifiedProducts > 0 ? 10 : 0)
+  );
+
+  // Dummy rating (placeholder until real ratings exist)
+  const rating = 4.5;
+
+  // Dummy response rate (placeholder until real metric exists)
+  const responseRate = 92;
+
   const handleFavoriteToggle = () => {
     if (isFavoriteSupplier(business.id)) {
       removeFromFavoriteSuppliers(business.id);
@@ -155,29 +170,19 @@ export default function SupplierProfileClient({
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Stats Row - Native App Style */}
-            <div className="flex items-center justify-center gap-6 w-full max-w-md">
-              <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-white">
-                  {totalProducts}
+              <div className="flex items-center justify-center gap-4 text-white/80 text-sm">
+                <div className="flex items-center gap-1">
+                  <FileText className="w-4 h-4" />
+                  <span>GST:</span>
+                  <span className="font-medium text-white">
+                    {business.gst_number || "—"}
+                  </span>
                 </div>
-                <div className="text-white/80 text-sm">Products</div>
-              </div>
-              <div className="w-px h-12 bg-white/30"></div>
-              <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-white">
-                  {businessAge}
+                <div className="w-px h-4 bg-white/30"></div>
+                <div className="flex items-center gap-1">
+                  <MessageCircle className="w-4 h-4" />
+                  <span>{responseRate}% Response rate</span>
                 </div>
-                <div className="text-white/80 text-sm">Years</div>
-              </div>
-              <div className="w-px h-12 bg-white/30"></div>
-              <div className="flex flex-col items-center">
-                <div className="text-2xl font-bold text-white">
-                  {verifiedProducts}
-                </div>
-                <div className="text-white/80 text-sm">Verified</div>
               </div>
             </div>
 
@@ -238,10 +243,10 @@ export default function SupplierProfileClient({
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200">
                       <div className="text-2xl font-bold text-green-600 mb-1">
-                        {verifiedProducts}
+                        {trustScore}
                       </div>
                       <div className="text-sm text-green-700 font-medium">
-                        Verified
+                        Trust score
                       </div>
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl border border-purple-200">
@@ -254,10 +259,10 @@ export default function SupplierProfileClient({
                     </div>
                     <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl border border-orange-200">
                       <div className="text-2xl font-bold text-orange-600 mb-1">
-                        {businessAge}
+                        {rating.toFixed(1)}
                       </div>
                       <div className="text-sm text-orange-700 font-medium">
-                        Years
+                        Ratings
                       </div>
                     </div>
                   </div>
@@ -298,24 +303,7 @@ export default function SupplierProfileClient({
                       {business.city}, {business.state} - {business.pincode}
                     </p>
                   </div>
-                  {hasPhone && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">
-                        Phone
-                      </label>
-                      <p className="text-gray-900">{business.phone}</p>
-                    </div>
-                  )}
-                  {hasAlternatePhone && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">
-                        Alternate Phone
-                      </label>
-                      <p className="text-gray-900">
-                        {business.alternate_phone}
-                      </p>
-                    </div>
-                  )}
+
                   {averagePrice > 0 && (
                     <div>
                       <label className="text-sm font-medium text-gray-500">
@@ -496,20 +484,6 @@ export default function SupplierProfileClient({
                             Contact Information
                           </h4>
                           <div className="space-y-1 text-sm">
-                            {hasPhone && (
-                              <p>
-                                <span className="text-gray-500">Phone:</span>{" "}
-                                {business.phone}
-                              </p>
-                            )}
-                            {hasAlternatePhone && (
-                              <p>
-                                <span className="text-gray-500">
-                                  Alt Phone:
-                                </span>{" "}
-                                {business.alternate_phone}
-                              </p>
-                            )}
                             <p>
                               <span className="text-gray-500">GST:</span>{" "}
                               {business.gst_number || "Not provided"}
