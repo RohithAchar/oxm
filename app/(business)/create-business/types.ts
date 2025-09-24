@@ -4,7 +4,7 @@ export const createBusinessformSchema = z.object({
   businessName: z.string().min(3, "Business name is required"),
   about: z
     .string()
-    .max(2000, "About must be at most 2000 characters")
+    .max(3000, "About must be at most 3000 characters")
     .optional(),
   gstNumber: z
     .string()
