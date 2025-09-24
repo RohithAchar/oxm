@@ -13,7 +13,6 @@ interface User {
   full_name: string | null;
   avatar_url: string | null;
 }
-
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const myId = await getUserId();
   const users = await getAllUsersChat({ myId });

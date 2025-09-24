@@ -78,7 +78,6 @@ const groupedNav: Array<{
   {
     section: "Support",
     items: [
-      { title: "Messages", url: "/messages" },
       { title: "Help center", url: "/supplier/help-center" },
       { title: "Contact us", url: "/supplier/contact-us" },
     ],

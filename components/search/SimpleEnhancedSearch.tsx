@@ -307,83 +307,162 @@ export default function SimpleEnhancedSearch({
 
       {/* Suggestions Dropdown */}
       {isOpen && showSuggestions && (
-        <div
-          ref={suggestionsRef}
-          className="absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border rounded-md shadow-lg max-h-[300px] overflow-y-auto"
-        >
-          {isLoading && (
-            <div className="flex items-center justify-center py-4">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-              <span className="ml-2 text-sm text-muted-foreground">
-                Searching...
-              </span>
-            </div>
-          )}
-
-          {!isLoading && suggestions.length === 0 && value.trim() && (
-            <div className="p-4 text-center text-muted-foreground">
-              No suggestions found for "{value}"
-            </div>
-          )}
-
-          {!isLoading && suggestions.length > 0 && (
-            <div className="py-2">
-              <div className="px-3 py-1 text-xs font-medium text-muted-foreground border-b">
-                Suggestions
+        <>
+          {/* Full-width overlay on small screens */}
+          <div
+            ref={suggestionsRef}
+            className="md:hidden fixed inset-x-0 top-14 z-60 bg-background border-t border-border shadow-lg max-h-[60vh] overflow-y-auto"
+          >
+            {isLoading && (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                <span className="ml-2 text-sm text-muted-foreground">
+                  Searching...
+                </span>
               </div>
-              {suggestions.map((suggestion) => (
-                <button
-                  key={`${suggestion.type}-${suggestion.id}`}
-                  onClick={() => handleSuggestionSelect(suggestion)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
-                >
-                  <Package className="h-4 w-4 text-muted-foreground" />
-                  <div className="flex-1">
-                    <div className="font-medium">{suggestion.text}</div>
-                    {suggestion.brand && (
-                      <div className="text-xs text-muted-foreground">
-                        {suggestion.brand}
-                        {suggestion.category && ` • ${suggestion.category}`}
-                      </div>
-                    )}
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
+            )}
 
-          {!isLoading && recentSearches.length > 0 && !value.trim() && (
-            <div className="py-2">
-              <div className="px-3 py-1 text-xs font-medium text-muted-foreground border-b">
-                Recent Searches
+            {!isLoading && suggestions.length === 0 && value.trim() && (
+              <div className="p-4 text-center text-muted-foreground">
+                No suggestions found for "{value}"
               </div>
-              {recentSearches.map((query, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleRecentSearchSelect(query)}
-                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
-                >
-                  <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span className="flex-1">{query}</span>
-                </button>
-              ))}
-              <button
-                onClick={clearSearchHistory}
-                className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors text-muted-foreground"
-              >
-                <X className="h-4 w-4" />
-                <span>Clear history</span>
-              </button>
-            </div>
-          )}
+            )}
 
-          {!isLoading && !value.trim() && recentSearches.length === 0 && (
-            <div className="p-4 text-center text-muted-foreground">
-              <TrendingUp className="h-8 w-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">Start typing to search products</p>
-            </div>
-          )}
-        </div>
+            {!isLoading && suggestions.length > 0 && (
+              <div className="py-2">
+                <div className="px-3 py-1 text-xs font-medium text-muted-foreground border-b">
+                  Suggestions
+                </div>
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={`${suggestion.type}-${suggestion.id}`}
+                    onClick={() => handleSuggestionSelect(suggestion)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+                  >
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="font-medium">{suggestion.text}</div>
+                      {suggestion.brand && (
+                        <div className="text-xs text-muted-foreground">
+                          {suggestion.brand}
+                          {suggestion.category && ` • ${suggestion.category}`}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {!isLoading && recentSearches.length > 0 && !value.trim() && (
+              <div className="py-2">
+                <div className="px-3 py-1 text-xs font-medium text-muted-foreground border-b">
+                  Recent Searches
+                </div>
+                {recentSearches.map((query, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleRecentSearchSelect(query)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+                  >
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="flex-1">{query}</span>
+                  </button>
+                ))}
+                <button
+                  onClick={clearSearchHistory}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors text-muted-foreground"
+                >
+                  <X className="h-4 w-4" />
+                  <span>Clear history</span>
+                </button>
+              </div>
+            )}
+
+            {!isLoading && !value.trim() && recentSearches.length === 0 && (
+              <div className="p-4 text-center text-muted-foreground">
+                <TrendingUp className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Start typing to search products</p>
+              </div>
+            )}
+          </div>
+
+          {/* Input-width dropdown on md and up */}
+          <div className="hidden md:block absolute top-full left-0 right-0 z-50 mt-1 bg-background border border-border rounded-md shadow-lg max-h-[300px] overflow-y-auto">
+            {isLoading && (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                <span className="ml-2 text-sm text-muted-foreground">
+                  Searching...
+                </span>
+              </div>
+            )}
+
+            {!isLoading && suggestions.length === 0 && value.trim() && (
+              <div className="p-4 text-center text-muted-foreground">
+                No suggestions found for "{value}"
+              </div>
+            )}
+
+            {!isLoading && suggestions.length > 0 && (
+              <div className="py-2">
+                <div className="px-3 py-1 text-xs font-medium text-muted-foreground border-b">
+                  Suggestions
+                </div>
+                {suggestions.map((suggestion) => (
+                  <button
+                    key={`${suggestion.type}-${suggestion.id}`}
+                    onClick={() => handleSuggestionSelect(suggestion)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+                  >
+                    <Package className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex-1">
+                      <div className="font-medium">{suggestion.text}</div>
+                      {suggestion.brand && (
+                        <div className="text-xs text-muted-foreground">
+                          {suggestion.brand}
+                          {suggestion.category && ` • ${suggestion.category}`}
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {!isLoading && recentSearches.length > 0 && !value.trim() && (
+              <div className="py-2">
+                <div className="px-3 py-1 text-xs font-medium text-muted-foreground border-b">
+                  Recent Searches
+                </div>
+                {recentSearches.map((query, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleRecentSearchSelect(query)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors"
+                  >
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="flex-1">{query}</span>
+                  </button>
+                ))}
+                <button
+                  onClick={clearSearchHistory}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-muted transition-colors text-muted-foreground"
+                >
+                  <X className="h-4 w-4" />
+                  <span>Clear history</span>
+                </button>
+              </div>
+            )}
+
+            {!isLoading && !value.trim() && recentSearches.length === 0 && (
+              <div className="p-4 text-center text-muted-foreground">
+                <TrendingUp className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">Start typing to search products</p>
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
