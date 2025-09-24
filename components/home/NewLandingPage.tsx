@@ -8,7 +8,7 @@ import {
   GraduationCap,
   Sparkles,
 } from "lucide-react";
-import ProductSearch from "@/components/search/ProductSearch";
+import SimpleEnhancedSearch from "@/components/search/SimpleEnhancedSearch";
 import {
   Card,
   CardHeader,
@@ -119,11 +119,14 @@ const NewLandingPage = async () => {
               Source confidently from verified Indian suppliers. Samples to
               bulk, all in one place.
             </P>
-            <ProductSearch
+            <SimpleEnhancedSearch
               placeholder="Search Winning Products & Verified Suppliers"
               size="lg"
               rounded="full"
               className="mx-auto w-full max-w-4xl"
+              buttonMode="label"
+              showSuggestions={true}
+              maxSuggestions={8}
             />
             {/* Secondary actions in a single pill bar */}
             <div className="mx-auto w-full max-w-2xl">

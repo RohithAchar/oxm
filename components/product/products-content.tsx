@@ -1,6 +1,5 @@
 import { ProductCard } from "@/components/home/product-card";
 import { AdvancedSearch } from "@/components/product/advanced-search";
-import { ActiveFilters } from "@/components/product/active-filters";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -46,12 +45,9 @@ export default async function ProductsContent({
 
   return (
     <div className="space-y-6">
-      {/* Fixed Summary and Active Filters Bar */}
-      <div className="sticky top-14 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      {/* Summary Bar (Active Filters removed) */}
+      <div className="bg-background border-b">
         <div className="space-y-4 py-4">
-          {/* Active Filters */}
-          <ActiveFilters />
-
           {/* Results Summary */}
           <div className="text-sm text-muted-foreground text-left">
             {data.products.length === data.total

@@ -37,7 +37,7 @@ const MobileMenu = () => {
       className="md:hidden fixed left-0 right-0 bottom-0 z-50 border-t bg-background"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <nav className="max-w-7xl mx-auto px-3 h-16 flex items-stretch">
+      <nav className="max-w-7xl mx-auto px-3 h-12 flex items-stretch">
         <ul
           className={`grid ${
             showThemeToggle ? "grid-cols-5" : "grid-cols-4"
@@ -51,7 +51,7 @@ const MobileMenu = () => {
                 <Link
                   href={item.href}
                   aria-current={isActive ? "page" : undefined}
-                  className={`group flex-1 flex flex-col items-center justify-center gap-1 rounded-xl transition-colors mx-1 py-1
+                  className={`group flex-1 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-colors mx-0.5 py-0.5
                     ${
                       isActive
                         ? "text-primary"
@@ -59,12 +59,12 @@ const MobileMenu = () => {
                     }`}
                 >
                   <span
-                    className={`inline-flex items-center justify-center h-9 w-9 rounded-full transition-colors bg-transparent group-hover:bg-muted/60`}
+                    className={`inline-flex items-center justify-center h-8 w-8 rounded-full transition-colors bg-transparent group-hover:bg-muted/60`}
                   >
-                    <Icon className="h-5 w-5" />
+                    <Icon className="h-4 w-4" />
                   </span>
                   <span
-                    className={`text-[11px] leading-none ${
+                    className={`text-[10px] leading-none ${
                       isActive ? "text-foreground" : "text-foreground/90"
                     }`}
                   >
@@ -77,11 +77,11 @@ const MobileMenu = () => {
           {/* Theme toggle */}
           {showThemeToggle && (
             <li className="flex">
-              <div className="group flex-1 flex flex-col items-center justify-center gap-1 rounded-xl mx-1">
-                <span className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-muted/60">
+              <div className="group flex-1 flex flex-col items-center justify-center gap-0.5 rounded-xl mx-0.5">
+                <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-muted/60">
                   <ModeToggle />
                 </span>
-                <span className="text-[11px] font-medium leading-none text-muted-foreground">
+                <span className="text-[10px] font-medium leading-none text-muted-foreground">
                   Theme
                 </span>
               </div>

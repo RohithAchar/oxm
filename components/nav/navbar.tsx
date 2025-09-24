@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ProductSearch from "@/components/search/ProductSearch";
+import EnhancedProductSearch from "@/components/search/EnhancedProductSearch";
+import SimpleEnhancedSearch from "@/components/search/SimpleEnhancedSearch";
 import { MessageSquare, User } from "lucide-react";
 import { ModeToggle } from "./theme-toggle-button";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
@@ -65,12 +67,14 @@ export const Navbar = () => {
                 })} */}
               </nav>
             ) : showSearch ? (
-              <ProductSearch
+              <SimpleEnhancedSearch
                 placeholder="Search products"
                 size="sm"
                 rounded="full"
                 className="w-full max-w-xl mx-auto"
                 buttonMode="icon"
+                showSuggestions={true}
+                maxSuggestions={6}
               />
             ) : null}
           </div>
@@ -150,11 +154,13 @@ export const Navbar = () => {
             ) : (
               showSearch && (
                 <div className="flex-1">
-                  <ProductSearch
+                  <SimpleEnhancedSearch
                     placeholder="Search products"
                     size="sm"
                     rounded="full"
                     buttonMode="icon"
+                    showSuggestions={true}
+                    maxSuggestions={5}
                   />
                 </div>
               )

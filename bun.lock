@@ -35,6 +35,7 @@
         "@supabase/ssr": "^0.6.1",
         "@supabase/supabase-js": "^2.49.10",
         "@tanstack/react-table": "^8.21.3",
+        "@types/lodash": "^4.17.20",
         "axios": "^1.9.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
@@ -43,6 +44,7 @@
         "embla-carousel-react": "^8.6.0",
         "fuse.js": "^7.1.0",
         "input-otp": "^1.4.2",
+        "lodash": "^4.17.21",
         "lucide-react": "^0.544.0",
         "next": "15.3.2",
         "next-themes": "^0.4.6",
@@ -348,6 +350,8 @@
     "@types/d3-time": ["@types/d3-time@3.0.4", "", {}, "sha512-yuzZug1nkAAaBlBBikKZTgzCeA+k1uy4ZFwWANOfKw5z5LRhV0gNA7gNkKm7HoK+HRN0wX3EkxGk0fpbWhmB7g=="],
 
     "@types/d3-timer": ["@types/d3-timer@3.0.2", "", {}, "sha512-Ps3T8E8dZDam6fUyNiMkekK3XUsaUEik+idO9/YjPtfj2qruF8tFBXS7XhtE4iIXBLxhmLjP3SXpLhVf21I9Lw=="],
+
+    "@types/lodash": ["@types/lodash@4.17.20", "", {}, "sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA=="],
 
     "@types/node": ["@types/node@20.17.50", "", { "dependencies": { "undici-types": "~6.19.2" } }, "sha512-Mxiq0ULv/zo1OzOhwPqOA13I81CV/W3nvd3ChtQZRT5Cwz3cr0FKo/wMSsbTqL3EXpaBAEQhva2B8ByRkOIh9A=="],
 

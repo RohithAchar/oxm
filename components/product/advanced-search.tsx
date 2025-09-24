@@ -241,8 +241,8 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
     return count;
   };
 
-  const FilterContent = () => (
-    <div className="space-y-6 p-4">
+  const FilterContent = ({ compact = false }: { compact?: boolean }) => (
+    <div className={compact ? "space-y-4 p-3" : "space-y-6 p-4"}>
       {/* Search removed from filter panel */}
       {/* Sort */}
       <div className="space-y-2">
@@ -275,12 +275,14 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <span>Categories</span>
           {expandedSections.has("categories") ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-3 mt-3">
+        <CollapsibleContent
+          className={compact ? "space-y-2 mt-2" : "space-y-3 mt-3"}
+        >
           <Select
             value={draftFilters.category}
             onValueChange={(value) =>
@@ -338,13 +340,19 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <span>Price Range</span>
           {expandedSections.has("price") ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-3 mt-3">
-          <div className="grid grid-cols-2 gap-2">
+        <CollapsibleContent
+          className={compact ? "space-y-2 mt-2" : "space-y-3 mt-3"}
+        >
+          <div
+            className={
+              compact ? "grid grid-cols-2 gap-1.5" : "grid grid-cols-2 gap-2"
+            }
+          >
             <Input
               type="number"
               placeholder="Min Price"
@@ -376,16 +384,18 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4" />
+            <MapPin className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
             <span>Location</span>
           </div>
           {expandedSections.has("location") ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-3 mt-3">
+        <CollapsibleContent
+          className={compact ? "space-y-2 mt-2" : "space-y-3 mt-3"}
+        >
           <Select
             value={draftFilters.state}
             onValueChange={(value) =>
@@ -437,12 +447,14 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <span>Quick Filters</span>
           {expandedSections.has("quick") ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-3 mt-3">
+        <CollapsibleContent
+          className={compact ? "space-y-2 mt-2" : "space-y-3 mt-3"}
+        >
           <div className="space-y-2">
             <label className="flex items-center space-x-2">
               <input
@@ -478,17 +490,23 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4" />
+            <Tag className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
             <span>Tags</span>
           </div>
           {expandedSections.has("tags") ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-3 mt-3">
-          <div className="flex flex-wrap gap-2">
+        <CollapsibleContent
+          className={compact ? "space-y-2 mt-2" : "space-y-3 mt-3"}
+        >
+          <div
+            className={
+              compact ? "flex flex-wrap gap-1.5" : "flex flex-wrap gap-2"
+            }
+          >
             {filterOptions?.availableTags.map((tag) => (
               <Badge
                 key={tag.name}
@@ -517,17 +535,23 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
-            <Palette className="w-4 h-4" />
+            <Palette className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
             <span>Colors</span>
           </div>
           {expandedSections.has("colors") ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-3 mt-3">
-          <div className="flex flex-wrap gap-2">
+        <CollapsibleContent
+          className={compact ? "space-y-2 mt-2" : "space-y-3 mt-3"}
+        >
+          <div
+            className={
+              compact ? "flex flex-wrap gap-1.5" : "flex flex-wrap gap-2"
+            }
+          >
             {filterOptions?.availableColors.map((color) => (
               <Badge
                 key={color.name}
@@ -558,17 +582,23 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       >
         <CollapsibleTrigger className="flex items-center justify-between w-full text-sm font-medium">
           <div className="flex items-center gap-2">
-            <Ruler className="w-4 h-4" />
+            <Ruler className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
             <span>Sizes</span>
           </div>
           {expandedSections.has("sizes") ? (
-            <ChevronUp className="w-4 h-4" />
+            <ChevronUp className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           ) : (
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className={compact ? "w-3.5 h-3.5" : "w-4 h-4"} />
           )}
         </CollapsibleTrigger>
-        <CollapsibleContent className="space-y-3 mt-3">
-          <div className="flex flex-wrap gap-2">
+        <CollapsibleContent
+          className={compact ? "space-y-2 mt-2" : "space-y-3 mt-3"}
+        >
+          <div
+            className={
+              compact ? "flex flex-wrap gap-1.5" : "flex flex-wrap gap-2"
+            }
+          >
             {filterOptions?.availableSizes.map((size) => (
               <Badge
                 key={size.name}
@@ -591,18 +621,34 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
       </Collapsible>
 
       {/* Action Buttons */}
-      <div className="flex gap-2 pt-4 border-t">
-        <Button onClick={applyFilters} className="flex-1" disabled={isApplying}>
+      <div
+        className={
+          compact ? "flex gap-2 pt-3 border-t" : "flex gap-2 pt-4 border-t"
+        }
+      >
+        <Button
+          onClick={applyFilters}
+          className={compact ? "flex-1 h-9 text-sm" : "flex-1"}
+          disabled={isApplying}
+        >
           {isApplying ? (
             <span className="inline-flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2
+                className={
+                  compact ? "h-3.5 w-3.5 animate-spin" : "h-4 w-4 animate-spin"
+                }
+              />
               Applying
             </span>
           ) : (
             "Apply Filters"
           )}
         </Button>
-        <Button variant="outline" onClick={clearFilters}>
+        <Button
+          variant="outline"
+          onClick={clearFilters}
+          className={compact ? "h-9 text-sm" : undefined}
+        >
           Clear All
         </Button>
       </div>
@@ -639,11 +685,11 @@ export function AdvancedSearch({ filterOptions }: AdvancedSearchProps) {
           </Button>
         </DrawerTrigger>
         <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle>Filters</DrawerTitle>
+          <DrawerHeader className="py-3">
+            <DrawerTitle className="text-base">Filters</DrawerTitle>
           </DrawerHeader>
-          <div className="max-h-[70vh] overflow-y-auto">
-            <FilterContent />
+          <div className="max-h-[65vh] overflow-y-auto">
+            <FilterContent compact />
           </div>
         </DrawerContent>
       </Drawer>
