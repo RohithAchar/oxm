@@ -102,7 +102,7 @@ export const Navbar = () => {
       </header>
 
       {/* Mobile Topbar */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 border-b bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-[0_2px_24px_rgba(0,0,0,0.06)]">
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background">
         <div
           className={`${
             isSupplier ? "hidden max-w-screen-2xl" : "max-w-7xl"
