@@ -32,7 +32,7 @@ export default async function AdminLayout({
     user.user?.user_metadata.picture || "/placeholder-profile.png";
 
   return (
-    <div className="dark flex flex-col lg:flex-row min-h-screen lg:min-h-0 py-0">
+    <div className="flex flex-col lg:flex-row min-h-screen lg:min-h-0 py-0 bg-background text-foreground">
       <SidebarProvider>
         <AdminSidebar
           profileUrl={profileUrl}
