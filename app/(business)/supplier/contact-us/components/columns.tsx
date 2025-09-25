@@ -1,6 +1,7 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
+import TicketPopover from "@/components/support/TicketPopover";
 
 export type SupplierTicketRow = {
   id: string;
@@ -30,5 +31,10 @@ export const columns: ColumnDef<SupplierTicketRow>[] = [
     cell: ({ row }) => (
       <span className="capitalize">{row.original.status}</span>
     ),
+  },
+  {
+    id: "actions",
+    header: "",
+    cell: ({ row }) => <TicketPopover id={row.original.id} />,
   },
 ];
