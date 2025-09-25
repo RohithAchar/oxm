@@ -29,6 +29,11 @@ const groupedNav: Array<{
     items: [
       { title: "Banner", url: "/admin/banner" },
       { title: "Notifications", url: "/admin/notifications" },
+      {
+        title: "Support Tickets",
+        url: "/admin/support-tickets",
+        matchPrefix: true,
+      },
     ],
   },
   {
