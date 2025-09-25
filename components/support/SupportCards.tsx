@@ -21,7 +21,11 @@ export default function SupportCards() {
           Get real-time help for urgent cases.
         </p>
         <div className="mt-2">
-          <Link href="/supplier/enquiry?user=support" className="text-primary">
+          <Link
+            href="/messages/776621d9-984a-4bb4-9028-bd6655aa4e04/chat"
+            className="text-primary"
+            target="_blank"
+          >
             Start chat
           </Link>
         </div>

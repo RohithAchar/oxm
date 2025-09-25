@@ -7,6 +7,8 @@ import { Card as UICard } from "@/components/ui/card";
 import { DataTable } from "./components/data.table";
 import { columns, type TicketRow } from "./components/columns";
 
+export const dynamic = "force-dynamic";
+
 async function getTickets(params?: {
   status?: string;
   q?: string;
