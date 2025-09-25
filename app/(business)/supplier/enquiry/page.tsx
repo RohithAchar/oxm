@@ -7,16 +7,21 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageCircle, Users } from "lucide-react";
 import Chat from "@/components/Chat";
+import { cn } from "@/lib/utils";
 
 interface PageProps {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function EnquiryPage({ searchParams }: PageProps) {
   const myId = await getUserId();
   const users = await getAllUsersChat({ myId });
+  const resolvedSearchParams = (await searchParams) || undefined;
   const selectedUserId =
-    typeof searchParams?.user === "string" ? searchParams?.user : undefined;
+    typeof resolvedSearchParams?.user === "string"
+      ? resolvedSearchParams.user
+      : undefined;
+  const selectedUser = users.find((u) => u.id === selectedUserId);
 
   const getInitials = (name: string | null) => {
     if (!name) return "U";
@@ -60,8 +65,18 @@ export default async function EnquiryPage({ searchParams }: PageProps) {
                   <Link
                     key={user.id}
                     href={`/supplier/enquiry?user=${user.id}`}
+                    aria-current={
+                      selectedUserId === user.id ? "page" : undefined
+                    }
                   >
-                    <div className="transition-all duration-200 hover:bg-accent/50 hover:shadow-md cursor-pointer group rounded-lg p-3 md:p-4 border">
+                    <div
+                      className={cn(
+                        "transition-all duration-200 cursor-pointer group rounded-lg p-3 md:p-4 border",
+                        selectedUserId === user.id
+                          ? "bg-accent/60 border-primary/40 ring-2 ring-primary/20"
+                          : "hover:bg-accent/50 hover:shadow-md"
+                      )}
+                    >
                       <div className="flex items-center gap-2 md:gap-3">
                         <Avatar className="h-10 w-10 md:h-12 md:w-12">
                           <AvatarImage
@@ -74,9 +89,19 @@ export default async function EnquiryPage({ searchParams }: PageProps) {
                         </Avatar>
 
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-medium text-sm md:text-base text-foreground truncate group-hover:text-primary transition-colors">
+                          <h3
+                            className={cn(
+                              "font-medium text-sm md:text-base truncate transition-colors",
+                              selectedUserId === user.id
+                                ? "text-foreground"
+                                : "text-foreground group-hover:text-primary"
+                            )}
+                          >
                             {user.full_name || "Unknown User"}
                           </h3>
+                          <p className="text-xs text-muted-foreground truncate">
+                            Click to open chat
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -91,12 +116,26 @@ export default async function EnquiryPage({ searchParams }: PageProps) {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
         <div className="border-b bg-card/30 backdrop-blur-sm px-4 md:px-6 py-3 md:py-4">
-          <h2 className="font-semibold text-base md:text-lg">Chat</h2>
+          <div className="flex items-center gap-3">
+            {selectedUser ? (
+              <Avatar className="h-8 w-8">
+                <AvatarImage
+                  src={selectedUser.avatar_url || undefined}
+                  alt={selectedUser.full_name || "User"}
+                />
+                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                  {getInitials(selectedUser.full_name)}
+                </AvatarFallback>
+              </Avatar>
+            ) : null}
+            <h2 className="font-semibold text-base md:text-lg">
+              {selectedUser?.full_name || "Chat"}
+            </h2>
+          </div>
         </div>
         <ScrollArea className="flex-1">
           <div className="p-4 md:p-6">
             {selectedUserId ? (
-              // @ts-expect-error Server/Client boundary - Chat is client component
               <Chat currentUserId={myId} otherUserId={selectedUserId} />
             ) : (
               <div className="h-full flex items-center justify-center">
