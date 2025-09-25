@@ -37,6 +37,26 @@ export default function SupplierPricingGuidelinesPage() {
       </div>
       <div className="border-t" />
 
+      {/* Mobile TOC */}
+      <div className="lg:hidden">
+        <Card className="p-3">
+          <h2 className="text-sm font-semibold mb-2">On this page</h2>
+          <ScrollArea className="max-h-[40vh]">
+            <nav className="flex flex-col gap-1">
+              {sections.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`#${s.id}`}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors py-1"
+                >
+                  {s.title}
+                </Link>
+              ))}
+            </nav>
+          </ScrollArea>
+        </Card>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
         {/* Content (left) */}
         <section className="lg:col-span-9 order-2 lg:order-1">
@@ -292,7 +312,7 @@ export default function SupplierPricingGuidelinesPage() {
         </section>
 
         {/* Sticky Index (right) */}
-        <aside className="lg:col-span-3 order-1 lg:order-2">
+        <aside className="hidden lg:block lg:col-span-3 order-1 lg:order-2">
           <div className="lg:sticky lg:top-24">
             <Card className="p-3 md:p-4">
               <h2 className="text-sm font-semibold mb-2 md:mb-3">
