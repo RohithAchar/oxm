@@ -7,6 +7,7 @@ import { BadgeCheckIcon, Eye } from "lucide-react";
 import { Badge } from "../ui/badge";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Skeleton } from "../ui/skeleton";
 
 interface ProductCardProps {
@@ -34,6 +35,8 @@ export const ProductCard = ({
   verificationYears,
   hasSample,
 }: ProductCardProps) => {
+  const searchParams = useSearchParams();
+  const keepDropship = searchParams.get("dropship_available") === "true";
   const [imgSrc, setImgSrc] = useState<string>(
     imageUrl || "/product-placeholder.png"
   );
@@ -63,7 +66,10 @@ export const ProductCard = ({
     return `₹${fmt.format(value as number)}`;
   };
   return (
-    <Link href={`/products/${id}`} className="block h-full">
+    <Link
+      href={`/products/${id}${keepDropship ? "?dropship_available=true" : ""}`}
+      className="block h-full"
+    >
       <div
         key={id}
         className="relative isolate bg-white dark:bg-card h-full overflow-hidden cursor-pointer flex flex-col"

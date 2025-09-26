@@ -107,7 +107,13 @@ export default async function ProductsContent({
                     supplierName={p.supplierName}
                     priceAndQuantity={p.priceAndQuantity || []}
                     dropshipPrice={
-                      filters.dropshipAvailable ? p.dropship_price : undefined
+                      filters.dropshipAvailable
+                        ? p.dropship_price
+                          ? (typeof p.dropship_price === "string"
+                              ? parseFloat(p.dropship_price)
+                              : Number(p.dropship_price)) / 100
+                          : undefined
+                        : undefined
                     }
                     is_verified={p.is_verified || false}
                     hasSample={p.is_sample_available || false}

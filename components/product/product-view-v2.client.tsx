@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   BadgeCheck,
   MapPin,
@@ -93,6 +94,10 @@ export default function ProductViewV2Client({
   const totalPrice = (product as any).total_price
     ? Number((product as any).total_price)
     : unitPrice * sampleQuantity;
+
+  // Dropship mode toggled by URL param
+  const searchParams = useSearchParams();
+  const dropshipMode = searchParams.get("dropship_available") === "true";
 
   // Swipe functionality
   const minSwipeDistance = 50;
@@ -235,46 +240,82 @@ export default function ProductViewV2Client({
               <Description text={product.description} />
 
               {/* RFQ Button */}
-              <div className="mt-4">
-                <RFQButton
-                  productId={product.id}
-                  productName={product.name}
-                  supplierId={business?.profile_id}
-                  supplierName={business?.business_name}
-                  tierPricingSnapshot={product.product_tier_pricing}
-                  productImage={images[0]?.image_url}
-                  variant="row"
-                />
-              </div>
+              {!dropshipMode && (
+                <div className="mt-4">
+                  <RFQButton
+                    productId={product.id}
+                    productName={product.name}
+                    supplierId={business?.profile_id}
+                    supplierName={business?.business_name}
+                    tierPricingSnapshot={product.product_tier_pricing}
+                    productImage={images[0]?.image_url}
+                    variant="row"
+                  />
+                </div>
+              )}
             </div>
 
-            {/* MOQ price (moved from below) */}
-            {product.product_tier_pricing?.length > 0 && (
+            {/* Price section: Dropship vs MOQ (mobile) */}
+            {dropshipMode ? (
               <div className="bg-muted/50 rounded-lg p-4">
-                <h3 className="font-medium mb-3">MOQ price</h3>
-                <div className="flex gap-2 overflow-x-auto no-scrollbar">
-                  {product.product_tier_pricing
-                    .slice()
-                    .sort((a: any, b: any) => a.quantity - b.quantity)
-                    .map((tier: any, idx: number) => (
-                      <div
-                        key={tier.id ?? idx}
-                        className={`rounded-lg border px-3 py-2 text-center min-w-[6rem] ${
-                          activeTier?.id === tier.id
-                            ? "bg-primary/10 border-primary"
-                            : "bg-background"
-                        }`}
-                      >
-                        <div className="text-xs text-muted-foreground">
-                          {tier.quantity}+
-                        </div>
-                        <div className="font-semibold text-sm">
-                          ₹{tier.price}
-                        </div>
-                      </div>
-                    ))}
+                <h3 className="font-medium mb-3">Dropship</h3>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs text-muted-foreground mb-0.5">
+                      Quantity
+                    </div>
+                    <div className="text-sm font-medium text-foreground">
+                      1 unit
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-base font-semibold text-foreground">
+                      ₹{(product as any)?.dropship_price ?? unitPrice}
+                    </div>
+                    <Button
+                      size="sm"
+                      className="mt-2"
+                      onClick={() => {
+                        console.log("Buy (dropship)", {
+                          productId: product.id,
+                          colorId,
+                          sizeId,
+                        });
+                      }}
+                    >
+                      Buy
+                    </Button>
+                  </div>
                 </div>
               </div>
+            ) : (
+              product.product_tier_pricing?.length > 0 && (
+                <div className="bg-muted/50 rounded-lg p-4">
+                  <h3 className="font-medium mb-3">MOQ price</h3>
+                  <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                    {product.product_tier_pricing
+                      .slice()
+                      .sort((a: any, b: any) => a.quantity - b.quantity)
+                      .map((tier: any, idx: number) => (
+                        <div
+                          key={tier.id ?? idx}
+                          className={`rounded-lg border px-3 py-2 text-center min-w-[6rem] ${
+                            activeTier?.id === tier.id
+                              ? "bg-primary/10 border-primary"
+                              : "bg-background"
+                          }`}
+                        >
+                          <div className="text-xs text-muted-foreground">
+                            {tier.quantity}+
+                          </div>
+                          <div className="font-semibold text-sm">
+                            ₹{tier.price}
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )
             )}
 
             {/* Options */}
@@ -620,17 +661,19 @@ export default function ProductViewV2Client({
                 <Description text={product.description} />
 
                 {/* RFQ Button */}
-                <div className="mt-4">
-                  <RFQButton
-                    productId={product.id}
-                    productName={product.name}
-                    supplierId={business?.profile_id}
-                    supplierName={business?.business_name}
-                    tierPricingSnapshot={product.product_tier_pricing}
-                    productImage={images[0]?.image_url}
-                    variant="row"
-                  />
-                </div>
+                {!dropshipMode && (
+                  <div className="mt-4">
+                    <RFQButton
+                      productId={product.id}
+                      productName={product.name}
+                      supplierId={business?.profile_id}
+                      supplierName={business?.business_name}
+                      tierPricingSnapshot={product.product_tier_pricing}
+                      productImage={images[0]?.image_url}
+                      variant="row"
+                    />
+                  </div>
+                )}
 
                 {/* RFQ section (desktop) */}
                 <div className="mt-4">
@@ -889,78 +932,115 @@ export default function ProductViewV2Client({
                   </div>
                 )}
 
-                {/* Perfect UI Price Section (desktop) */}
-                {product?.is_sample_available && (
+                {/* Desktop pricing: Dropship vs Sample section */}
+                {dropshipMode ? (
                   <div className="bg-card rounded-lg border shadow-sm">
-                    {/* Top Row - Sample Available, Bulk Adjustment, Price */}
                     <div className="flex items-center justify-between p-6 border-b">
                       <div className="flex items-center gap-3">
-                        <Package className="w-6 h-6 text-primary" />
+                        <Truck className="w-6 h-6 text-primary" />
                         <span className="text-base font-medium text-foreground">
-                          Sample Available
+                          Dropship
                         </span>
-                      </div>
-                      <div className="flex items-center gap-3 bg-secondary px-4 py-2 rounded-full">
-                        <span className="text-base font-medium text-foreground">
-                          Adjust in Bulk
-                        </span>
-                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
-                          <Check className="w-4 h-4 text-primary-foreground" />
-                        </div>
                       </div>
                       <div className="text-right">
                         <div className="text-3xl font-bold text-foreground">
-                          ₹
-                          {unitPrice?.toFixed
-                            ? unitPrice.toFixed(2)
-                            : unitPrice}
+                          ₹{(product as any)?.dropship_price ?? unitPrice}
                         </div>
                       </div>
                     </div>
-
-                    {/* Middle Row - Minimum Order and Order Sample Button */}
                     <div className="flex items-center justify-between p-6">
                       <div>
                         <div className="text-sm text-muted-foreground mb-1">
-                          Minimum Order
+                          Quantity
                         </div>
                         <div className="text-base font-medium text-foreground">
-                          3 units
+                          1 unit
                         </div>
                       </div>
-                      <Button
-                        className="px-8 py-3 rounded-lg font-medium text-base"
-                        onClick={() => {
-                          if (navigator.vibrate) navigator.vibrate(200);
-                          console.log("Order Sample clicked", {
-                            productId: product.id,
-                            colorId,
-                            sizeId,
-                            quantity: sampleQuantity,
-                            unitPrice,
-                            totalPrice,
-                          });
-                        }}
-                      >
-                        Order Sample
-                      </Button>
-                    </div>
-
-                    {/* Free Delivery Banner */}
-                    <div className="bg-muted px-6 py-4 rounded-b-lg">
-                      <div className="flex items-center gap-4">
-                        <Truck className="w-7 h-7 text-primary" />
-                        <div>
-                          <span className="text-primary font-semibold text-base">
-                            Free Delivery
-                          </span>
-                          <span className="text-muted-foreground text-base ml-2">
-                            on all orders
-                          </span>
-                        </div>
+                      <div className="text-right">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            console.log("Buy (dropship)", {
+                              productId: product.id,
+                              colorId,
+                              sizeId,
+                            });
+                          }}
+                        >
+                          Buy
+                        </Button>
                       </div>
                     </div>
                   </div>
+                ) : (
+                  product?.is_sample_available && (
+                    <div className="bg-card rounded-lg border shadow-sm">
+                      <div className="flex items-center justify-between p-6 border-b">
+                        <div className="flex items-center gap-3">
+                          <Package className="w-6 h-6 text-primary" />
+                          <span className="text-base font-medium text-foreground">
+                            Sample Available
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-3 bg-secondary px-4 py-2 rounded-full">
+                          <span className="text-base font-medium text-foreground">
+                            Adjust in Bulk
+                          </span>
+                          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                            <Check className="w-4 h-4 text-primary-foreground" />
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-3xl font-bold text-foreground">
+                            ₹
+                            {unitPrice?.toFixed
+                              ? unitPrice.toFixed(2)
+                              : unitPrice}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between p-6">
+                        <div>
+                          <div className="text-sm text-muted-foreground mb-1">
+                            Minimum Order
+                          </div>
+                          <div className="text-base font-medium text-foreground">
+                            3 units
+                          </div>
+                        </div>
+                        <Button
+                          className="px-8 py-3 rounded-lg font-medium text-base"
+                          onClick={() => {
+                            if (navigator.vibrate) navigator.vibrate(200);
+                            console.log("Order Sample clicked", {
+                              productId: product.id,
+                              colorId,
+                              sizeId,
+                              quantity: sampleQuantity,
+                              unitPrice,
+                              totalPrice,
+                            });
+                          }}
+                        >
+                          Order Sample
+                        </Button>
+                      </div>
+                      <div className="bg-muted px-6 py-4 rounded-b-lg">
+                        <div className="flex items-center gap-4">
+                          <Truck className="w-7 h-7 text-primary" />
+                          <div>
+                            <span className="text-primary font-semibold text-base">
+                              Free Delivery
+                            </span>
+                            <span className="text-muted-foreground text-base ml-2">
+                              on all orders
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )
                 )}
 
                 {/* Buy button removed for large screens to avoid duplication */}
