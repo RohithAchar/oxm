@@ -106,6 +106,9 @@ export default async function ProductsContent({
                     brand={p.brand || ""}
                     supplierName={p.supplierName}
                     priceAndQuantity={p.priceAndQuantity || []}
+                    dropshipPrice={
+                      filters.dropshipAvailable ? p.dropship_price : undefined
+                    }
                     is_verified={p.is_verified || false}
                     hasSample={p.is_sample_available || false}
                   />

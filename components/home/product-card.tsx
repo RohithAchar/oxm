@@ -16,6 +16,7 @@ interface ProductCardProps {
   supplierName: string;
   imageUrl: string;
   priceAndQuantity: any[];
+  dropshipPrice?: number;
   is_verified: boolean;
   verificationYears?: number;
   hasSample?: boolean;
@@ -28,6 +29,7 @@ export const ProductCard = ({
   supplierName,
   imageUrl,
   priceAndQuantity,
+  dropshipPrice,
   is_verified,
   verificationYears,
   hasSample,
@@ -51,6 +53,14 @@ export const ProductCard = ({
     const fmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
     if (min === max) return `₹${fmt.format(min)}`;
     return `₹${fmt.format(min)} – ₹${fmt.format(max)}`;
+  };
+
+  const formatSinglePrice = (value?: number | null) => {
+    if (value === undefined || value === null || !Number.isFinite(value)) {
+      return null;
+    }
+    const fmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });
+    return `₹${fmt.format(value as number)}`;
   };
   return (
     <Link href={`/products/${id}`} className="block h-full">
@@ -111,16 +121,29 @@ export const ProductCard = ({
 
           {/* Badges moved to top-right for unified placement */}
 
-          {/* Price and MOQ */}
-          {priceAndQuantity && priceAndQuantity?.length > 0 && (
+          {/* Price section */}
+          {typeof dropshipPrice === "number" &&
+          Number.isFinite(dropshipPrice) ? (
             <div className="space-y-1.5 mt-auto">
               <div className="text-base font-bold text-foreground">
-                {formatPriceRange(priceAndQuantity)}
+                {formatSinglePrice(dropshipPrice)}
               </div>
               <div className="text-sm text-muted-foreground">
-                Min. order: {priceAndQuantity[0].quantity} pieces
+                Dropship price
               </div>
             </div>
+          ) : (
+            priceAndQuantity &&
+            priceAndQuantity?.length > 0 && (
+              <div className="space-y-1.5 mt-auto">
+                <div className="text-base font-bold text-foreground">
+                  {formatPriceRange(priceAndQuantity)}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Min. order: {priceAndQuantity[0].quantity} pieces
+                </div>
+              </div>
+            )
           )}
         </div>
       </div>
