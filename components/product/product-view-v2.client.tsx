@@ -192,7 +192,9 @@ export default function ProductViewV2Client({
                 >
                   <Heart
                     className={`w-5 h-5 text-white transition-colors duration-200 ${
-                      isFavorite(product.id) ? "fill-rose-600 text-rose-600" : ""
+                      isFavorite(product.id)
+                        ? "fill-rose-600 text-rose-600"
+                        : ""
                     }`}
                   />
                 </Button>
@@ -397,7 +399,10 @@ export default function ProductViewV2Client({
                     <div>Trust Score: 500 • Rating: 4.5/5</div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Link href={`/messages/${business?.profile_id}/chat`} className="flex-1">
+                    <Link
+                      href={`/messages/${business?.profile_id}/chat`}
+                      className="flex-1"
+                    >
                       <Button
                         size="sm"
                         className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-full transition-all duration-200 active:scale-95"
@@ -423,73 +428,75 @@ export default function ProductViewV2Client({
             </div>
 
             {/* Perfect UI Price Section (mobile) */}
-            <div className="bg-white rounded-lg border shadow-sm">
-              {/* Top Row - Sample Available, Bulk Adjustment, Price */}
-              <div className="flex items-center justify-between p-3 border-b">
-                <div className="flex items-center gap-1.5">
-                  <Package className="w-4 h-4 text-rose-600" />
-                  <span className="text-xs font-medium text-gray-900">
-                    Sample Available
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 bg-green-50 px-2 py-1 rounded-full">
-                  <span className="text-xs font-medium text-green-800">
-                    Adjust in Bulk
-                  </span>
-                  <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                    <Check className="w-2.5 h-2.5 text-white" />
+            {product?.is_sample_available && (
+              <div className="bg-card rounded-lg border shadow-sm">
+                {/* Top Row - Sample Available, Bulk Adjustment, Price */}
+                <div className="flex items-center justify-between p-3 border-b">
+                  <div className="flex items-center gap-1.5">
+                    <Package className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-medium text-foreground">
+                      Sample Available
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-secondary px-2 py-1 rounded-full">
+                    <span className="text-xs font-medium text-foreground">
+                      Adjust in Bulk
+                    </span>
+                    <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                      <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-lg font-bold text-foreground">
+                      ₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-gray-900">
-                    ₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}
-                  </div>
-                </div>
-              </div>
 
-              {/* Middle Row - Minimum Order and Order Sample Button */}
-              <div className="flex items-center justify-between p-3">
-                <div>
-                  <div className="text-xs text-gray-500 mb-0.5">
-                    Minimum Order
-                  </div>
-                  <div className="text-sm font-medium text-gray-900">
-                    3 units
-                  </div>
-                </div>
-                <Button
-                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors duration-200"
-                  onClick={() => {
-                    if (navigator.vibrate) navigator.vibrate(200);
-                    console.log("Order Sample clicked", {
-                      productId: product.id,
-                      colorId,
-                      sizeId,
-                      quantity: sampleQuantity,
-                      unitPrice,
-                      totalPrice,
-                    });
-                  }}
-                >
-                  Order Sample
-                </Button>
-              </div>
-
-              {/* Free Delivery Banner */}
-              <div className="bg-gradient-to-r from-red-50 to-pink-50 px-3 py-2 rounded-b-lg">
-                <div className="flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-amber-600" />
+                {/* Middle Row - Minimum Order and Order Sample Button */}
+                <div className="flex items-center justify-between p-3">
                   <div>
-                    <span className="text-red-600 font-bold text-xs">
-                      Free Delivery
-                    </span>
-                    <span className="text-gray-700 text-xs ml-1">
-                      on all orders
-                    </span>
+                    <div className="text-xs text-muted-foreground mb-0.5">
+                      Minimum Order
+                    </div>
+                    <div className="text-sm font-medium text-foreground">
+                      3 units
+                    </div>
+                  </div>
+                  <Button
+                    className="px-4 py-1.5 text-sm font-medium"
+                    onClick={() => {
+                      if (navigator.vibrate) navigator.vibrate(200);
+                      console.log("Order Sample clicked", {
+                        productId: product.id,
+                        colorId,
+                        sizeId,
+                        quantity: sampleQuantity,
+                        unitPrice,
+                        totalPrice,
+                      });
+                    }}
+                  >
+                    Order Sample
+                  </Button>
+                </div>
+
+                {/* Free Delivery Banner */}
+                <div className="bg-muted px-3 py-2 rounded-b-lg">
+                  <div className="flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-primary" />
+                    <div>
+                      <span className="text-primary font-semibold text-xs">
+                        Free Delivery
+                      </span>
+                      <span className="text-muted-foreground text-xs ml-1">
+                        on all orders
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Shipping Address */}
             <div className="bg-muted/50 rounded-lg p-4">
@@ -647,8 +654,7 @@ export default function ProductViewV2Client({
                               addToFavoriteSuppliers({
                                 id: business.id,
                                 business_name: business.business_name,
-                                profile_avatar_url:
-                                  business.profile_avatar_url,
+                                profile_avatar_url: business.profile_avatar_url,
                                 city: business.city,
                                 is_verified: business.is_verified,
                                 profile_id: business.profile_id,
@@ -659,7 +665,9 @@ export default function ProductViewV2Client({
                       >
                         <Heart
                           className={`w-5 h-5 transition-colors duration-200 ${
-                            isFavoriteSupplier(business?.id) ? "fill-current" : ""
+                            isFavoriteSupplier(business?.id)
+                              ? "fill-current"
+                              : ""
                           }`}
                         />
                       </Button>
@@ -739,7 +747,9 @@ export default function ProductViewV2Client({
                               className="px-3 py-2 rounded-full transition-all duration-200 active:scale-95 text-slate-600 hover:text-slate-900 flex items-center gap-1"
                               title="View Supplier Profile"
                             >
-                              <span className="text-xs font-medium">Profile</span>
+                              <span className="text-xs font-medium">
+                                Profile
+                              </span>
                               <ChevronRight className="w-4 h-4" />
                             </Button>
                           </Link>
@@ -880,73 +890,78 @@ export default function ProductViewV2Client({
                 )}
 
                 {/* Perfect UI Price Section (desktop) */}
-                <div className="bg-white rounded-lg border shadow-sm">
-                  {/* Top Row - Sample Available, Bulk Adjustment, Price */}
-                  <div className="flex items-center justify-between p-6 border-b">
-                    <div className="flex items-center gap-3">
-                      <Package className="w-6 h-6 text-rose-600" />
-                      <span className="text-base font-medium text-gray-900">
-                        Sample Available
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3 bg-green-50 px-4 py-2 rounded-full">
-                      <span className="text-base font-medium text-green-800">
-                        Adjust in Bulk
-                      </span>
-                      <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
+                {product?.is_sample_available && (
+                  <div className="bg-card rounded-lg border shadow-sm">
+                    {/* Top Row - Sample Available, Bulk Adjustment, Price */}
+                    <div className="flex items-center justify-between p-6 border-b">
+                      <div className="flex items-center gap-3">
+                        <Package className="w-6 h-6 text-primary" />
+                        <span className="text-base font-medium text-foreground">
+                          Sample Available
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3 bg-secondary px-4 py-2 rounded-full">
+                        <span className="text-base font-medium text-foreground">
+                          Adjust in Bulk
+                        </span>
+                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-primary-foreground" />
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-3xl font-bold text-foreground">
+                          ₹
+                          {unitPrice?.toFixed
+                            ? unitPrice.toFixed(2)
+                            : unitPrice}
+                        </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold text-gray-900">
-                        ₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Middle Row - Minimum Order and Order Sample Button */}
-                  <div className="flex items-center justify-between p-6">
-                    <div>
-                      <div className="text-sm text-gray-500 mb-1">
-                        Minimum Order
-                      </div>
-                      <div className="text-base font-medium text-gray-900">
-                        3 units
-                      </div>
-                    </div>
-                    <Button
-                      className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-medium text-base transition-colors duration-200"
-                      onClick={() => {
-                        if (navigator.vibrate) navigator.vibrate(200);
-                        console.log("Order Sample clicked", {
-                          productId: product.id,
-                          colorId,
-                          sizeId,
-                          quantity: sampleQuantity,
-                          unitPrice,
-                          totalPrice,
-                        });
-                      }}
-                    >
-                      Order Sample
-                    </Button>
-                  </div>
-
-                  {/* Free Delivery Banner */}
-                  <div className="bg-gradient-to-r from-red-50 to-pink-50 px-6 py-4 rounded-b-lg">
-                    <div className="flex items-center gap-4">
-                      <Truck className="w-7 h-7 text-amber-600" />
+                    {/* Middle Row - Minimum Order and Order Sample Button */}
+                    <div className="flex items-center justify-between p-6">
                       <div>
-                        <span className="text-red-600 font-bold text-base">
-                          Free Delivery
-                        </span>
-                        <span className="text-gray-700 text-base ml-2">
-                          on all orders
-                        </span>
+                        <div className="text-sm text-muted-foreground mb-1">
+                          Minimum Order
+                        </div>
+                        <div className="text-base font-medium text-foreground">
+                          3 units
+                        </div>
+                      </div>
+                      <Button
+                        className="px-8 py-3 rounded-lg font-medium text-base"
+                        onClick={() => {
+                          if (navigator.vibrate) navigator.vibrate(200);
+                          console.log("Order Sample clicked", {
+                            productId: product.id,
+                            colorId,
+                            sizeId,
+                            quantity: sampleQuantity,
+                            unitPrice,
+                            totalPrice,
+                          });
+                        }}
+                      >
+                        Order Sample
+                      </Button>
+                    </div>
+
+                    {/* Free Delivery Banner */}
+                    <div className="bg-muted px-6 py-4 rounded-b-lg">
+                      <div className="flex items-center gap-4">
+                        <Truck className="w-7 h-7 text-primary" />
+                        <div>
+                          <span className="text-primary font-semibold text-base">
+                            Free Delivery
+                          </span>
+                          <span className="text-muted-foreground text-base ml-2">
+                            on all orders
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Buy button removed for large screens to avoid duplication */}
               </div>
