@@ -255,68 +255,36 @@ export default function ProductViewV2Client({
               )}
             </div>
 
-            {/* Price section: Dropship vs MOQ (mobile) */}
-            {dropshipMode ? (
-              <div className="bg-muted/50 rounded-lg p-4">
-                <h3 className="font-medium mb-3">Dropship</h3>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs text-muted-foreground mb-0.5">
-                      Quantity
-                    </div>
-                    <div className="text-sm font-medium text-foreground">
-                      1 unit
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-base font-semibold text-foreground">
-                      ₹{(product as any)?.dropship_price ?? unitPrice}
-                    </div>
-                    <Button
-                      size="sm"
-                      className="mt-2"
-                      onClick={() => {
-                        console.log("Buy (dropship)", {
-                          productId: product.id,
-                          colorId,
-                          sizeId,
-                        });
-                      }}
-                    >
-                      Buy
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              product.product_tier_pricing?.length > 0 && (
-                <div className="bg-muted/50 rounded-lg p-4">
-                  <h3 className="font-medium mb-3">MOQ price</h3>
-                  <div className="flex gap-2 overflow-x-auto no-scrollbar">
-                    {product.product_tier_pricing
-                      .slice()
-                      .sort((a: any, b: any) => a.quantity - b.quantity)
-                      .map((tier: any, idx: number) => (
-                        <div
-                          key={tier.id ?? idx}
-                          className={`rounded-lg border px-3 py-2 text-center min-w-[6rem] ${
-                            activeTier?.id === tier.id
-                              ? "bg-primary/10 border-primary"
-                              : "bg-background"
-                          }`}
-                        >
-                          <div className="text-xs text-muted-foreground">
-                            {tier.quantity}+
+            {/* Price section (mobile) - only show MOQ when not in dropship mode */}
+            {!dropshipMode
+              ? product.product_tier_pricing?.length > 0 && (
+                  <div className="bg-muted/50 rounded-lg p-4">
+                    <h3 className="font-medium mb-3">MOQ price</h3>
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                      {product.product_tier_pricing
+                        .slice()
+                        .sort((a: any, b: any) => a.quantity - b.quantity)
+                        .map((tier: any, idx: number) => (
+                          <div
+                            key={tier.id ?? idx}
+                            className={`rounded-lg border px-3 py-2 text-center min-w-[6rem] ${
+                              activeTier?.id === tier.id
+                                ? "bg-primary/10 border-primary"
+                                : "bg-background"
+                            }`}
+                          >
+                            <div className="text-xs text-muted-foreground">
+                              {tier.quantity}+
+                            </div>
+                            <div className="font-semibold text-sm">
+                              ₹{tier.price}
+                            </div>
                           </div>
-                          <div className="font-semibold text-sm">
-                            ₹{tier.price}
-                          </div>
-                        </div>
-                      ))}
+                        ))}
+                    </div>
                   </div>
-                </div>
-              )
-            )}
+                )
+              : null}
 
             {/* Options */}
             {((product.product_colors && product.product_colors.length > 0) ||
@@ -469,14 +437,14 @@ export default function ProductViewV2Client({
             </div>
 
             {/* Perfect UI Price Section (mobile) */}
-            {product?.is_sample_available && (
+            {dropshipMode ? (
               <div className="bg-card rounded-lg border shadow-sm">
-                {/* Top Row - Sample Available, Bulk Adjustment, Price */}
+                {/* Top Row - Dropship, Adjust, Price */}
                 <div className="flex items-center justify-between p-3 border-b">
                   <div className="flex items-center gap-1.5">
-                    <Package className="w-4 h-4 text-primary" />
+                    <Truck className="w-4 h-4 text-primary" />
                     <span className="text-xs font-medium text-foreground">
-                      Sample Available
+                      Dropship
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 bg-secondary px-2 py-1 rounded-full">
@@ -489,36 +457,33 @@ export default function ProductViewV2Client({
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-foreground">
-                      ₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}
+                      ₹{(product as any)?.dropship_price ?? unitPrice}
                     </div>
                   </div>
                 </div>
 
-                {/* Middle Row - Minimum Order and Order Sample Button */}
+                {/* Middle Row - Quantity and Buy */}
                 <div className="flex items-center justify-between p-3">
                   <div>
                     <div className="text-xs text-muted-foreground mb-0.5">
-                      Minimum Order
+                      Quantity
                     </div>
                     <div className="text-sm font-medium text-foreground">
-                      3 units
+                      1 unit
                     </div>
                   </div>
                   <Button
                     className="px-4 py-1.5 text-sm font-medium"
                     onClick={() => {
                       if (navigator.vibrate) navigator.vibrate(200);
-                      console.log("Order Sample clicked", {
+                      console.log("Buy (dropship)", {
                         productId: product.id,
                         colorId,
                         sizeId,
-                        quantity: sampleQuantity,
-                        unitPrice,
-                        totalPrice,
                       });
                     }}
                   >
-                    Order Sample
+                    Buy
                   </Button>
                 </div>
 
@@ -537,6 +502,76 @@ export default function ProductViewV2Client({
                   </div>
                 </div>
               </div>
+            ) : (
+              product?.is_sample_available && (
+                <div className="bg-card rounded-lg border shadow-sm">
+                  {/* Top Row - Sample Available, Bulk Adjustment, Price */}
+                  <div className="flex items-center justify-between p-3 border-b">
+                    <div className="flex items-center gap-1.5">
+                      <Package className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-medium text-foreground">
+                        Sample Available
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 bg-secondary px-2 py-1 rounded-full">
+                      <span className="text-xs font-medium text-foreground">
+                        Adjust in Bulk
+                      </span>
+                      <div className="w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-foreground">
+                        ₹{unitPrice?.toFixed ? unitPrice.toFixed(2) : unitPrice}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Middle Row - Minimum Order and Order Sample Button */}
+                  <div className="flex items-center justify-between p-3">
+                    <div>
+                      <div className="text-xs text-muted-foreground mb-0.5">
+                        Minimum Order
+                      </div>
+                      <div className="text-sm font-medium text-foreground">
+                        3 units
+                      </div>
+                    </div>
+                    <Button
+                      className="px-4 py-1.5 text-sm font-medium"
+                      onClick={() => {
+                        if (navigator.vibrate) navigator.vibrate(200);
+                        console.log("Order Sample clicked", {
+                          productId: product.id,
+                          colorId,
+                          sizeId,
+                          quantity: sampleQuantity,
+                          unitPrice,
+                          totalPrice,
+                        });
+                      }}
+                    >
+                      Order Sample
+                    </Button>
+                  </div>
+
+                  {/* Free Delivery Banner */}
+                  <div className="bg-muted px-3 py-2 rounded-b-lg">
+                    <div className="flex items-center gap-2">
+                      <Truck className="w-5 h-5 text-primary" />
+                      <div>
+                        <span className="text-primary font-semibold text-xs">
+                          Free Delivery
+                        </span>
+                        <span className="text-muted-foreground text-xs ml-1">
+                          on all orders
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
             )}
 
             {/* Shipping Address */}
@@ -841,7 +876,7 @@ export default function ProductViewV2Client({
                 </div>
 
                 {/* MOQ price table */}
-                {product.product_tier_pricing?.length > 0 && (
+                {!dropshipMode && product.product_tier_pricing?.length > 0 && (
                   <div className="border rounded-lg p-4 bg-card">
                     <h3 className="font-medium mb-3">MOQ price</h3>
                     {/* Horizontal scroll on mobile, grid on md+ */}
@@ -935,6 +970,7 @@ export default function ProductViewV2Client({
                 {/* Desktop pricing: Dropship vs Sample section */}
                 {dropshipMode ? (
                   <div className="bg-card rounded-lg border shadow-sm">
+                    {/* Top Row - Dropship, Adjust, Price */}
                     <div className="flex items-center justify-between p-6 border-b">
                       <div className="flex items-center gap-3">
                         <Truck className="w-6 h-6 text-primary" />
@@ -942,12 +978,21 @@ export default function ProductViewV2Client({
                           Dropship
                         </span>
                       </div>
+                      <div className="flex items-center gap-3 bg-secondary px-4 py-2 rounded-full">
+                        <span className="text-base font-medium text-foreground">
+                          Adjust in Bulk
+                        </span>
+                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-primary-foreground" />
+                        </div>
+                      </div>
                       <div className="text-right">
                         <div className="text-3xl font-bold text-foreground">
                           ₹{(product as any)?.dropship_price ?? unitPrice}
                         </div>
                       </div>
                     </div>
+                    {/* Middle Row - Quantity and Buy Button */}
                     <div className="flex items-center justify-between p-6">
                       <div>
                         <div className="text-sm text-muted-foreground mb-1">
@@ -959,8 +1004,9 @@ export default function ProductViewV2Client({
                       </div>
                       <div className="text-right">
                         <Button
-                          size="sm"
+                          className="px-8 py-3 rounded-lg font-medium text-base"
                           onClick={() => {
+                            if (navigator.vibrate) navigator.vibrate(200);
                             console.log("Buy (dropship)", {
                               productId: product.id,
                               colorId,
@@ -970,6 +1016,20 @@ export default function ProductViewV2Client({
                         >
                           Buy
                         </Button>
+                      </div>
+                    </div>
+                    {/* Free Delivery Banner */}
+                    <div className="bg-muted px-6 py-4 rounded-b-lg">
+                      <div className="flex items-center gap-4">
+                        <Truck className="w-7 h-7 text-primary" />
+                        <div>
+                          <span className="text-primary font-semibold text-base">
+                            Free Delivery
+                          </span>
+                          <span className="text-muted-foreground text-base ml-2">
+                            on all orders
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
