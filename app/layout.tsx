@@ -9,6 +9,8 @@ import ConditionalFooter from "@/components/ConditionalFooter";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { GlobalBreadcrumbs } from "@/components/Breadcrumbs";
 import Container from "@/components/common/Container";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title:
@@ -85,6 +87,8 @@ export default async function RootLayout({
             <ConditionalFooter />
           </ErrorBoundary>
         </Providers>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
