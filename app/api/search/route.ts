@@ -171,7 +171,7 @@ async function searchProducts(supabase: any, params: any) {
       )
     `
     )
-    .eq("is_active", true)
+    // Remove is_active filter to include inactive products
     .range(from, to);
 
   // Apply filters

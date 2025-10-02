@@ -279,7 +279,7 @@ const getSimpleProducts = async (
     } = await supabase
       .from("products")
       .select("*", { count: "exact" })
-      .eq("is_active", true)
+      // Remove is_active filter to include inactive products
       .order("created_at", { ascending: false })
       .range(from, to);
 
@@ -388,7 +388,7 @@ export const getEnhancedProducts = async (
     let query = supabase
       .from("products")
       .select("*", { count: "exact" })
-      .eq("is_active", true)
+      // Remove is_active filter to include inactive products
       .range(from, to);
 
     // Apply keyword search (name, brand, description, hsn_code) and also match category/subcategory names

@@ -250,6 +250,7 @@ export default function ProductViewV2Client({
                     tierPricingSnapshot={product.product_tier_pricing}
                     productImage={images[0]?.image_url}
                     variant="row"
+                    isActive={product.is_active}
                   />
                 </div>
               )}
@@ -474,6 +475,7 @@ export default function ProductViewV2Client({
                   </div>
                   <Button
                     className="px-4 py-1.5 text-sm font-medium"
+                    disabled={!product.is_active}
                     onClick={() => {
                       if (navigator.vibrate) navigator.vibrate(200);
                       console.log("Buy (dropship)", {
@@ -483,7 +485,7 @@ export default function ProductViewV2Client({
                       });
                     }}
                   >
-                    Buy
+                    {product.is_active ? "Buy" : "Out of Stock"}
                   </Button>
                 </div>
 
@@ -540,6 +542,7 @@ export default function ProductViewV2Client({
                     </div>
                     <Button
                       className="px-4 py-1.5 text-sm font-medium"
+                      disabled={!product.is_active}
                       onClick={() => {
                         if (navigator.vibrate) navigator.vibrate(200);
                         console.log("Order Sample clicked", {
@@ -552,7 +555,7 @@ export default function ProductViewV2Client({
                         });
                       }}
                     >
-                      Order Sample
+                      {product.is_active ? "Order Sample" : "Out of Stock"}
                     </Button>
                   </div>
 
@@ -706,6 +709,7 @@ export default function ProductViewV2Client({
                       tierPricingSnapshot={product.product_tier_pricing}
                       productImage={images[0]?.image_url}
                       variant="row"
+                      isActive={product.is_active}
                     />
                   </div>
                 )}
@@ -1071,6 +1075,7 @@ export default function ProductViewV2Client({
                         </div>
                         <Button
                           className="px-8 py-3 rounded-lg font-medium text-base"
+                          disabled={!product.is_active}
                           onClick={() => {
                             if (navigator.vibrate) navigator.vibrate(200);
                             console.log("Order Sample clicked", {
@@ -1083,7 +1088,7 @@ export default function ProductViewV2Client({
                             });
                           }}
                         >
-                          Order Sample
+                          {product.is_active ? "Order Sample" : "Out of Stock"}
                         </Button>
                       </div>
                       <div className="bg-muted px-6 py-4 rounded-b-lg">

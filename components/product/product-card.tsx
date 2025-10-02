@@ -16,6 +16,7 @@ interface ProductCardProps {
   is_verified: boolean;
   city: string;
   is_sample_available: boolean;
+  is_active?: boolean | null;
 }
 
 interface TierPricingProps {
@@ -33,6 +34,7 @@ export const ProductCard = ({
   is_verified,
   city,
   is_sample_available,
+  is_active = true,
 }: ProductCardProps) => {
   const [imageError, setImageError] = useState(false);
   const isDemoBrand = /demo/i.test(brand || "");
@@ -52,20 +54,30 @@ export const ProductCard = ({
 
   return (
     <Link href={`/products/${id}`} className="block h-full">
-      <div className="relative isolate bg-white dark:bg-card h-full overflow-hidden flex flex-col">
+      <div
+        className={`relative isolate bg-white dark:bg-card h-full overflow-hidden flex flex-col ${
+          !is_active ? "opacity-75" : ""
+        }`}
+      >
         {/* Top-right unified badges */}
-        {is_sample_available && (
-          <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
-            {is_sample_available && (
-              <Badge
-                variant="secondary"
-                className="text-[10px] px-2 py-0.5 leading-none"
-              >
-                Sample
-              </Badge>
-            )}
-          </div>
-        )}
+        <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
+          {!is_active && (
+            <Badge
+              variant="destructive"
+              className="text-[10px] px-2 py-0.5 leading-none"
+            >
+              Out of Stock
+            </Badge>
+          )}
+          {is_sample_available && (
+            <Badge
+              variant="secondary"
+              className="text-[10px] px-2 py-0.5 leading-none"
+            >
+              Sample
+            </Badge>
+          )}
+        </div>
 
         {/* Product Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-md">

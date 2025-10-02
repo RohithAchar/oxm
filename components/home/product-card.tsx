@@ -21,6 +21,7 @@ interface ProductCardProps {
   is_verified: boolean;
   verificationYears?: number;
   hasSample?: boolean;
+  is_active?: boolean | null;
 }
 
 export const ProductCard = ({
@@ -34,6 +35,7 @@ export const ProductCard = ({
   is_verified,
   verificationYears,
   hasSample,
+  is_active = true,
 }: ProductCardProps) => {
   const searchParams = useSearchParams();
   const keepDropship = searchParams.get("dropship_available") === "true";
@@ -72,20 +74,28 @@ export const ProductCard = ({
     >
       <div
         key={id}
-        className="relative isolate bg-white dark:bg-card h-full overflow-hidden cursor-pointer flex flex-col"
+        className={`relative isolate bg-white dark:bg-card h-full overflow-hidden cursor-pointer flex flex-col ${
+          !is_active ? "opacity-75" : ""
+        }`}
       >
-        {hasSample && (
-          <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
-            {hasSample && (
-              <Badge
-                variant="secondary"
-                className="text-[10px] px-2 py-0.5 leading-none"
-              >
-                Sample
-              </Badge>
-            )}
-          </div>
-        )}
+        <div className="absolute top-2 right-2 z-20 flex flex-col gap-1 items-end">
+          {!is_active && (
+            <Badge
+              variant="destructive"
+              className="text-[10px] px-2 py-0.5 leading-none"
+            >
+              Out of Stock
+            </Badge>
+          )}
+          {hasSample && (
+            <Badge
+              variant="secondary"
+              className="text-[10px] px-2 py-0.5 leading-none"
+            >
+              Sample
+            </Badge>
+          )}
+        </div>
         {/* Product Image */}
         <div className="relative aspect-square w-full overflow-hidden rounded-md">
           {imageLoading && (

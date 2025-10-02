@@ -115,6 +115,7 @@ export const ProductView = async ({ id }: { id: string }) => {
                 supplierId={data.supplier_id!}
                 supplierName={business?.business_name || "Supplier"}
                 tierPricingSnapshot={null}
+                isActive={data.is_active}
               />
             </div>
 
@@ -140,8 +141,12 @@ export const ProductView = async ({ id }: { id: string }) => {
                     <p className="text-2xl font-semibold text-foreground">
                       ₹{data.total_price}
                     </p>
-                    <Button size="sm" className="mt-2">
-                      Order Sample
+                    <Button
+                      size="sm"
+                      className="mt-2"
+                      disabled={!data.is_active}
+                    >
+                      {data.is_active ? "Order Sample" : "Out of Stock"}
                     </Button>
                   </div>
                 </div>

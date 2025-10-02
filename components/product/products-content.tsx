@@ -117,6 +117,7 @@ export default async function ProductsContent({
                     }
                     is_verified={p.is_verified || false}
                     hasSample={p.is_sample_available || false}
+                    is_active={p.is_active}
                   />
                 );
               })}

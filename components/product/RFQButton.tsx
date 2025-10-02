@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, Tags, ChevronRight } from "lucide-react";
+import { Loader2, Tags, ChevronRight, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 
 type Json = Database["public"]["Tables"]["buy_leads"]["Row"]["customization"];
@@ -42,6 +42,7 @@ export function RFQButton({
   tierPricingSnapshot,
   productImage,
   variant = "button",
+  isActive = true,
 }: {
   productId: string;
   productName: string;
@@ -50,6 +51,7 @@ export function RFQButton({
   tierPricingSnapshot?: any | null;
   productImage?: string;
   variant?: "button" | "row";
+  isActive?: boolean | null;
 }) {
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -243,6 +245,20 @@ export function RFQButton({
   const FormBody = (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
+        {(isActive === false || isActive === null) && (
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-amber-600" />
+              <span className="text-sm font-medium text-amber-800">
+                Product Currently Inactive
+              </span>
+            </div>
+            <p className="text-xs text-amber-700 mt-1">
+              This product is currently out of stock, but the supplier may be
+              able to provide a quote for future availability.
+            </p>
+          </div>
+        )}
         <Card>
           <CardContent className="pt-4 text-sm text-muted-foreground">
             <div className="flex gap-3">

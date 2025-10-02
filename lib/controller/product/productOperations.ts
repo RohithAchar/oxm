@@ -472,6 +472,7 @@ const getProductById = async (productId: string) => {
         name,
         description,
         is_sample_available,
+        is_active,
         quantity,
         total_price,
         price_per_unit,
