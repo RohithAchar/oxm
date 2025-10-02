@@ -19,6 +19,13 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_PROJECT_ID=your_supabase_project_id
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
+# Cashfree Configuration
+# Get these from Cashfree Dashboard > Developers > API Keys
+CASHFREE_CLIENT_ID=your_cashfree_client_id
+CASHFREE_CLIENT_SECRET=your_cashfree_client_secret
+CASHFREE_BASE_URL=https://payout-gamma.cashfree.com  # Use gamma for sandbox
+# CASHFREE_BASE_URL=https://payout-api.cashfree.com  # Use this for production
+
 # Cashfree Configuration (Mock for now)
 CASHFREE_ENVIRONMENT=mock
 CASHFREE_CLIENT_ID=mock_client_id

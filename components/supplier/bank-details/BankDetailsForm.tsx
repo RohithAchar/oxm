@@ -23,6 +23,7 @@ import {
   AlertCircle,
   Info,
   CreditCard,
+  Shield,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -472,6 +473,29 @@ export function BankDetailsForm({
               </Button>
             )}
           </div>
+
+          {/* Verification Notice */}
+          {!isEditing && (
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-start gap-3">
+                <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div className="text-sm">
+                  <h4 className="font-medium text-blue-900 mb-1">
+                    Bank Account Verification Required
+                  </h4>
+                  <p className="text-blue-700 mb-2">
+                    After adding your bank account, you'll need to verify it
+                    before receiving payments.
+                  </p>
+                  <ul className="text-blue-600 space-y-1 text-xs">
+                    <li>• Verification is done via secure penny drop method</li>
+                    <li>• Takes 2-3 minutes to complete</li>
+                    <li>• Required for payment security and compliance</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
         </form>
       </CardContent>
     </Card>

@@ -21,6 +21,8 @@ import {
   AlertCircle,
   Star,
   Building2,
+  Shield,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -66,6 +68,7 @@ export function BankDetailsList({
   const [accounts, setAccounts] = useState<BankAccount[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [verifyingAccount, setVerifyingAccount] = useState<string | null>(null);
 
   const fetchBankDetails = async () => {
     try {
@@ -113,6 +116,45 @@ export function BankDetailsList({
       toast.error("Failed to delete bank account");
     } finally {
       setIsDeleting(null);
+    }
+  };
+
+  const handleVerify = async (accountId: string) => {
+    try {
+      setVerifyingAccount(accountId);
+      const response = await fetch(
+        `/api/supplier/bank-details/${accountId}/verify`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            verification_method: "penny_drop",
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to verify bank account");
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast.success("Bank account verification initiated successfully");
+        fetchBankDetails(); // Refresh the list to show updated status
+      } else {
+        toast.error("Bank account verification failed");
+      }
+    } catch (error) {
+      console.error("Error verifying bank account:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to verify bank account"
+      );
+    } finally {
+      setVerifyingAccount(null);
     }
   };
 
@@ -322,6 +364,26 @@ export function BankDetailsList({
                     <Edit className="w-4 h-4" />
                     Edit
                   </Button>
+
+                  {/* Verify Button - Only show for unverified accounts */}
+                  {account.verification_status !== "verified" && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleVerify(account.id)}
+                      disabled={verifyingAccount === account.id}
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                    >
+                      {verifyingAccount === account.id ? (
+                        <RefreshCw className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Shield className="w-4 h-4" />
+                      )}
+                      {verifyingAccount === account.id
+                        ? "Verifying..."
+                        : "Verify"}
+                    </Button>
+                  )}
 
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
