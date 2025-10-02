@@ -207,10 +207,12 @@ export function BankDetailsForm({
             `Failed to ${isEditing ? "update" : "add"} bank details`
         );
 
-        if (result.details) {
+        if (result.details && Array.isArray(result.details)) {
           result.details.forEach((detail: any) => {
             toast.error(`${detail.field}: ${detail.message}`);
           });
+        } else if (result.details && typeof result.details === "string") {
+          toast.error(result.details);
         }
       }
     } catch (error) {

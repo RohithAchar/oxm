@@ -104,7 +104,6 @@ export async function GET(
       )
       .eq("id", id)
       .eq("supplier_business_id", business.id)
-      .eq("is_active", true)
       .single();
 
     if (fetchError || !bankDetails) {
@@ -380,7 +379,6 @@ export async function DELETE(
       .select("id, is_primary")
       .eq("id", id)
       .eq("supplier_business_id", business.id)
-      .eq("is_active", true)
       .single();
 
     if (existsError || !existingBankDetails) {
@@ -390,12 +388,11 @@ export async function DELETE(
       );
     }
 
-    // Check if there are other active bank accounts
+    // Check if there are other bank accounts
     const { data: otherAccounts, error: countError } = await supabase
       .from("supplier_bank_details")
       .select("id")
       .eq("supplier_business_id", business.id)
-      .eq("is_active", true)
       .neq("id", id);
 
     if (countError) {

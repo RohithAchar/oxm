@@ -96,11 +96,66 @@ export async function GET(request: NextRequest) {
       .order("created_at", { ascending: false });
 
     if (fetchError) {
-      console.error("Error fetching bank details:", fetchError);
+      console.error("❌ Error fetching bank details:", fetchError);
       return NextResponse.json(
-        { error: "Failed to fetch bank details" },
+        { error: "Failed to fetch bank details", details: fetchError.message },
         { status: 500 }
       );
+    }
+
+    // Fix existing inactive records (one-time fix)
+    if (bankDetails && bankDetails.length === 0) {
+      // Check if there are inactive records that should be active
+      const { data: inactiveRecords } = await supabase
+        .from("supplier_bank_details")
+        .select("id")
+        .eq("supplier_business_id", business.id)
+        .eq("is_active", false);
+
+      if (inactiveRecords && inactiveRecords.length > 0) {
+        // Reactivate them (one-time fix)
+        await supabase
+          .from("supplier_bank_details")
+          .update({ is_active: true })
+          .eq("supplier_business_id", business.id)
+          .eq("is_active", false);
+
+        // Refetch after fixing
+        const { data: fixedBankDetails } = await supabase
+          .from("supplier_bank_details")
+          .select(
+            `
+            id,
+            account_holder_name,
+            account_number,
+            ifsc_code,
+            bank_name,
+            branch_name,
+            account_type,
+            verification_status,
+            verification_message,
+            is_primary,
+            is_active,
+            created_at,
+            updated_at,
+            last_verified_at
+          `
+          )
+          .eq("supplier_business_id", business.id)
+          .eq("is_active", true)
+          .order("is_primary", { ascending: false })
+          .order("created_at", { ascending: false });
+
+        const maskedFixedDetails = fixedBankDetails?.map((detail) => ({
+          ...detail,
+          account_number: `****${detail.account_number.slice(-4)}`,
+        }));
+
+        return NextResponse.json({
+          success: true,
+          data: maskedFixedDetails || [],
+        });
+      }
     }
 
     // Mask account numbers for security
