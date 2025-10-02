@@ -35,16 +35,10 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <main className="container mx-auto max-w-3xl px-4 py-10">
-      <header className="space-y-2">
-        <P className="uppercase tracking-wide text-sm text-muted-foreground">
-          About
-        </P>
+      <header className="space-y-4">
         <H1 className="text-3xl font-semibold tracking-tight">
           OpenXmart: Powering a Trust-Driven B2B Future in India
         </H1>
-        <P className="text-sm text-muted-foreground">
-          By OpenXmart Technologies
-        </P>
       </header>
 
       <hr className="my-8" />
@@ -94,9 +88,9 @@ export default function AboutPage() {
           <strong>Empowering Businesses. Fueling the Economy.</strong>
         </P>
         <P>
-          But this is more than just business. It’s a movement to restore trust,
-          transparency, and fairness in Indian commerce — so every deal is
-          confident, and every business can grow with dignity.
+          But this is more than just business. It's a movement to restore trust,
+          transparency, and fairness in Indian commerce — so every deal is made
+          with confidence, and every business can grow with dignity.
         </P>
         <P className="italic">
           — Rithish Shetty
@@ -131,7 +125,7 @@ export default function AboutPage() {
               <li>Built-in dispute resolution</li>
             </ul>
             <P className="text-sm text-muted-foreground">
-              ✅ Experience first. Decide next.
+              ✅ Experience first. Decide later.
             </P>
           </div>
 
@@ -161,7 +155,7 @@ export default function AboutPage() {
             </P>
             <ul className="list-disc pl-6 space-y-1">
               <li>Payment is held safely until delivery</li>
-              <li>2-day buyer check period before fund release</li>
+              <li>2-day buyer review period before fund release</li>
               <li>Fast complaint system for fake/damaged items</li>
               <li>Only verified suppliers can sell</li>
             </ul>
@@ -181,7 +175,7 @@ export default function AboutPage() {
               <li>Lead management dashboard</li>
             </ul>
             <P className="text-sm text-muted-foreground">
-              Your growth is our growth — not pay-per-lead.
+              Your growth is our growth — no pay-per-lead fees.
             </P>
           </div>
         </div>
@@ -246,8 +240,8 @@ export default function AboutPage() {
 
       <section className="space-y-3">
         <blockquote className="border-l-4 pl-4 italic">
-          “This is my journey from zero — and OpenXmart is the startup that will
-          change how bharath does business.”
+          "This is my journey from zero — and OpenXmart is the startup that will
+          change how Bharat does business."
         </blockquote>
         <P className="italic">— Rithish Shetty, Founder</P>
       </section>
