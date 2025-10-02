@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const formData = await request.formData();
   const email = String(formData.get("email"));
+  const redirectTo = String(formData.get("redirectTo") || "/");
 
   const cookieStore = await cookies();
   const supabase = createServerClient<Database>(
@@ -30,7 +31,9 @@ export async function POST(request: NextRequest) {
   const { error } = await supabase.auth.signInWithOtp({
     email,
     options: {
-      emailRedirectTo: `${requestUrl.origin}/api/auth/callback`,
+      emailRedirectTo: `${
+        requestUrl.origin
+      }/api/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
     },
   });
 

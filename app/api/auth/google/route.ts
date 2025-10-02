@@ -8,6 +8,11 @@ export async function POST(request: NextRequest) {
   const requestUrl = new URL(request.url);
   const cookieStore = await cookies();
 
+  // Get redirect URL from request body or query params
+  const body = await request.json().catch(() => ({}));
+  const redirectTo =
+    body.redirectTo || requestUrl.searchParams.get("redirectTo") || "/";
+
   const supabase = createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -28,7 +33,9 @@ export async function POST(request: NextRequest) {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${requestUrl.origin}/api/auth/callback`,
+      redirectTo: `${
+        requestUrl.origin
+      }/api/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
     },
   });
 

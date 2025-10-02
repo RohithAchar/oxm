@@ -1,23 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { toast } from "sonner";
 import { createClient } from "@/utils/supabase/client";
 
-export default function VerifyPhonePage() {
+function VerifyPhoneContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [phone, setPhone] = useState("");
   const [step, setStep] = useState<"enter" | "verify">("enter");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [redirectTo, setRedirectTo] = useState("/create-business");
 
   useEffect(() => {
+    // Get redirect URL from query parameters
+    const redirectParam = searchParams.get("redirectTo");
+    if (redirectParam) {
+      setRedirectTo(decodeURIComponent(redirectParam));
+    }
+
     const loadPhone = async () => {
       try {
         const supabase = createClient();
@@ -37,7 +49,7 @@ export default function VerifyPhonePage() {
       } catch {}
     };
     loadPhone();
-  }, []);
+  }, [searchParams]);
 
   const sendOtp = async () => {
     try {
@@ -69,7 +81,7 @@ export default function VerifyPhonePage() {
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.message || "Failed");
       toast.success("Phone verified");
-      router.replace("/create-business");
+      router.replace(redirectTo);
     } catch (e: any) {
       toast.error(e.message || "Invalid code");
     } finally {
@@ -105,7 +117,11 @@ export default function VerifyPhonePage() {
                 />
               </div>
             </div>
-            <Button className="w-full" onClick={sendOtp} disabled={loading || phone.length !== 10}>
+            <Button
+              className="w-full"
+              onClick={sendOtp}
+              disabled={loading || phone.length !== 10}
+            >
               {loading ? "Sending..." : "Send OTP"}
             </Button>
           </div>
@@ -122,10 +138,19 @@ export default function VerifyPhonePage() {
               </InputOTP>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setStep("enter")} disabled={loading}>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setStep("enter")}
+                disabled={loading}
+              >
                 Change number
               </Button>
-              <Button className="flex-1" onClick={verifyOtp} disabled={loading || code.length !== 6}>
+              <Button
+                className="flex-1"
+                onClick={verifyOtp}
+                disabled={loading || code.length !== 6}
+              >
                 {loading ? "Verifying..." : "Verify"}
               </Button>
             </div>
@@ -136,4 +161,21 @@ export default function VerifyPhonePage() {
   );
 }
 
-
+export default function VerifyPhonePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-[80vh] flex items-center justify-center px-4">
+          <Card className="w-full max-w-md p-6 space-y-6">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-semibold">Verify your phone</h1>
+              <p className="text-sm text-muted-foreground">Loading...</p>
+            </div>
+          </Card>
+        </div>
+      }
+    >
+      <VerifyPhoneContent />
+    </Suspense>
+  );
+}

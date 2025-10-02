@@ -51,7 +51,12 @@ export async function middleware(request: NextRequest) {
   ) {
     if (!user) {
       const url = request.nextUrl.clone();
+      // Capture the original URL (pathname + search params) for redirect after login
+      const redirectTo = encodeURIComponent(
+        request.nextUrl.pathname + request.nextUrl.search
+      );
       url.pathname = "/login";
+      url.searchParams.set("redirectTo", redirectTo);
       return NextResponse.redirect(url);
     }
 
@@ -65,7 +70,12 @@ export async function middleware(request: NextRequest) {
 
       if (!profile?.is_phone_verified) {
         const url = request.nextUrl.clone();
+        // Capture the original URL for redirect after phone verification
+        const redirectTo = encodeURIComponent(
+          request.nextUrl.pathname + request.nextUrl.search
+        );
         url.pathname = "/verify-phone";
+        url.searchParams.set("redirectTo", redirectTo);
         return NextResponse.redirect(url);
       }
     }
@@ -82,10 +92,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   }
-  
+
   // Optionally, we could hint UI to show phone capture popover if needed.
 
-  
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
   // creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:

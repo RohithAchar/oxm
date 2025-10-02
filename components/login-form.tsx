@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import { H1 } from "@/components/ui/h1";
 import { P } from "@/components/ui/p";
@@ -20,7 +21,17 @@ export function LoginForm({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const [redirectTo, setRedirectTo] = useState<string>("/");
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  useEffect(() => {
+    // Get the redirect URL from query parameters
+    const redirectParam = searchParams.get("redirectTo");
+    if (redirectParam) {
+      setRedirectTo(decodeURIComponent(redirectParam));
+    }
+  }, [searchParams]);
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,9 +41,13 @@ export function LoginForm({
     setEmailSent(false);
 
     try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      // Add redirect URL to form data
+      formData.append("redirectTo", redirectTo);
+
       const response = await fetch("/api/auth/magic-link", {
         method: "POST",
-        body: new FormData(e.target as HTMLFormElement),
+        body: formData,
       });
 
       const data = await response.json();
@@ -58,7 +73,9 @@ export function LoginForm({
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/api/auth/callback`,
+          redirectTo: `${
+            window.location.origin
+          }/api/auth/callback?redirectTo=${encodeURIComponent(redirectTo)}`,
         },
       });
 
