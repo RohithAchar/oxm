@@ -126,11 +126,15 @@ const AdminBusinessVerification = () => {
         business.business_name
           .toLowerCase()
           .includes(searchTerm.toLowerCase()) ||
-        business.gst_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        business.city.toLowerCase().includes(searchTerm.toLowerCase());
+        (business.gst_number
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase()) ??
+          false) ||
+        (business.city?.toLowerCase().includes(searchTerm.toLowerCase()) ??
+          false);
 
       const matchesStatus =
-        statusFilter === "ALL" || business.status === statusFilter;
+        statusFilter === "ALL" || business.verification_status === statusFilter;
       const matchesCity = cityFilter === "ALL" || business.city === cityFilter;
 
       return matchesSearch && matchesStatus && matchesCity;
@@ -139,7 +143,9 @@ const AdminBusinessVerification = () => {
 
   // Get unique cities for filter dropdown
   const uniqueCities = useMemo(() => {
-    const cities = businesses.map((business) => business.city);
+    const cities = businesses
+      .map((business) => business.city)
+      .filter((city): city is string => city !== null);
     return [...new Set(cities)].sort();
   }, [businesses]);
 
@@ -170,8 +176,8 @@ const AdminBusinessVerification = () => {
 
   const handleEdit = (business: Business) => {
     setSelectedBusiness(business);
-    setNewStatus(business.status || "PENDING");
-    setMessage(business.message || "");
+    setNewStatus(business.verification_status || "PENDING");
+    setMessage("");
     setIsEditDialogOpen(true);
   };
 
@@ -251,8 +257,7 @@ const AdminBusinessVerification = () => {
       const response = await axios.patch(
         `/api/businesses/${business.id}/verification`,
         {
-          status: business.status,
-          message: business.message,
+          status: business.verification_status,
           is_verified: newVerifiedStatus,
         }
       );
@@ -462,12 +467,12 @@ const AdminBusinessVerification = () => {
                         <div className="flex flex-col">
                           <span>{business.business_name}</span>
                           <span className="text-xs text-muted-foreground md:hidden">
-                            {business.type} • {business.phone}
+                            {business.business_type || "N/A"}
                           </span>
                         </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
-                        {business.type}
+                        {business.business_type || "N/A"}
                       </TableCell>
                       <TableCell>
                         <div className="text-sm">
@@ -487,7 +492,9 @@ const AdminBusinessVerification = () => {
                           {business.gst_number}
                         </code>
                       </TableCell>
-                      <TableCell>{getStatusBadge(business.status)}</TableCell>
+                      <TableCell>
+                        {getStatusBadge(business.verification_status)}
+                      </TableCell>
                       <TableCell className="hidden sm:table-cell">
                         <Badge
                           className={
@@ -590,7 +597,9 @@ const AdminBusinessVerification = () => {
                   <Tags className="h-4 w-4" />
                   Type
                 </Label>
-                <p className="text-sm">{selectedBusiness.type}</p>
+                <p className="text-sm">
+                  {selectedBusiness.business_type || "N/A"}
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -622,7 +631,9 @@ const AdminBusinessVerification = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Current Status</Label>
-                  <div>{getStatusBadge(selectedBusiness.status)}</div>
+                  <div>
+                    {getStatusBadge(selectedBusiness.verification_status)}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium">Verified</Label>

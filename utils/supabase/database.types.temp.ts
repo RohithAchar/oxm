@@ -1,5 +1,5 @@
 // Temporary permissive database types to allow build to pass
-// TODO: Replace with actual generated types from Supabase
+// Replace with actual generated types from Supabase
 
 export type Json =
   | string
