@@ -31,7 +31,6 @@ const groupedNav: Array<{
     items: [
       { title: "Overview", url: "/supplier/overview" },
       { title: "Profile", url: "/supplier/profile" },
-      { title: "Payment Details", url: "/supplier/bank-details" },
       { title: "Insights", url: "/supplier/insights" },
     ],
   },
