@@ -95,6 +95,9 @@ export class CashfreeService {
       return data;
     } catch (error) {
       console.error("Error verifying bank account:", error);
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
       throw new Error("Failed to initiate bank verification");
     }
   }
@@ -126,6 +129,9 @@ export class CashfreeService {
       return data;
     } catch (error) {
       console.error("Error getting bank verification status:", error);
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
       throw new Error("Failed to get bank verification status");
     }
   }

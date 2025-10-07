@@ -84,9 +84,89 @@ export function BankDetailsManager({
         body: JSON.stringify(formData),
       });
 
+      // If verification still processing, show info and stop without error
+      if (response.status === 202) {
+        const data = await response.json();
+        const ref = data?.reference_id ? ` (ref: ${data.reference_id})` : "";
+        toast.info(
+          `Bank verification is processing${ref}. Please retry in a few minutes.`
+        );
+        // Keep form open so user can retry or change inputs
+        return;
+      }
+
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to add bank details");
+        // Try parse server-side error
+        let userMessage = "Failed to add bank details";
+        let serverError: any = null;
+        try {
+          serverError = await response.json();
+        } catch (_) {
+          // ignore JSON parse issues
+        }
+
+        // Extract details from serverError
+        const raw = serverError?.details || serverError?.error || "";
+        const reason = serverError?.reason || "";
+        const serverCode = serverError?.code || "";
+
+        // Attempt to parse embedded Cashfree payload JSON from details
+        let cfPayload: any = null;
+        if (typeof raw === "string" && raw.includes("Cashfree API error")) {
+          const jsonStart = raw.indexOf("{");
+          if (jsonStart !== -1) {
+            const jsonStr = raw.slice(jsonStart);
+            try {
+              cfPayload = JSON.parse(jsonStr);
+            } catch (_) {}
+          }
+        }
+
+        // Map known error codes/messages to friendly guidance
+        const code = serverCode || cfPayload?.code;
+        const msg = cfPayload?.message || reason || serverError?.error || raw;
+        switch (code) {
+          case "user_id_length_exceeded":
+            userMessage =
+              "Internal issue: verification reference too long. Please retry now.";
+            break;
+          case "user_id_already_exists":
+            userMessage =
+              "A verification reference already exists. Please retry now.";
+            break;
+          case "invalid_ifsc":
+          case "invalid_ifsc_fail":
+          case "invalid_ifsc_code":
+            userMessage =
+              "The IFSC code appears invalid. Please check and try again.";
+            break;
+          case "invalid_account_number":
+            userMessage =
+              "The account number appears invalid. Please check and try again.";
+            break;
+          default:
+            if (response.status === 401) {
+              userMessage = "You must be signed in to add bank details.";
+            } else if (response.status === 400) {
+              userMessage =
+                msg || "Invalid bank details. Please review and try again.";
+            } else if (response.status === 502) {
+              // Prefer provider message when available to avoid generic/unhelpful copy
+              userMessage =
+                msg ||
+                "Bank verification service is unavailable. Please try again shortly.";
+            } else if (response.status === 500) {
+              userMessage =
+                "Server error while adding bank details. Please try again.";
+            } else {
+              userMessage = msg || userMessage;
+            }
+            break;
+        }
+
+        // Show a concise toast prioritizing clarity
+        toast.error(userMessage);
+        return;
       }
 
       const data = await response.json();
