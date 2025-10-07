@@ -40,7 +40,10 @@ export function BankDetailsManager({
 
   const fetchBankDetails = async () => {
     try {
-      const response = await fetch("/api/supplier/bank-details");
+      const response = await fetch("/api/supplier/bank-details", {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-store" },
+      });
       if (!response.ok) {
         throw new Error("Failed to fetch bank details");
       }
@@ -76,6 +79,7 @@ export function BankDetailsManager({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Cache-Control": "no-store",
         },
         body: JSON.stringify(formData),
       });
@@ -114,6 +118,7 @@ export function BankDetailsManager({
         `/api/supplier/bank-details/${bankDetailsId}/verify`,
         {
           method: "POST",
+          headers: { "Cache-Control": "no-store" },
         }
       );
 
@@ -141,6 +146,7 @@ export function BankDetailsManager({
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
+            "Cache-Control": "no-store",
           },
           body: JSON.stringify({ is_primary: true }),
         }
@@ -171,6 +177,7 @@ export function BankDetailsManager({
         `/api/supplier/bank-details/${bankDetailsId}`,
         {
           method: "DELETE",
+          headers: { "Cache-Control": "no-store" },
         }
       );
 

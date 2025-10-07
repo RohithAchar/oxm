@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
+export const dynamic = "force-dynamic";
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

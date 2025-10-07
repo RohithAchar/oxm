@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { cashfreeService } from "@/lib/services/cashfree";
 
+export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const supabase = await createClient();
@@ -42,7 +43,18 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    return NextResponse.json({ bankDetails });
+    return NextResponse.json(
+      { bankDetails },
+      {
+        headers: {
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+          SurrogateControl: "no-store",
+        },
+      }
+    );
   } catch (error) {
     console.error("Error in GET /api/supplier/bank-details:", error);
     return NextResponse.json(
