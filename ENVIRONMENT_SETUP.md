@@ -102,15 +102,13 @@ npm run dev
 
 1. **Create `.env.local`** with your actual Supabase values
 2. **Run database migration**: Use the clean SQL file we created
-3. **Test the bank details system**: Navigate to `/supplier/bank-details`
-4. **Generate types**: Run `npm run db:generate-types`
+3. **Generate types**: Run `npm run db:generate-types`
 
 ## 📋 **Verification Checklist**
 
 - [ ] `.env.local` file created with actual values
 - [ ] `package.json` no longer has hardcoded project ID
 - [ ] Database migration completed successfully
-- [ ] Bank details system accessible at `/supplier/bank-details`
 - [ ] Type generation works: `npm run db:generate-types`
 
 **Your Supabase configuration is now secure and properly set up!** 🎉
