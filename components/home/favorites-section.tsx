@@ -97,30 +97,31 @@ export default function FavoritesSection() {
   }
 
   if (favoriteProducts.length === 0) {
-    return (
-      <section className="py-8">
-        <div className="rounded-2xl border bg-muted/30 p-6">
-          <div className="flex items-center justify-between mb-4 md:mb-6">
-            <div className="w-full text-left">
-              <h2 className="text-foreground text-xl md:text-2xl font-semibold mb-1">
-                Your Favorites
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Products you've saved
-              </p>
-            </div>
-          </div>
-          <div className="text-center py-12">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/50 text-muted-foreground">
-              <Heart className="h-7 w-7" />
-            </div>
-            <h3 className="text-lg font-semibold text-foreground">
-              Your collection starts here.
-            </h3>
-          </div>
-        </div>
-      </section>
-    );
+    return null;
+    // return (
+    //   <section className="py-8">
+    //     <div className="rounded-2xl border bg-muted/30 p-6">
+    //       <div className="flex items-center justify-between mb-4 md:mb-6">
+    //         <div className="w-full text-left">
+    //           <h2 className="text-foreground text-xl md:text-2xl font-semibold mb-1">
+    //             Your Favorites
+    //           </h2>
+    //           <p className="text-sm text-muted-foreground">
+    //             Products you've saved
+    //           </p>
+    //         </div>
+    //       </div>
+    //       <div className="text-center py-12">
+    //         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted/50 text-muted-foreground">
+    //           <Heart className="h-7 w-7" />
+    //         </div>
+    //         <h3 className="text-lg font-semibold text-foreground">
+    //           Your collection starts here.
+    //         </h3>
+    //       </div>
+    //     </div>
+    //   </section>
+    // );
   }
 
   return (

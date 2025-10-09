@@ -33,7 +33,7 @@ export const Navbar = () => {
   return (
     <>
       {/* Desktop Topbar */}
-      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-background">
+      <header className="hidden md:block fixed top-0 left-0 right-0 z-50 bg-background border-b">
         <div
           className={`${
             isSupplier ? "hidden max-w-full" : "max-w-screen-2xl"
@@ -43,7 +43,6 @@ export const Navbar = () => {
             <span className="text-foreground">Open</span>
             <span className="text-primary">X</span>
             <span className="text-foreground">mart</span>
-            <span className="text-muted-foreground text-xs">.com</span>
           </Link>
           <div className="hidden md:block justify-self-center w-full">
             {isSupplier ? (
