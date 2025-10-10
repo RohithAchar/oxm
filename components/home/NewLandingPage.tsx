@@ -23,6 +23,7 @@ import { Carousal } from "@/components/home/carousal";
 import { CustomCarousalSkeleton } from "./custom-carousal";
 import RecentlyViewedList from "@/components/recent/RecentlyViewedList";
 import FavoritesSection from "@/components/home/favorites-section";
+import CategoriesSection from "@/components/home/categories-section";
 import { H1 } from "@/components/ui/h1";
 import { H2 } from "@/components/ui/h2";
 import { P } from "@/components/ui/p";
@@ -110,7 +111,7 @@ const NewLandingPage = async () => {
 
       {/* Desktop / large-screen content */}
       <section className="animate-blurred-fade-in animate-duration-slow animate-delay-300 hidden md:block relative px-4 lg:px-0 pt-4 lg:pt-16">
-        <div className="rounded-md p-4 pt-8 md:p-12">
+        <div className="rounded-md p-4 pt-8 md:pt-12">
           <div className="relative mx-auto max-w-4xl text-center space-y-4 md:space-y-5">
             <H1 className="text-3xl md:text-6xl text-center font-bold tracking-tight leading-tight text-foreground">
               Find Winning Products
@@ -318,6 +319,9 @@ const NewLandingPage = async () => {
 
       {/* Favorites section */}
       <FavoritesSection />
+
+      {/* Categories Section */}
+      <CategoriesSection />
 
       {/* Footer is rendered globally via layout */}
     </main>
