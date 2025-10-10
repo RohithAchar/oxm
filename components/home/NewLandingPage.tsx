@@ -27,6 +27,7 @@ import CategoriesSection from "@/components/home/categories-section";
 import { H1 } from "@/components/ui/h1";
 import { H2 } from "@/components/ui/h2";
 import { P } from "@/components/ui/p";
+import HowItWorks from "@/components/home/how-it-works";
 
 const NewLandingPage = async () => {
   return (
@@ -111,7 +112,7 @@ const NewLandingPage = async () => {
 
       {/* Desktop / large-screen content */}
       <section className="animate-blurred-fade-in animate-duration-slow animate-delay-300 hidden md:block relative px-4 lg:px-0 pt-4 lg:pt-16">
-        <div className="rounded-md p-4 pt-8 md:pt-12">
+        <div className="rounded-md p-4 pt-8 md:pt-16">
           <div className="relative mx-auto max-w-4xl text-center space-y-4 md:space-y-5">
             <H1 className="text-3xl md:text-6xl text-center font-bold tracking-tight leading-tight text-foreground">
               Find Winning Products
@@ -169,141 +170,9 @@ const NewLandingPage = async () => {
         </div>
       </section>
 
-      {/* How it works (desktop only) */}
-      <section className="hidden md:block px-4 lg:px-0 mt-16 lg:mt-24">
-        <div className="w-full text-center mb-8">
-          <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground">
-            How OpenXmart works for you
-          </H2>
-          <P className="text-sm sm:text-base text-center -mt-2">
-            A simple, transparent process designed to connect you with verified
-            suppliers and quality products.
-          </P>
-        </div>
-        {/* Mobile horizontal scroller */}
-        <div
-          className="md:hidden -ml-4 px-4 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none]"
-          style={{ WebkitOverflowScrolling: "touch" }}
-        >
-          <div className="flex gap-3 snap-x snap-mandatory">
-            <div className="min-w-[80%] snap-start">
-              <Card className="group hover:shadow-md transition">
-                <CardHeader className="p-3 sm:p-4">
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <Sparkles className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                    <CardTitle className="text-base md:text-lg line-clamp-2">
-                      Browse Products
-                    </CardTitle>
-                    <CardDescription className="text-xs md:text-sm line-clamp-2">
-                      Explore products from verified Indian suppliers.
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-            <div className="min-w-[80%] snap-start">
-              <Card className="group hover:shadow-md transition">
-                <CardHeader className="p-3 sm:p-4">
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <Package className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                    <CardTitle className="text-base md:text-lg line-clamp-2">
-                      Order Samples
-                    </CardTitle>
-                    <CardDescription className="text-xs md:text-sm line-clamp-2">
-                      Test product quality before bulk buying.
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-            <div className="min-w-[80%] snap-start">
-              <Card className="group hover:shadow-md transition">
-                <CardHeader className="p-3 sm:p-4">
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <Handshake className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                    <CardTitle className="text-base md:text-lg line-clamp-2">
-                      Contact Suppliers
-                    </CardTitle>
-                    <CardDescription className="text-xs md:text-sm line-clamp-2">
-                      Buy directly and build long-term partnerships.
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-            <div className="min-w-[80%] snap-start">
-              <Card className="group hover:shadow-md transition">
-                <CardHeader className="p-3 sm:p-4">
-                  <div className="flex flex-col items-center text-center gap-2">
-                    <ShieldCheck className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                    <CardTitle className="text-base md:text-lg line-clamp-2">
-                      Buyer Protection
-                    </CardTitle>
-                    <CardDescription className="text-xs md:text-sm line-clamp-2">
-                      Your money is safe until delivery is verified.
-                    </CardDescription>
-                  </div>
-                </CardHeader>
-              </Card>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop/grid */}
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-4">
-          <Card className="group hover:shadow-md transition">
-            <CardHeader className="p-3 sm:p-4">
-              <div className="flex flex-col items-center text-center gap-2">
-                <Sparkles className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                <CardTitle className="text-base md:text-lg line-clamp-2">
-                  Browse Products
-                </CardTitle>
-                <CardDescription className="text-xs md:text-sm line-clamp-2">
-                  Explore products from verified Indian suppliers.
-                </CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition">
-            <CardHeader className="p-3 sm:p-4">
-              <div className="flex flex-col items-center text-center gap-2">
-                <Package className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                <CardTitle className="text-base md:text-lg line-clamp-2">
-                  Order Samples
-                </CardTitle>
-                <CardDescription className="text-xs md:text-sm line-clamp-2">
-                  Test product quality before bulk buying.
-                </CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition">
-            <CardHeader className="p-3 sm:p-4">
-              <div className="flex flex-col items-center text-center gap-2">
-                <Handshake className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                <CardTitle className="text-base md:text-lg line-clamp-2">
-                  Contact Suppliers
-                </CardTitle>
-                <CardDescription className="text-xs md:text-sm line-clamp-2">
-                  Buy directly and build long-term partnerships.
-                </CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-          <Card className="group hover:shadow-md transition">
-            <CardHeader className="p-3 sm:p-4">
-              <div className="flex flex-col items-center text-center gap-2">
-                <ShieldCheck className="h-7 w-7 text-foreground/70 transition-colors group-hover:text-primary" />
-                <CardTitle className="text-base md:text-lg line-clamp-2">
-                  Buyer Protection
-                </CardTitle>
-                <CardDescription className="text-xs md:text-sm line-clamp-2">
-                  Your money is safe until delivery is verified.
-                </CardDescription>
-              </div>
-            </CardHeader>
-          </Card>
-        </div>
+      {/* How it works */}
+      <section className="px-4 lg:px-0 mt-16 lg:mt-24">
+        <HowItWorks />
       </section>
 
       {/* Recently Viewed and New Arrivals already shown on mobile above.
