@@ -161,7 +161,7 @@ const CategoriesSection = () => {
     <section className="py-8 md:pt-12">
       <div className="max-w-7xl mx-auto px-4">
         <div className="text-center mb-6">
-          <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
+          <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground -mt-2">
             Browse Categories
           </H2>
           <P className="text-sm sm:text-base text-center">

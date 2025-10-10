@@ -116,7 +116,7 @@ const NewLandingPage = async () => {
             <H1 className="text-3xl md:text-6xl text-center font-bold tracking-tight leading-tight text-foreground">
               Find Winning Products
             </H1>
-            <P className="text-sm md:text-base lg:text-lg text-center">
+            <P className="text-sm md:text-base lg:text-lg text-center -mt-4">
               Source confidently from verified Indian suppliers. Samples to
               bulk, all in one place.
             </P>
@@ -172,10 +172,10 @@ const NewLandingPage = async () => {
       {/* How it works (desktop only) */}
       <section className="hidden md:block px-4 lg:px-0 mt-16 lg:mt-24">
         <div className="w-full text-center mb-8">
-          <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground mb-2">
+          <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground">
             How OpenXmart works for you
           </H2>
-          <P className="text-sm sm:text-base text-center">
+          <P className="text-sm sm:text-base text-center -mt-2">
             A simple, transparent process designed to connect you with verified
             suppliers and quality products.
           </P>
