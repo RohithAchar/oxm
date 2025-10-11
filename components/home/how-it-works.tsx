@@ -24,28 +24,28 @@ const HOW_IT_WORKS_STEPS: StepItem[] = [
     title: "Browse Products",
     description: "Explore products from verified Indian suppliers.",
     icon: Sparkles,
-    image: "/how_it_works/browse_products_1.webp",
+    image: "/how_it_works/browse_products_1.png",
   },
   {
     key: "samples",
     title: "Order Samples",
     description: "Test product quality before bulk buying.",
     icon: Package,
-    image: "/how_it_works/browse_products_1.webp",
+    image: "/how_it_works/order_samples_2.png",
   },
   {
     key: "contact",
     title: "Contact Suppliers",
     description: "Buy directly and build long-term partnerships.",
     icon: Handshake,
-    image: "/how_it_works/browse_products_1.webp",
+    image: "/how_it_works/contact_suppliers_3.jpg",
   },
   {
     key: "protection",
     title: "Buyer Protection",
     description: "Your money is safe until delivery is verified.",
     icon: ShieldCheck,
-    image: "/how_it_works/browse_products_1.webp",
+    image: "/how_it_works/buyer_protection_4.jpg",
   },
 ];
 
@@ -67,7 +67,7 @@ export default function HowItWorks() {
   return (
     <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center min-h-screen">
       {/* Left: vertical steps with circular icons */}
-      <div className="space-y-12 relative">
+      <div className="space-y-10 relative">
         <div className="w-full">
           <H2 className="text-lg sm:text-3xl md:text-4xl font-semibold text-foreground">
             How OpenXmart works for you
@@ -146,6 +146,18 @@ export default function HowItWorks() {
           fill
           priority
           className="object-cover"
+          onError={(e) => {
+            console.error("Image failed to load:", active.image, e);
+            // Try to reload the image
+            const target = e.target as HTMLImageElement;
+            if (target) {
+              target.src = active.image;
+            }
+          }}
+          onLoad={() => {
+            console.log("Image loaded successfully:", active.image);
+          }}
+          unoptimized={active.image.includes(".jpg")}
         />
       </Card>
     </div>
