@@ -1621,6 +1621,14 @@ export type Database = {
           receiver: string
         }[]
       }
+      get_latest_products_for_mobile: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          image_url: string
+          name: string
+        }[]
+      }
       get_product_specifications: {
         Args: { p_product_id: string }
         Returns: {
@@ -1628,6 +1636,18 @@ export type Database = {
           spec_name: string
           spec_unit: string
           spec_value: string
+        }[]
+      }
+      get_products_with_first_image: {
+        Args: {
+          active_only?: boolean
+          category_filter?: string
+          supplier_filter?: string
+        }
+        Returns: {
+          id: string
+          image_url: string
+          name: string
         }[]
       }
       increment_banner_clicks: {

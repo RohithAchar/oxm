@@ -10,24 +10,15 @@ import {
 } from "lucide-react";
 import SimpleEnhancedSearch from "@/components/search/SimpleEnhancedSearch";
 import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import {
   NewLaunchedItems,
   NewLaunchedItemsSkeleton,
 } from "@/components/home/new-launched-list";
-import { Carousal } from "@/components/home/carousal";
-import { CustomCarousalSkeleton } from "./custom-carousal";
 import RecentlyViewedList from "@/components/recent/RecentlyViewedList";
 import FavoritesSection from "@/components/home/favorites-section";
-import CategoriesSection from "@/components/home/categories-section";
 import { H1 } from "@/components/ui/h1";
-import { H2 } from "@/components/ui/h2";
 import { P } from "@/components/ui/p";
 import HowItWorks from "@/components/home/how-it-works";
+import { MobileLandingPage } from "./MobileLandingPage";
 
 const NewLandingPage = async () => {
   return (
@@ -67,48 +58,7 @@ const NewLandingPage = async () => {
       />
 
       {/* Mobile-only layout */}
-      <section className="md:hidden max-w-7xl mx-auto pt-4 space-y-4">
-        {/* Custom Carousel */}
-        <Suspense fallback={<CustomCarousalSkeleton />}>
-          {/* Using existing carousal that renders CustomCarousal items */}
-          <Carousal />
-        </Suspense>
-
-        {/* Horizontal pill nav (icons + text) */}
-        <div className=" pl-4 pr-4 flex justify-start gap-2 overflow-x-auto no-scrollbar py-1 snap-x snap-mandatory">
-          <Link href="/products">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
-              <Sparkles className="h-4 w-4" />
-              <span>Explore</span>
-            </div>
-          </Link>
-          <Link href="/intro">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
-              <Package className="h-4 w-4" />
-              <span>MyBox</span>
-            </div>
-          </Link>
-          <Link href="/learn">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
-              <GraduationCap className="h-4 w-4" />
-              <span>Learn</span>
-            </div>
-          </Link>
-          <Link href="/products?dropship_available=true">
-            <div className="flex items-center gap-2 px-3 py-2 rounded-md border bg-background whitespace-nowrap text-sm shrink-0 snap-start">
-              <Truck className="h-4 w-4" />
-              <span>Dropship</span>
-            </div>
-          </Link>
-        </div>
-
-        {/* New Arrivals */}
-        <div>
-          <Suspense fallback={<NewLaunchedItemsSkeleton />}>
-            <NewLaunchedItems />
-          </Suspense>
-        </div>
-      </section>
+      <MobileLandingPage />
 
       {/* Desktop / large-screen content */}
       <section className="animate-blurred-fade-in animate-duration-slow animate-delay-300 hidden md:block relative px-4 lg:px-0 pt-4 lg:pt-16">
@@ -171,26 +121,23 @@ const NewLandingPage = async () => {
       </section>
 
       {/* How it works */}
-      <section className="px-4 lg:px-0 mt-16 lg:mt-24">
+      {/* <section className="hidden lg:block px-4 lg:px-0 mt-16 lg:mt-24">
         <HowItWorks />
-      </section>
+      </section> */}
 
       {/* Recently Viewed and New Arrivals already shown on mobile above.
           Show them here as well for desktop. */}
-      <div className="hidden md:block">
+      {/* <div className="hidden md:block">
         <Suspense fallback={<NewLaunchedItemsSkeleton />}>
           <NewLaunchedItems />
         </Suspense>
-      </div>
+      </div> */}
 
       {/* Recently viewed (bottom of page) */}
-      <RecentlyViewedList />
+      {/* <RecentlyViewedList /> */}
 
       {/* Favorites section */}
-      <FavoritesSection />
-
-      {/* Categories Section */}
-      <CategoriesSection />
+      {/* <FavoritesSection /> */}
 
       {/* Footer is rendered globally via layout */}
     </main>
