@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
 async function sendEmailStub(to: string, subject: string, html: string) {
-  console.log("[support-email]", { to, subject });
   return true;
 }
 

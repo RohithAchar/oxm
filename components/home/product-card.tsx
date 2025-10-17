@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import Image from "next/image";
 import { Button } from "../ui/button";
 import Link from "next/link";
@@ -15,7 +17,7 @@ interface ProductCardProps {
   name: string;
   brand: string;
   supplierName: string;
-  imageUrl: string;
+  imageUrl: string | null;
   priceAndQuantity: any[];
   dropshipPrice?: number;
   is_verified: boolean;
@@ -116,7 +118,7 @@ export const ProductCard = ({
         {/* Product Details */}
         <div className="p-3 md:p-4 space-y-2 flex-1 flex flex-col">
           {/* Product Title */}
-          <h1 className="font-normal text-foreground text-base leading-tight line-clamp-2 break-words">
+          <h1 className="font-normal text-foreground text-sm leading-tight line-clamp-2 break-words">
             {name}
           </h1>
 
@@ -140,7 +142,7 @@ export const ProductCard = ({
           {/* Price section */}
           {typeof dropshipPrice === "number" &&
           Number.isFinite(dropshipPrice) ? (
-            <div className="space-y-1.5 mt-auto">
+            <div className="space-y-1.5 mt-1">
               <div className="text-base font-bold text-foreground">
                 {formatSinglePrice(dropshipPrice)}
               </div>
@@ -151,7 +153,7 @@ export const ProductCard = ({
           ) : (
             priceAndQuantity &&
             priceAndQuantity?.length > 0 && (
-              <div className="space-y-1.5 mt-auto">
+              <div className="space-y-1.5 mt-1">
                 <div className="text-base font-bold text-foreground">
                   {formatPriceRange(priceAndQuantity)}
                 </div>

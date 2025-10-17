@@ -1,4 +1,5 @@
 import { ProductCard } from "@/components/home/product-card";
+import ProductsInfinite from "@/components/product/ProductsInfinite";
 import { AdvancedSearch } from "@/components/product/advanced-search";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +38,7 @@ export default async function ProductsContent({
     sizes: params.sizes ? params.sizes.split(",").filter(Boolean) : undefined,
     sortBy: params.sort || "created_at_desc",
     page: parseInt(params.page ?? "1", 10),
-    pageSize: parseInt(params.page_size ?? "12", 10),
+    pageSize: parseInt(params.page_size ?? "12", 2),
   };
 
   const data = await getEnhancedProducts(filters);
@@ -90,73 +91,24 @@ export default async function ProductsContent({
           </Card>
         </div>
       ) : (
-        <>
-          {/* Products Grid */}
-          <div className="grid items-stretch auto-rows-fr gap-4 md:gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {data.products
-              .filter((p) => p && !/footer/i.test((p.name || "").toString()))
-              .map((p) => {
-                if (!p) return null;
-                return (
-                  <ProductCard
-                    key={p.id}
-                    id={p.id}
-                    imageUrl={p.imageUrl}
-                    name={p.name}
-                    brand={p.brand || ""}
-                    supplierName={p.supplierName}
-                    priceAndQuantity={p.priceAndQuantity || []}
-                    dropshipPrice={
-                      filters.dropshipAvailable
-                        ? p.dropship_price
-                          ? (typeof p.dropship_price === "string"
-                              ? parseFloat(p.dropship_price)
-                              : Number(p.dropship_price)) / 100
-                          : undefined
-                        : undefined
-                    }
-                    is_verified={p.is_verified || false}
-                    hasSample={p.is_sample_available || false}
-                    is_active={p.is_active}
-                  />
-                );
-              })}
-          </div>
-
-          {/* Pagination */}
-          <div className="flex gap-2 mt-8 justify-center">
-            {data.totalPages > 1 &&
-              Array.from({ length: data.totalPages }, (_, i) => {
-                const pageNum = i + 1;
-                const paginationParams = new URLSearchParams();
-
-                // Preserve all current filters in pagination
-                Object.entries(filters).forEach(([key, value]) => {
-                  if (value !== undefined && value !== "" && value !== false) {
-                    if (Array.isArray(value) && value.length > 0) {
-                      paginationParams.set(key, value.join(","));
-                    } else if (!Array.isArray(value)) {
-                      paginationParams.set(key, String(value));
-                    }
-                  }
-                });
-
-                paginationParams.set("page", String(pageNum));
-
-                return (
-                  <Button
-                    asChild
-                    variant={pageNum === data.page ? "default" : "outline"}
-                    key={pageNum}
-                  >
-                    <Link href={`/products?${paginationParams.toString()}`}>
-                      {pageNum}
-                    </Link>
-                  </Button>
-                );
-              })}
-          </div>
-        </>
+        <ProductsInfinite
+          initialQueryString={(() => {
+            const params = new URLSearchParams();
+            Object.entries(filters).forEach(([key, value]) => {
+              if (value !== undefined && value !== "" && value !== false) {
+                if (Array.isArray(value) && value.length > 0) {
+                  params.set(key, value.join(","));
+                } else if (!Array.isArray(value)) {
+                  params.set(key, String(value));
+                }
+              }
+            });
+            // Reset page for infinite mode
+            params.delete("page");
+            params.delete("page_size");
+            return params.toString();
+          })()}
+        />
       )}
     </div>
   );

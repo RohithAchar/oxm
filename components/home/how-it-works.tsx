@@ -147,16 +147,12 @@ export default function HowItWorks() {
           priority
           className="object-cover"
           onError={(e) => {
-            console.error("Image failed to load:", active.image, e);
-            // Try to reload the image
             const target = e.target as HTMLImageElement;
             if (target) {
               target.src = active.image;
             }
           }}
-          onLoad={() => {
-            console.log("Image loaded successfully:", active.image);
-          }}
+          onLoad={() => {}}
           unoptimized={active.image.includes(".jpg")}
         />
       </Card>

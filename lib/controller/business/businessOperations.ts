@@ -58,7 +58,7 @@ export const getBusinessById = async (id: string) => {
 
     return data;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 };
@@ -121,7 +121,7 @@ export const updateBusiness = async (
     revalidatePath("/supplier/profile");
     return { success: true, data: updatedData };
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error; // Re-throw so the component can catch it
   }
 };
@@ -262,7 +262,7 @@ export const createBusiness = async (
     revalidatePath("/supplier/profile");
     return business;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     throw error;
   }
 };

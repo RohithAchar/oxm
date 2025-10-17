@@ -478,11 +478,6 @@ export default function ProductViewV2Client({
                     disabled={!product.is_active}
                     onClick={() => {
                       if (navigator.vibrate) navigator.vibrate(200);
-                      console.log("Buy (dropship)", {
-                        productId: product.id,
-                        colorId,
-                        sizeId,
-                      });
                     }}
                   >
                     {product.is_active ? "Buy" : "Out of Stock"}
@@ -545,14 +540,6 @@ export default function ProductViewV2Client({
                       disabled={!product.is_active}
                       onClick={() => {
                         if (navigator.vibrate) navigator.vibrate(200);
-                        console.log("Order Sample clicked", {
-                          productId: product.id,
-                          colorId,
-                          sizeId,
-                          quantity: sampleQuantity,
-                          unitPrice,
-                          totalPrice,
-                        });
                       }}
                     >
                       {product.is_active ? "Order Sample" : "Out of Stock"}
@@ -1011,11 +998,6 @@ export default function ProductViewV2Client({
                           className="px-8 py-3 rounded-lg font-medium text-base"
                           onClick={() => {
                             if (navigator.vibrate) navigator.vibrate(200);
-                            console.log("Buy (dropship)", {
-                              productId: product.id,
-                              colorId,
-                              sizeId,
-                            });
                           }}
                         >
                           Buy
@@ -1078,14 +1060,6 @@ export default function ProductViewV2Client({
                           disabled={!product.is_active}
                           onClick={() => {
                             if (navigator.vibrate) navigator.vibrate(200);
-                            console.log("Order Sample clicked", {
-                              productId: product.id,
-                              colorId,
-                              sizeId,
-                              quantity: sampleQuantity,
-                              unitPrice,
-                              totalPrice,
-                            });
                           }}
                         >
                           {product.is_active ? "Order Sample" : "Out of Stock"}
