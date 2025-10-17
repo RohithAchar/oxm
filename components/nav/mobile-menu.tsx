@@ -37,7 +37,7 @@ const MobileMenu = () => {
       className="md:hidden fixed left-0 right-0 bottom-0 z-50 border-t bg-background"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <nav className="max-w-7xl mx-auto px-3 h-12 flex items-stretch">
+      <nav className="max-w-7xl mx-auto px-3 h-16 flex items-center">
         <ul
           className={`grid ${
             showThemeToggle ? "grid-cols-5" : "grid-cols-4"
