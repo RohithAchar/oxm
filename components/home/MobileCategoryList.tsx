@@ -50,7 +50,7 @@ export const CategoryCard = ({
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
-        className="relative h-[100px] w-[100px] overflow-hidden rounded-lg flex items-center justify-center text-center font-bold text-sm"
+        className="relative h-[100px] w-[100px] overflow-hidden rounded-lg flex items-center justify-center text-center font-bold text-sm text-black"
       >
         {name}
       </div>
