@@ -58,7 +58,7 @@ const categoryIcons: Record<string, any> = {
 };
 
 // Function to get icon based on category name or keywords
-const getCategoryIcon = (categoryName: string) => {
+export const getCategoryIcon = (categoryName: string) => {
   // First try exact match
   if (categoryIcons[categoryName]) {
     return categoryIcons[categoryName];
@@ -108,9 +108,6 @@ const getCategoryIcon = (categoryName: string) => {
   // Default fallback
   return Package;
 };
-
-// Fallback icon for categories without specific mapping
-const DefaultIcon = Package;
 
 const CategoryCard = ({ category }: { category: any }) => {
   const IconComponent = getCategoryIcon(category.name);

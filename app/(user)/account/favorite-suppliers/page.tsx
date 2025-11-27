@@ -114,7 +114,6 @@ export default function FavoriteSuppliersPage() {
                         className="w-full bg-green-600 hover:bg-green-700 text-white"
                       >
                         <MessageCircle className="w-4 h-4 mr-1" />
-                        Chat
                       </Button>
                     </Link>
                     <Button

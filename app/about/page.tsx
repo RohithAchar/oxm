@@ -5,18 +5,27 @@ import { H3 } from "@/components/ui/h3";
 import { H4 } from "@/components/ui/h4";
 import { P } from "@/components/ui/p";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://openxmart.com";
+
 export const metadata: Metadata = {
   title: "About | OpenXmart",
   description:
     "OpenXmart Technologies is building India's most trusted B2B marketplace with sample-first trust, verified transactions, and transparent buyer-seller connections.",
+  metadataBase: new URL(SITE_URL),
+  keywords: [
+    "OpenXmart story",
+    "B2B marketplace India",
+    "trusted supplier platform",
+    "sample first commerce",
+  ],
   alternates: {
-    canonical: "https://openxmart.com/about",
+    canonical: `${SITE_URL}/about`,
   },
   openGraph: {
     title: "About OpenXmart",
     description:
       "Powering a trust-driven B2B future in India through sample-first trust and verified trade.",
-    url: "https://openxmart.com/about",
+    url: `${SITE_URL}/about`,
     siteName: "OpenXmart",
     type: "website",
   },
@@ -32,9 +41,29 @@ export const metadata: Metadata = {
   },
 };
 
+const aboutJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  url: `${SITE_URL}/about`,
+  mainEntity: {
+    "@type": "Organization",
+    name: "OpenXmart Technologies",
+    founder: {
+      "@type": "Person",
+      name: "Rithish Shetty",
+    },
+  },
+  description:
+    "Learn how OpenXmart enables sample-first B2B trade with verified Indian suppliers.",
+};
+
 export default function AboutPage() {
   return (
     <main className="container mx-auto max-w-3xl px-4 py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }}
+      />
       <header className="space-y-4">
         <H1 className="text-3xl font-semibold tracking-tight">
           OpenXmart: Powering a Trust-Driven B2B Future in India

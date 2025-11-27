@@ -222,6 +222,59 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          chat_room_id: string
+          content: string
+          created_at: string | null
+          id: string
+          user_name: string
+        }
+        Insert: {
+          chat_room_id: string
+          content: string
+          created_at?: string | null
+          id?: string
+          user_name: string
+        }
+        Update: {
+          chat_room_id?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          user_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_chat_room_id_fkey"
+            columns: ["chat_room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string | null
+          id: string
+          reciever: string
+          sender: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          reciever: string
+          sender: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          reciever?: string
+          sender?: string
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
@@ -1622,7 +1675,7 @@ export type Database = {
         }[]
       }
       get_latest_products_for_mobile: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           id: string
           image_url: string

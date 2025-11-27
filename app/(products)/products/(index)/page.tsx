@@ -1,7 +1,53 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
+
 import ProductsRouteLoadingMount from "@/components/product/products-route-loading-mount";
 import ProductsContent from "@/components/product/products-content";
-import Link from "next/link";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://openxmart.com";
+
+export const metadata: Metadata = {
+  title: "Products | OpenXmart",
+  description:
+    "Browse trending private-label products, order samples, and convert to bulk with trusted Indian manufacturers on OpenXmart.",
+  metadataBase: new URL(SITE_URL),
+  keywords: [
+    "OpenXmart products",
+    "buy product samples India",
+    "wholesale marketplace listings",
+    "bulk sourcing products",
+  ],
+  alternates: {
+    canonical: `${SITE_URL}/products`,
+  },
+  openGraph: {
+    title: "Products | OpenXmart",
+    description:
+      "Discover curated products across apparel, beauty, home and more from verified Indian suppliers.",
+    url: `${SITE_URL}/products`,
+    siteName: "OpenXmart",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Products | OpenXmart",
+    description:
+      "Source trending private-label products from verified Indian suppliers.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
+const productsJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  url: `${SITE_URL}/products`,
+  name: "OpenXmart Products",
+  description:
+    "Browse OpenXmart's live product catalogue and order samples or bulk quantities from trusted suppliers.",
+};
 
 export default async function ProductsPage({
   searchParams,
@@ -12,6 +58,10 @@ export default async function ProductsPage({
 
   return (
     <div className="space-y-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productsJsonLd) }}
+      />
       {/* Lightweight client loading indicator for route/query changes */}
       <ProductsRouteLoadingMount />
       <Suspense

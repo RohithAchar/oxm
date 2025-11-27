@@ -1,23 +1,8 @@
 import Link from "next/link";
-import { Suspense } from "react";
-import {
-  Truck,
-  Package,
-  Handshake,
-  ShieldCheck,
-  GraduationCap,
-  Sparkles,
-} from "lucide-react";
+import { Truck, GraduationCap, Sparkles } from "lucide-react";
 import SimpleEnhancedSearch from "@/components/search/SimpleEnhancedSearch";
-import {
-  NewLaunchedItems,
-  NewLaunchedItemsSkeleton,
-} from "@/components/home/new-launched-list";
-import RecentlyViewedList from "@/components/recent/RecentlyViewedList";
-import FavoritesSection from "@/components/home/favorites-section";
 import { H1 } from "@/components/ui/h1";
 import { P } from "@/components/ui/p";
-import HowItWorks from "@/components/home/how-it-works";
 import { MobileLandingPage } from "./MobileLandingPage";
 
 const NewLandingPage = async () => {

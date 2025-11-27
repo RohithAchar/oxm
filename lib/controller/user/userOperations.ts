@@ -11,7 +11,7 @@ export const getUser = async () => {
   return data;
 };
 
-export const getUserId = async () => {
+export const getUserId = async (): Promise<string> => {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
   if (error) {

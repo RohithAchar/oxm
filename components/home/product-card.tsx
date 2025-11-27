@@ -73,6 +73,7 @@ export const ProductCard = ({
     <Link
       href={`/products/${id}${keepDropship ? "?dropship_available=true" : ""}`}
       className="block h-full"
+      aria-label={`View details for ${name} from ${supplierName}`}
     >
       <div
         key={id}
@@ -106,7 +107,7 @@ export const ProductCard = ({
           <Image
             fill
             src={imageError ? "/product-placeholder.png" : imgSrc}
-            alt="Product Image"
+            alt={name ? `${name} product image` : "Product image"}
             onError={() => setImageError(true)}
             onLoadingComplete={() => setImageLoading(false)}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
