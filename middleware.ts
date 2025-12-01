@@ -3,6 +3,9 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { Database } from "./utils/supabase/database.types";
 
+const enforcePhoneVerification =
+  process.env.NEXT_PUBLIC_ENFORCE_PHONE_VERIFICATION === "true";
+
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -61,7 +64,10 @@ export async function middleware(request: NextRequest) {
     }
 
     // Additional gate for create-business: require verified phone
-    if (request.nextUrl.pathname.startsWith("/create-business")) {
+    if (
+      enforcePhoneVerification &&
+      request.nextUrl.pathname.startsWith("/create-business")
+    ) {
       const { data: profile } = await supabase
         .from("profiles")
         .select("is_phone_verified")
