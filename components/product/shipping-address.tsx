@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { MapPin, Plus, Edit, Check } from "lucide-react";
+import { MapPin, Plus, Edit, Check, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import Link from "next/link";
 import { UserAddress, CreateUserAddressInput } from "@/types/address";
 import {
   createAddress,
@@ -48,6 +49,7 @@ export default function ShippingAddress({
   const [isLoading, setIsLoading] = useState(false);
   const [isFormLoading, setIsFormLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [isUnauthenticated, setIsUnauthenticated] = useState(false);
   const [formData, setFormData] = useState<CreateUserAddressInput>({
     full_name: "",
     phone_number: "",
@@ -89,6 +91,7 @@ export default function ShippingAddress({
   const loadAddresses = async () => {
     try {
       setIsLoading(true);
+      setIsUnauthenticated(false);
       const userAddresses = await getUserAddresses();
       setAddresses(userAddresses);
 
@@ -100,9 +103,15 @@ export default function ShippingAddress({
         setSelectedAddress(defaultShipping);
         onAddressSelect?.(defaultShipping);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error loading addresses:", error);
-      toast.error("Failed to load addresses");
+      // Check if error is due to unauthenticated user
+      if (error?.message?.includes("Unauthorized") || error?.status === 401) {
+        setIsUnauthenticated(true);
+        setAddresses([]);
+      } else {
+        toast.error("Failed to load addresses");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -125,6 +134,7 @@ export default function ShippingAddress({
       onAddressSelect?.(newAddress);
       setShowForm(false);
       setIsOpen(false);
+      setIsUnauthenticated(false);
       toast.success("Address added successfully");
 
       // Reset form
@@ -150,9 +160,15 @@ export default function ShippingAddress({
         delivery_instructions: "",
         landmark_description: "",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating address:", error);
-      toast.error("Failed to create address");
+      // Check if error is due to unauthenticated user
+      if (error?.message?.includes("Unauthorized") || error?.status === 401) {
+        setIsUnauthenticated(true);
+        setShowForm(false);
+      } else {
+        toast.error("Failed to create address");
+      }
     } finally {
       setIsFormLoading(false);
     }
@@ -198,6 +214,11 @@ export default function ShippingAddress({
                 <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                 <span>Loading addresses...</span>
               </div>
+            ) : isUnauthenticated ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <LogIn className="w-4 h-4" />
+                <span>Log in to manage addresses</span>
+              </div>
             ) : selectedAddress ? (
               <div className="flex items-start gap-3 w-full">
                 <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -231,7 +252,27 @@ export default function ShippingAddress({
             <DrawerTitle>Shipping Address</DrawerTitle>
           </DrawerHeader>
           <div className="px-4 pb-4">
-            {!showForm ? (
+            {isUnauthenticated ? (
+              <div className="text-center py-8 space-y-4">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
+                  <LogIn className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold">
+                    You are not logged in
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Please log in to view and manage your shipping addresses.
+                  </p>
+                </div>
+                <Link href="/login" className="inline-block">
+                  <Button className="w-full sm:w-auto">
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Log in
+                  </Button>
+                </Link>
+              </div>
+            ) : !showForm ? (
               <div className="space-y-3">
                 {addresses.length > 0 ? (
                   <div className="space-y-2 max-h-80 overflow-y-auto">

@@ -10,8 +10,10 @@ export async function fetchAddresses(): Promise<UserAddress[]> {
   const response = await fetch(API_BASE);
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to fetch addresses");
+    const error = await response.json().catch(() => ({ error: "Failed to fetch addresses" }));
+    const errorWithStatus = new Error(error.error || "Failed to fetch addresses");
+    (errorWithStatus as any).status = response.status;
+    throw errorWithStatus;
   }
 
   const data = await response.json();
@@ -44,8 +46,10 @@ export async function createAddress(
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to create address");
+    const error = await response.json().catch(() => ({ error: "Failed to create address" }));
+    const errorWithStatus = new Error(error.error || "Failed to create address");
+    (errorWithStatus as any).status = response.status;
+    throw errorWithStatus;
   }
 
   const data = await response.json();

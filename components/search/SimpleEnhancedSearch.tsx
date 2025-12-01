@@ -51,7 +51,7 @@ export default function SimpleEnhancedSearch({
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Load search history from localStorage on mount
@@ -72,10 +72,8 @@ export default function SimpleEnhancedSearch({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
+        containerRef.current &&
+        !containerRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
       }
@@ -258,7 +256,7 @@ export default function SimpleEnhancedSearch({
       : "text-sm md:text-base";
 
   return (
-    <div className={`relative w-full ${className}`}>
+    <div ref={containerRef} className={`relative w-full ${className}`}>
       <div className="relative">
         <Search
           className={`pointer-events-none absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-muted-foreground ${iconSize}`}
@@ -309,10 +307,7 @@ export default function SimpleEnhancedSearch({
       {isOpen && showSuggestions && (
         <>
           {/* Full-width overlay on small screens */}
-          <div
-            ref={suggestionsRef}
-            className="md:hidden fixed inset-x-0 top-14 z-60 bg-background border-t border-border shadow-lg max-h-[60vh] overflow-y-auto"
-          >
+          <div className="md:hidden fixed inset-x-0 top-14 z-60 bg-background border-t border-border shadow-lg max-h-[60vh] overflow-y-auto">
             {isLoading && (
               <div className="flex items-center justify-center py-4">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>

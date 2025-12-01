@@ -4,6 +4,14 @@ import SimpleEnhancedSearch from "@/components/search/SimpleEnhancedSearch";
 import { H1 } from "@/components/ui/h1";
 import { P } from "@/components/ui/p";
 import { MobileLandingPage } from "./MobileLandingPage";
+import HowItWorks from "./how-it-works";
+import { Suspense } from "react";
+import {
+  NewLaunchedItems,
+  NewLaunchedItemsSkeleton,
+} from "./new-launched-list";
+import FavoritesSection from "./favorites-section";
+import RecentlyViewedList from "../recent/RecentlyViewedList";
 
 const NewLandingPage = async () => {
   return (
@@ -106,23 +114,23 @@ const NewLandingPage = async () => {
       </section>
 
       {/* How it works */}
-      {/* <section className="hidden lg:block px-4 lg:px-0 mt-16 lg:mt-24">
+      <section className="hidden lg:block px-4 lg:px-0 mt-16 lg:mt-24">
         <HowItWorks />
-      </section> */}
+      </section>
 
       {/* Recently Viewed and New Arrivals already shown on mobile above.
           Show them here as well for desktop. */}
-      {/* <div className="hidden md:block">
+      <div className="hidden md:block">
         <Suspense fallback={<NewLaunchedItemsSkeleton />}>
           <NewLaunchedItems />
         </Suspense>
-      </div> */}
+      </div>
 
       {/* Recently viewed (bottom of page) */}
-      {/* <RecentlyViewedList /> */}
+      <RecentlyViewedList />
 
       {/* Favorites section */}
-      {/* <FavoritesSection /> */}
+      <FavoritesSection />
 
       {/* Footer is rendered globally via layout */}
     </main>
