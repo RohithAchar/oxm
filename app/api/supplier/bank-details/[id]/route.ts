@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+
+const revalidateBankDetailsPages = () => {
+  revalidatePath("/supplier/bank-details");
+};
 
 export const dynamic = "force-dynamic";
 export async function PUT(
@@ -62,6 +67,7 @@ export async function PUT(
       );
     }
 
+    revalidateBankDetailsPages();
     return NextResponse.json({ bankDetails: updatedBankDetails });
   } catch (error) {
     console.error("Error in PUT /api/supplier/bank-details/[id]:", error);
@@ -120,6 +126,7 @@ export async function DELETE(
       );
     }
 
+    revalidateBankDetailsPages();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error in DELETE /api/supplier/bank-details/[id]:", error);

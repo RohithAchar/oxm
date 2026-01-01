@@ -11,6 +11,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Menu } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { NavigationMenuHome } from "../home/navigation-menu";
 
 export const Navbar = () => {
   const pathname = usePathname();
@@ -66,15 +67,16 @@ export const Navbar = () => {
                 })} */}
               </nav>
             ) : showSearch ? (
-              <SimpleEnhancedSearch
-                placeholder="Search products"
-                size="sm"
-                rounded="full"
-                className="w-full max-w-xl mx-auto"
-                buttonMode="icon"
-                showSuggestions={true}
-                maxSuggestions={6}
-              />
+              // <SimpleEnhancedSearch
+              //   placeholder="Search products"
+              //   size="sm"
+              //   rounded="full"
+              //   className="w-full max-w-xl mx-auto"
+              //   buttonMode="icon"
+              //   showSuggestions={true}
+              //   maxSuggestions={6}
+              // />
+              <></>
             ) : null}
           </div>
           <div className="ml-3 md:ml-4 flex items-center gap-2 sm:gap-3">
@@ -102,6 +104,11 @@ export const Navbar = () => {
             </Link>
           </div>
         </div>
+        {pathname === "/" && (
+          <div className="max-w-7xl mx-auto pb-2">
+            <NavigationMenuHome />
+          </div>
+        )}
       </header>
 
       {/* Mobile Topbar */}

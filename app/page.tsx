@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
 import NewLandingPage from "@/components/home/NewLandingPage";
+import { LandingPageLarge } from "@/components/home/landing-page-large";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://openxmart.com";
 const HERO_IMAGE = `${SITE_URL}/image.jpeg`;
@@ -74,7 +75,8 @@ const Home = async () => {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
       />
-      <NewLandingPage />
+      <LandingPageLarge />
+      {/* <NewLandingPage /> */}
     </>
   );
 };

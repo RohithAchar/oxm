@@ -16,10 +16,10 @@ export default function RootMain({ children }: { children: React.ReactNode }) {
         paddingRight: "env(safe-area-inset-right)",
       }}
     >
-      <Container>
-        {!isAdmin && <GlobalBreadcrumbs />}
-        {children}
-      </Container>
+      {/* <Container> */}
+      {!isAdmin && <GlobalBreadcrumbs />}
+      {children}
+      {/* </Container> */}
     </main>
   );
 }

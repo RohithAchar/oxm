@@ -1293,6 +1293,77 @@ export type Database = {
         }
         Relationships: []
       }
+      supplier_payout_beneficiaries: {
+        Row: {
+          added_on: string
+          bank_account_number: string | null
+          bank_ifsc: string | null
+          beneficiary_address: string | null
+          beneficiary_city: string | null
+          beneficiary_country_code: string | null
+          beneficiary_email: string | null
+          beneficiary_name: string
+          beneficiary_phone: string | null
+          beneficiary_postal_code: string | null
+          beneficiary_state: string | null
+          beneficiary_status: string
+          cashfree_beneficiary_id: string
+          created_at: string
+          id: string
+          raw_response: Json | null
+          supplier_business_id: string
+          vpa: string | null
+        }
+        Insert: {
+          added_on: string
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
+          beneficiary_address?: string | null
+          beneficiary_city?: string | null
+          beneficiary_country_code?: string | null
+          beneficiary_email?: string | null
+          beneficiary_name: string
+          beneficiary_phone?: string | null
+          beneficiary_postal_code?: string | null
+          beneficiary_state?: string | null
+          beneficiary_status: string
+          cashfree_beneficiary_id: string
+          created_at?: string
+          id?: string
+          raw_response?: Json | null
+          supplier_business_id: string
+          vpa?: string | null
+        }
+        Update: {
+          added_on?: string
+          bank_account_number?: string | null
+          bank_ifsc?: string | null
+          beneficiary_address?: string | null
+          beneficiary_city?: string | null
+          beneficiary_country_code?: string | null
+          beneficiary_email?: string | null
+          beneficiary_name?: string
+          beneficiary_phone?: string | null
+          beneficiary_postal_code?: string | null
+          beneficiary_state?: string | null
+          beneficiary_status?: string
+          cashfree_beneficiary_id?: string
+          created_at?: string
+          id?: string
+          raw_response?: Json | null
+          supplier_business_id?: string
+          vpa?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_payout_beneficiaries_supplier_business_id_fkey"
+            columns: ["supplier_business_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_businesses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       supplier_shipping_preferences: {
         Row: {
           base_cost: number | null

@@ -31,7 +31,7 @@ const groupedNav: Array<{
     items: [
       { title: "Overview", url: "/supplier/overview" },
       { title: "Profile", url: "/supplier/profile" },
-      { title: "Bank Details", url: "/supplier/bank-details" },
+      { title: "Payout Beneficiary", url: "/supplier/payout-beneficiary" },
       { title: "Insights", url: "/supplier/insights" },
     ],
   },

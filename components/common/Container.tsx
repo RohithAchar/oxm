@@ -16,7 +16,7 @@ export default function Container({
   const maxWidthClass = isSpecialFullWidth ? "max-w-full" : "max-w-7xl";
   return (
     <div
-      className={`${maxWidthClass} mx-auto ${className} ${
+      className={`${maxWidthClass}  mx-auto ${className} ${
         isSpecialFullWidth ? "px-0" : "px-4"
       }`}
     >

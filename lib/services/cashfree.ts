@@ -45,6 +45,35 @@ export interface CashfreeBankVerificationStatus {
   };
 }
 
+export interface CashfreeBeneficiaryInstrumentDetails {
+  bank_account_number: string;
+  bank_ifsc: string;
+  vpa?: string | null;
+}
+
+export interface CashfreeBeneficiaryContactDetails {
+  beneficiary_email?: string;
+  beneficiary_phone?: string;
+  beneficiary_country_code?: string;
+  beneficiary_address?: string;
+  beneficiary_city?: string;
+  beneficiary_state?: string;
+  beneficiary_postal_code?: string;
+}
+
+export interface CashfreeCreateBeneficiaryRequest {
+  beneficiary_id: string;
+  beneficiary_name: string;
+  beneficiary_instrument_details: CashfreeBeneficiaryInstrumentDetails;
+  beneficiary_contact_details: CashfreeBeneficiaryContactDetails;
+}
+
+export interface CashfreeCreateBeneficiaryResponse
+  extends CashfreeCreateBeneficiaryRequest {
+  beneficiary_status: string;
+  added_on: string; // ISO timestamp
+}
+
 export class CashfreeService {
   private clientId: string;
   private clientSecret: string;
@@ -65,6 +94,15 @@ export class CashfreeService {
       "Content-Type": "application/json",
       "x-client-id": this.clientId,
       "x-client-secret": this.clientSecret,
+    };
+  }
+
+  private getPayoutHeaders() {
+    return {
+      "Content-Type": "application/json",
+      "x-client-id": this.clientId,
+      "x-client-secret": this.clientSecret,
+      "x-api-version": "2024-01-01",
     };
   }
 
@@ -176,6 +214,46 @@ export class CashfreeService {
       ifsc_details: verificationStatus.ifsc_details,
       last_verified_at: new Date().toISOString(),
     };
+  }
+
+  /**
+   * Create a payout beneficiary in Cashfree
+   * This registers a supplier's bank account/VPA for receiving payouts
+   */
+  async createPayoutBeneficiary(
+    payload: CashfreeCreateBeneficiaryRequest
+  ): Promise<CashfreeCreateBeneficiaryResponse> {
+    try {
+      // Use payout API endpoint - check if baseUrl needs to be different for payout
+      // Cashfree payout API is typically at payout-api.cashfree.com or payout-gamma.cashfree.com
+      const payoutBaseUrl = this.baseUrl.includes("payout")
+        ? this.baseUrl
+        : this.baseUrl
+            .replace("api.cashfree.com", "payout-api.cashfree.com")
+            .replace("gamma.cashfree.com", "payout-gamma.cashfree.com");
+
+      const response = await fetch(`${payoutBaseUrl}/payout/beneficiary`, {
+        method: "POST",
+        headers: this.getPayoutHeaders(),
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Cashfree Payout API error: ${response.status} - ${errorText}`
+        );
+      }
+
+      const data = await response.json();
+      return data as CashfreeCreateBeneficiaryResponse;
+    } catch (error) {
+      console.error("Error creating payout beneficiary:", error);
+      if (error instanceof Error) {
+        throw new Error(error.message);
+      }
+      throw new Error("Failed to create payout beneficiary");
+    }
   }
 }
 

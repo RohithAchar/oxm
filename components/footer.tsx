@@ -66,9 +66,13 @@ const Footer = ({ fullWidth = true }: FooterProps) => {
   const quickLinks: { name: string; href: string }[] = [];
 
   return (
-    <footer className="bg-gray-900 text-white mt-24 lg:mt-48">
+    <footer className="bg-gray-900 text-white">
       {/* Main Footer Content */}
-      <div className={`${fullWidth ? 'max-w-7xl mx-auto' : ''} px-6 md:px-12 py-16`}>
+      <div
+        className={`${
+          fullWidth ? "max-w-7xl mx-auto" : ""
+        } px-6 md:px-12 py-16`}
+      >
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-12">
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
@@ -125,7 +129,11 @@ const Footer = ({ fullWidth = true }: FooterProps) => {
 
       {/* Bottom Bar */}
       <div className="border-t border-gray-700 bg-gray-950">
-        <div className={`${fullWidth ? 'max-w-7xl mx-auto' : ''} px-6 md:px-12 py-6`}>
+        <div
+          className={`${
+            fullWidth ? "max-w-7xl mx-auto" : ""
+          } px-6 md:px-12 py-6`}
+        >
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
               <P className="text-gray-400 text-sm">

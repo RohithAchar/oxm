@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { cashfreeService } from "@/lib/services/cashfree";
+
+const revalidateBankDetailsPages = () => {
+  revalidatePath("/supplier/bank-details");
+};
 
 export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
@@ -238,6 +243,8 @@ export async function POST(req: NextRequest) {
           { status: 500 }
         );
       }
+
+      revalidateBankDetailsPages();
 
       return NextResponse.json({
         bankDetails,
