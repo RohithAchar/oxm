@@ -63,7 +63,7 @@ export default async function IntroPage() {
   const hasBusiness = await isBusinessExists(userId);
 
   return (
-    <div className="px-4 lg:px-0 py-10 sm:py-14 lg:py-16">
+    <div className="px-4 lg:px-0 py-10 sm:py-14 lg:py-16 w-full max-w-7xl mx-auto">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

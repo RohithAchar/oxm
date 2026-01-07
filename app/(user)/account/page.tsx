@@ -22,7 +22,7 @@ import {
 
 const AccountPage = async () => {
   return (
-    <div className="py-4 space-y-6">
+    <div className="py-4 space-y-6 w-full max-w-7xl mx-auto">
       {/* Profile Section */}
       <div className="space-y-4">
         <h1 className="text-2xl font-semibold">My Account</h1>

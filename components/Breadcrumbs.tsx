@@ -70,7 +70,7 @@ export default function Breadcrumbs() {
   const containerClass = isSupplier || isAdmin ? "px-0 py-0" : "pt-3 pb-0";
 
   return (
-    <div className={containerClass}>
+    <div className={`${containerClass}`}>
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

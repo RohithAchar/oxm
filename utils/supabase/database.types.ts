@@ -193,21 +193,27 @@ export type Database = {
       categories: {
         Row: {
           created_at: string | null
+          icon: string | null
           id: string
+          image_url: string | null
           name: string
           parent_id: string | null
           slug: string
         }
         Insert: {
           created_at?: string | null
+          icon?: string | null
           id?: string
+          image_url?: string | null
           name: string
           parent_id?: string | null
           slug: string
         }
         Update: {
           created_at?: string | null
+          icon?: string | null
           id?: string
+          image_url?: string | null
           name?: string
           parent_id?: string | null
           slug?: string
