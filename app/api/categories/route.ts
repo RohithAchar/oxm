@@ -1,11 +1,11 @@
 // app/api/categories/route.ts
-import { createClient } from "@/utils/supabase/server";
+import { createAnonClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
 
 // GET all categories
 export async function GET() {
   try {
-    const supabase = await createClient();
+    const supabase = await createAnonClient();
 
     // in alphabetic order and without the parent category
     const { data: categories, error } = await supabase

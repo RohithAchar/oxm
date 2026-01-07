@@ -1,7 +1,10 @@
 "use client";
 
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import * as Icons from "lucide-react";
+import { LucideIcon } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -13,8 +16,48 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string | null;
+  description?: string | null;
+}
+
 export function NavigationMenuHome() {
   const isMobile = useIsMobile();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        if (!response.ok) throw new Error("Failed to fetch categories");
+        const data = await response.json();
+        // Filter to only show top-level categories (parent_id is null)
+        const topLevelCategories = (data.categories || []).filter(
+          (cat: any) => !cat.parent_id
+        );
+        setCategories(topLevelCategories); // Show all categories
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const getIconComponent = (iconName: string | null): LucideIcon => {
+    if (!iconName) return Icons.Circle;
+    const pascalCase = iconName
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join("");
+    return (Icons as any)[pascalCase] || Icons.Circle;
+  };
 
   return (
     <NavigationMenu viewport={isMobile}>
@@ -22,42 +65,62 @@ export function NavigationMenuHome() {
         <div className="flex items-center justify-between">
           <NavigationMenuItem>
             <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <a
-                      className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-4 no-underline outline-hidden transition-all duration-200 select-none focus:shadow-md md:p-6"
-                      href="/categories"
-                    >
-                      <div className="mb-2 text-lg font-medium sm:mt-4">
-                        Explore Categories
-                      </div>
-                      <p className="text-muted-foreground text-sm leading-tight">
-                        Explore categories and find products you need.
-                      </p>
-                    </a>
-                  </NavigationMenuLink>
-                </li>
-                <ListItem href="/docs" title="Introduction">
-                  Re-usable components built using Radix UI and Tailwind CSS.
-                </ListItem>
-                <ListItem href="/docs/installation" title="Installation">
-                  How to install dependencies and structure your app.
-                </ListItem>
-                <ListItem href="/docs/primitives/typography" title="Typography">
-                  Styles for headings, paragraphs, lists...etc.
-                </ListItem>
-              </ul>
+            <NavigationMenuContent className="!w-[1200px] max-w-[95vw]">
+              <div className="w-full p-6">
+                <div className="flex gap-6 items-start">
+                  {/* Explore All Categories Link */}
+                  <div className="flex-shrink-0 w-[240px]">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="flex h-full w-full flex-col justify-start rounded-lg bg-gradient-to-br from-primary/5 to-primary/10 p-5 no-underline outline-hidden transition-all duration-200 select-none focus:shadow-md hover:shadow-lg border border-primary/20 hover:border-primary/40"
+                        href="/categories"
+                      >
+                        <div className="mb-3 text-base font-semibold text-foreground">
+                          Explore All Categories
+                        </div>
+                        <p className="text-muted-foreground text-sm leading-relaxed">
+                          Browse all categories and find products you need.
+                        </p>
+                        <div className="mt-4 text-xs text-primary font-medium">
+                          View all →
+                        </div>
+                      </Link>
+                    </NavigationMenuLink>
+                  </div>
+
+                  {/* Categories List */}
+                  {loading ? (
+                    <div className="p-3 text-sm text-muted-foreground">
+                      Loading categories...
+                    </div>
+                  ) : categories.length > 0 ? (
+                    <div className="grid grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-2 flex-1">
+                      {categories.map((category) => {
+                        return (
+                          <ListItem
+                            key={category.id}
+                            href={`/category/${category.slug}`}
+                            title={category.name}
+                          >
+                            {category.description ||
+                              `Browse ${category.name} products`}
+                          </ListItem>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="p-3 text-sm text-muted-foreground">
+                      No categories available
+                    </div>
+                  )}
+                </div>
+              </div>
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Recommended Products</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <div className="h-[200px] w-[500px] flex items-center justify-center">
-                Items will be displayed here.
-              </div>
-            </NavigationMenuContent>
+            <NavigationMenuLink asChild>
+              <Link href="/products">Products</Link>
+            </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuTrigger>Buyer Protection</NavigationMenuTrigger>
@@ -92,11 +155,16 @@ function ListItem({
   ...props
 }: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
   return (
-    <li {...props}>
+    <li {...props} className="w-full">
       <NavigationMenuLink asChild>
-        <Link href={href}>
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
+        <Link
+          href={href}
+          className="block p-3 rounded-lg hover:bg-muted transition-colors group"
+        >
+          <div className="text-sm font-medium mb-1 truncate group-hover:text-foreground">
+            {title}
+          </div>
+          <p className="text-muted-foreground text-xs leading-snug line-clamp-2">
             {children}
           </p>
         </Link>
