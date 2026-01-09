@@ -122,14 +122,14 @@ export function NavigationMenuHome() {
               <Link href="/products">Products</Link>
             </NavigationMenuLink>
           </NavigationMenuItem>
-          <NavigationMenuItem>
+          {/* <NavigationMenuItem>
             <NavigationMenuTrigger>Buyer Protection</NavigationMenuTrigger>
             <NavigationMenuContent>
               <div className="h-[200px] w-[500px] flex items-center justify-center">
                 Content will be displayed here.
               </div>
             </NavigationMenuContent>
-          </NavigationMenuItem>
+          </NavigationMenuItem> */}
         </div>
         <div className="flex items-center justify-between gap-8">
           <NavigationMenuItem>

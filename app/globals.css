@@ -217,4 +217,41 @@
     animation: grain 8s steps(10) infinite;
     pointer-events: none;
   }
+
+  /* Mobile native app styles */
+  @media (max-width: 768px) {
+    .mobile-categories-wrapper {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Safe area support for mobile */
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom, 1rem);
+    }
+
+    /* Native app-like touch feedback */
+    .active\:scale-95:active {
+      transform: scale(0.95);
+    }
+
+    /* Smooth scrolling for mobile */
+    html {
+      -webkit-overflow-scrolling: touch;
+      scroll-behavior: smooth;
+    }
+
+    /* Better tap targets */
+    a, button {
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+  }
 }

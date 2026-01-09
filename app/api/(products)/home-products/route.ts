@@ -90,7 +90,7 @@ export async function GET(req: NextRequest) {
     );
 
     const visible = enriched.filter((p) => p.businessStatus === "APPROVED");
-    
+
     // Calculate hasMore based on whether we got a full page of results
     // If we got fewer products than requested, there are no more
     const hasMore = visible.length === limit && (count || 0) > from + visible.length;

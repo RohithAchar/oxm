@@ -112,66 +112,13 @@ export const Navbar = () => {
       </header>
 
       {/* Mobile Topbar */}
-      <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background">
-        <div
-          className={`${
-            isSupplier ? "hidden max-w-screen-2xl" : "max-w-7xl"
-          } mx-auto px-3 h-14 flex items-center justify-between gap-4`}
-        >
+      <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b">
+        <div className="max-w-7xl mx-auto px-3 h-14 flex items-center">
           <Link href="/" className="font-semibold text-lg leading-none">
             <span className="text-foreground">Open</span>
             <span className="text-primary">X</span>
             <span className="text-foreground">mart</span>
           </Link>
-          <div className="flex items-center gap-2">
-            {isSupplier ? (
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <button
-                    aria-label="Open supplier navigation"
-                    className="p-2 -mr-1 text-muted-foreground hover:text-foreground"
-                  >
-                    <Menu className="h-6 w-6" />
-                  </button>
-                </DrawerTrigger>
-                <DrawerContent className="p-2">
-                  <nav className="grid">
-                    {supplierNav.map((item) => {
-                      const active = pathname === item.href;
-                      return (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          aria-current={active ? "page" : undefined}
-                          className={cn(
-                            "px-3 py-3 text-base",
-                            active
-                              ? "text-foreground font-medium"
-                              : "text-muted-foreground"
-                          )}
-                        >
-                          {item.name}
-                        </Link>
-                      );
-                    })}
-                  </nav>
-                </DrawerContent>
-              </Drawer>
-            ) : (
-              showSearch && (
-                <div className="flex-1">
-                  <SimpleEnhancedSearch
-                    placeholder="Search products"
-                    size="sm"
-                    rounded="full"
-                    buttonMode="icon"
-                    showSuggestions={true}
-                    maxSuggestions={5}
-                  />
-                </div>
-              )
-            )}
-          </div>
         </div>
       </header>
     </>

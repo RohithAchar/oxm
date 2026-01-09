@@ -69,9 +69,9 @@ export const FeaturedProducts = async () => {
   }
 
   return (
-    <div className="bg-muted">
-      <section className="w-full max-w-7xl mx-auto px-4 py-8 md:py-12">
-        <div className="flex items-center justify-between mb-8 md:mb-12">
+    <div className="bg-muted md:bg-muted">
+      <section className="w-full max-w-7xl mx-auto px-2 md:px-4 py-4 md:py-8 md:py-12">
+        <div className="flex items-center justify-between mb-4 md:mb-8 md:mb-12">
           {/* <div className="w-full text-center">
           <h2 className="text-center text-2xl sm:text-3xl md:text-4xl font-semibold tracking-wide text-foreground mb-2">
             Featured Products
@@ -83,7 +83,7 @@ export const FeaturedProducts = async () => {
         </div>
         <InfiniteProductsGrid
           apiEndpoint="/api/home-products"
-          gridClassName="grid items-stretch auto-rows-fr grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2"
+          gridClassName="grid items-stretch auto-rows-fr grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3"
           pageSize={12}
           initialItems={initialProducts}
         />

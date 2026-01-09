@@ -24,14 +24,15 @@ export const Categories = async () => {
     console.error(error);
   }
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="flex md:grid md:grid-cols-6 gap-3 md:gap-4 overflow-x-auto md:overflow-visible pb-2 md:pb-0 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide">
       {categories.map((category) => (
-        <Category
-          key={category.id}
-          name={category.name}
-          icon={category.icon}
-          slug={category.slug}
-        />
+        <div key={category.id} className="flex-shrink-0 w-[90px] md:w-auto">
+          <Category
+            name={category.name}
+            icon={category.icon}
+            slug={category.slug}
+          />
+        </div>
       ))}
     </div>
   );
@@ -60,10 +61,19 @@ const Category = ({ name, icon, slug }: CategoryProps) => {
   const IconComponent = getIconComponent(icon);
 
   return (
-    <Button variant="outline" asChild>
-      <Link className="flex items-center gap-2" href={`/category/${slug}`}>
-        <IconComponent />
-        <p className="text-wrap">{name}</p>
+    <Button
+      variant="outline"
+      asChild
+      className="h-auto w-full flex-col gap-2 py-3 px-2 md:flex-row md:py-2 md:px-4"
+    >
+      <Link
+        className="flex flex-col items-center justify-center gap-2 text-center active:scale-95 transition-transform"
+        href={`/category/${slug}`}
+      >
+        <IconComponent className="w-5 h-5 md:w-4 md:h-4 flex-shrink-0" />
+        <p className="text-[10px] md:text-sm font-medium leading-tight line-clamp-2 text-center">
+          {name}
+        </p>
       </Link>
     </Button>
   );
@@ -71,18 +81,24 @@ const Category = ({ name, icon, slug }: CategoryProps) => {
 
 const CategorySkeleton = () => {
   return (
-    <Button variant="outline" disabled className="flex items-center gap-2">
-      <Skeleton className="h-8 w-8 rounded-md" />
-      <Skeleton className="h-4 w-24" />
+    <Button
+      variant="outline"
+      disabled
+      className="h-auto w-full flex-col gap-2 py-3 px-2 md:flex-row md:py-2 md:px-4"
+    >
+      <Skeleton className="h-5 w-5 rounded-md md:h-4 md:w-4" />
+      <Skeleton className="h-3 w-full rounded md:h-4 md:w-24" />
     </Button>
   );
 };
 
 export const CategorySkeletons = () => {
   return (
-    <div className="grid grid-cols-6 gap-4">
+    <div className="flex md:grid md:grid-cols-6 gap-3 md:gap-4 overflow-x-auto md:overflow-visible pb-2 md:pb-0 -mx-4 md:mx-0 px-4 md:px-0 scrollbar-hide">
       {Array.from({ length: 12 }).map((_, i) => (
-        <CategorySkeleton key={i} />
+        <div key={i} className="flex-shrink-0 w-[90px] md:w-auto">
+          <CategorySkeleton />
+        </div>
       ))}
     </div>
   );
