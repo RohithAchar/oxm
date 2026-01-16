@@ -70,7 +70,7 @@ export function MobileHamburgerMenu({
             <Menu className="h-5 w-5" />
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="p-4">
+        <DrawerContent className="p-4 !z-[9999]" overlayClassName="!z-[9998]">
           <nav className="space-y-1">
             {supplierNav.map((item) => {
               const active = pathname === item.href;
@@ -108,7 +108,7 @@ export function MobileHamburgerMenu({
           <Menu className="h-5 w-5" />
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="p-4 max-h-[85vh] overflow-y-auto">
+      <DrawerContent className="p-4 max-h-[85vh] overflow-y-auto !z-[9999]" overlayClassName="!z-[9998]">
         <nav className="space-y-1">
           {/* Categories */}
           <Collapsible open={categoriesOpen} onOpenChange={setCategoriesOpen}>

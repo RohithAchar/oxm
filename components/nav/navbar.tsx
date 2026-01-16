@@ -5,13 +5,25 @@ import { Button } from "@/components/ui/button";
 import ProductSearch from "@/components/search/ProductSearch";
 import EnhancedProductSearch from "@/components/search/EnhancedProductSearch";
 import SimpleEnhancedSearch from "@/components/search/SimpleEnhancedSearch";
-import { MessageSquare, User } from "lucide-react";
+import {
+  MessageSquare,
+  User,
+  Package,
+  FolderTree,
+  Store,
+  Bell,
+  LogIn,
+  LogOut,
+} from "lucide-react";
 import { ModeToggle } from "./theme-toggle-button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { Menu } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { NavigationMenuHome } from "../home/navigation-menu";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect, useState } from "react";
+import LogoutButton from "@/components/LogoutButton";
 
 export const Navbar = () => {
   const pathname = usePathname();
@@ -19,6 +31,19 @@ export const Navbar = () => {
   const showThemeToggle = true;
   const showSearch = !(pathname?.startsWith("/supplier") ?? false);
   const isSupplier = pathname?.startsWith("/supplier");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setIsAuthenticated(!!user);
+    };
+    checkAuth();
+  }, []);
 
   const supplierNav = [
     { name: "Overview", href: "/supplier/overview" },
@@ -113,12 +138,138 @@ export const Navbar = () => {
 
       {/* Mobile Topbar */}
       <header className="md:hidden fixed top-0 left-0 right-0 z-50 bg-background border-b">
-        <div className="max-w-7xl mx-auto px-3 h-14 flex items-center">
+        <div className="max-w-7xl mx-auto px-3 h-14 flex items-center justify-between">
           <Link href="/" className="font-semibold text-lg leading-none">
             <span className="text-foreground">Open</span>
             <span className="text-primary">X</span>
             <span className="text-foreground">mart</span>
           </Link>
+          <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+            <DrawerTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Open menu"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </DrawerTrigger>
+            <DrawerContent
+              className="!z-[9999] bg-muted"
+              overlayClassName="!z-[9998]"
+            >
+              <div className="p-4 space-y-1">
+                {/* Products & Categories */}
+                <DrawerClose asChild>
+                  <Link
+                    href="/products"
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 text-base rounded-lg transition-colors text-foreground",
+                      pathname === "/products"
+                        ? "font-medium bg-muted"
+                        : "hover:bg-muted/50"
+                    )}
+                  >
+                    <Package className="h-5 w-5" />
+                    <span>Products</span>
+                  </Link>
+                </DrawerClose>
+                <DrawerClose asChild>
+                  <Link
+                    href="/categories"
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 text-base rounded-lg transition-colors text-foreground",
+                      pathname === "/categories"
+                        ? "font-medium bg-muted"
+                        : "hover:bg-muted/50"
+                    )}
+                  >
+                    <FolderTree className="h-5 w-5" />
+                    <span>Categories</span>
+                  </Link>
+                </DrawerClose>
+
+                {/* Separator */}
+                <div className="h-px bg-border my-2" />
+
+                {/* Supply on OXM */}
+                <DrawerClose asChild>
+                  <Link
+                    href="/supplier"
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 text-base rounded-lg transition-colors text-foreground",
+                      pathname?.startsWith("/supplier")
+                        ? "font-medium bg-muted"
+                        : "hover:bg-muted/50"
+                    )}
+                  >
+                    <Store className="h-5 w-5" />
+                    <span>Supply on OXM</span>
+                  </Link>
+                </DrawerClose>
+
+                {/* Separator */}
+                <div className="h-px bg-border my-2" />
+
+                {/* Messages & Alerts */}
+                <DrawerClose asChild>
+                  <Link
+                    href="/messages"
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 text-base rounded-lg transition-colors text-foreground",
+                      pathname === "/messages"
+                        ? "font-medium bg-muted"
+                        : "hover:bg-muted/50"
+                    )}
+                  >
+                    <MessageSquare className="h-5 w-5" />
+                    <span>Messages</span>
+                  </Link>
+                </DrawerClose>
+                <DrawerClose asChild>
+                  <Link
+                    href="/notifications"
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 text-base rounded-lg transition-colors text-foreground",
+                      pathname === "/notifications"
+                        ? "font-medium bg-muted"
+                        : "hover:bg-muted/50"
+                    )}
+                  >
+                    <Bell className="h-5 w-5" />
+                    <span>Alerts</span>
+                  </Link>
+                </DrawerClose>
+
+                {/* Separator */}
+                <div className="h-px bg-border my-2" />
+
+                {/* Login/Logout */}
+                {isAuthenticated ? (
+                  <DrawerClose asChild>
+                    <LogoutButton
+                      variant="ghost"
+                      className="w-full justify-start gap-3 px-4 py-3 text-base text-foreground hover:bg-muted/50"
+                    >
+                      <LogOut className="h-5 w-5" />
+                      <span>Logout</span>
+                    </LogoutButton>
+                  </DrawerClose>
+                ) : (
+                  <DrawerClose asChild>
+                    <Link
+                      href="/login"
+                      className="flex items-center gap-3 px-4 py-3 text-base rounded-lg transition-colors text-foreground hover:bg-muted/50"
+                    >
+                      <LogIn className="h-5 w-5" />
+                      <span>Login</span>
+                    </Link>
+                  </DrawerClose>
+                )}
+              </div>
+            </DrawerContent>
+          </Drawer>
         </div>
       </header>
     </>

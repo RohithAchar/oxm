@@ -29,12 +29,12 @@ export const LandingPageLarge = async () => {
           </section>
 
           {/* Products Section - Mobile */}
-          <section className="px-0 py-6 bg-muted/30">
-            <div className="px-4 mb-5">
+          <section className="px-0 py-6">
+            {/* <div className="px-4 mb-5">
               <h2 className="text-lg font-semibold text-foreground">
                 Featured Products
               </h2>
-            </div>
+            </div> */}
             <Suspense fallback={<FeaturedProductsSkeleton />}>
               <FeaturedProducts />
             </Suspense>
